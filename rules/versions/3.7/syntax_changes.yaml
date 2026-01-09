@@ -1,0 +1,23 @@
+# Syntax changes when upgrading from Python 3.7 to 3.8+
+
+- id: "PY3720"
+  name: "Walrus operator not available"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The walrus operator := (assignment expressions) is not available in
+    Python 3.7. It was introduced in Python 3.8.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Name"
+    attributes:
+      id: "PLACEHOLDER"
+  message: |
+    Assignment expressions (:=) are not available until Python 3.8.
+  suggestion: |
+    Upgrade to Python 3.8+ to use the walrus operator.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions"

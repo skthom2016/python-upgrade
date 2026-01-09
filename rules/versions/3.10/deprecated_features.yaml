@@ -1,0 +1,25 @@
+# Deprecated features when upgrading from Python 3.10 to 3.11+
+
+- id: "PY3110"
+  name: "cgi module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.10"
+  target_version: "3.11"
+  description: |
+    The 'cgi' module was deprecated in Python 3.11.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "cgi"
+  message: |
+    The 'cgi' module is deprecated. Consider using a modern web framework.
+  suggestion: |
+    Replace CGI with FastAPI, Django, or Flask.
+  references:
+    - "https://docs.python.org/3/library/cgi.html"

@@ -1,0 +1,107 @@
+# Standard library changes when upgrading from Python 3.6 to 3.7+
+# Changes to modules, functions, and classes in the Python standard library
+
+- id: "PY3630"
+  name: "xml.etree.ElementTree.getchildren() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.9"
+  description: |
+    xml.etree.ElementTree.getchildren() and .getiterator() were deprecated
+    in Python 3.2 and removed in Python 3.9.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Call"
+          attr: "regex:(getchildren|getiterator)"
+  message: |
+    getchildren() and getiterator() were removed in Python 3.9.
+    Use list(element) or element.iter() instead.
+  suggestion: |
+    Replace .getchildren() with list(element) and .getiterator() with
+    element.iter().
+  examples:
+    bad: |
+      children = element.getchildren()
+    good: |
+      children = list(element)
+  references:
+    - "https://docs.python.org/3/library/xml.etree.elementtree.html"
+    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
+
+- id: "PY3631"
+  name: "parser module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.10"
+  description: |
+    The 'parser' module was deprecated in Python 3.9 and removed in
+    Python 3.10. Use the 'ast' module instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "parser"
+  message: |
+    The 'parser' module was removed in Python 3.10. Use the 'ast' module
+    instead for parsing Python code.
+  suggestion: |
+    Replace 'import parser' with 'import ast' and use AST parsing functions.
+  examples:
+    bad: |
+      import parser
+      ast_tree = parser.suite(source)
+    good: |
+      import ast
+      ast_tree = ast.parse(source)
+  references:
+    - "https://docs.python.org/3/library/parser.html"
+    - "https://docs.python.org/3/whatsnew/3.10.html#removed"
+
+- id: "PY3632"
+  name: "imp module removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.12"
+  description: |
+    The 'imp' module was deprecated in Python 3.4 and removed in
+    Python 3.12. Use 'importlib' instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "imp"
+  message: |
+    The 'imp' module was removed in Python 3.12. Use 'importlib' instead.
+  suggestion: |
+    Replace 'import imp' with 'import importlib' and use the equivalent
+    importlib functions.
+  examples:
+    bad: |
+      import imp
+      module = imp.load_source(name, path)
+    good: |
+      import importlib.util
+      spec = importlib.util.spec_from_file_location(name, path)
+      module = importlib.util.module_from_spec(spec)
+      spec.loader.exec_module(module)
+  references:
+    - "https://docs.python.org/3/library/imp.html"
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"

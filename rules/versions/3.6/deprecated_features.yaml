@@ -1,0 +1,109 @@
+# Deprecated features when upgrading from Python 3.6 to 3.7+
+# These features are deprecated and will be removed in future versions
+
+- id: "PY3610"
+  name: "time.clock() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.8"
+  description: |
+    time.clock() was deprecated in Python 3.3 and removed in Python 3.8.
+    Use time.perf_counter() or time.process_time() instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "time"
+          attr: "clock"
+  message: |
+    time.clock() was removed in Python 3.8. Use time.perf_counter() or
+    time.process_time() instead.
+  suggestion: |
+    Replace time.clock() with time.perf_counter() for performance timing
+    or time.process_time() for CPU time.
+  examples:
+    bad: |
+      start = time.clock()
+    good: |
+      start = time.perf_counter()
+  references:
+    - "https://docs.python.org/3/library/time.html#time.clock"
+    - "https://docs.python.org/3/whatsnew/3.8.html#removed"
+
+- id: "PY3611"
+  name: "platform.dist() and platform.linux_distribution() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.8"
+  description: |
+    platform.dist() and platform.linux_distribution() were deprecated in
+    Python 3.5 and removed in Python 3.8.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "platform"
+          attr: "regex:(dist|linux_distribution)"
+  message: |
+    platform.dist() and platform.linux_distribution() were removed in
+    Python 3.8. Use the distro package instead.
+  suggestion: |
+    Install and use the 'distro' package: pip install distro
+  examples:
+    bad: |
+      distro_info = platform.linux_distribution()
+    good: |
+      import distro
+      distro_info = distro.linux_distribution()
+  references:
+    - "https://docs.python.org/3/library/platform.html#platform.linux_distribution"
+    - "https://docs.python.org/3/whatsnew/3.8.html#removed"
+
+- id: "PY3612"
+  name: "cgi module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.11"
+  description: |
+    The cgi module was deprecated in Python 3.11 and will be removed in
+    Python 3.13. Use a web framework instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "cgi"
+  message: |
+    The 'cgi' module is deprecated and will be removed in Python 3.13.
+    Consider using a modern web framework.
+  suggestion: |
+    Replace CGI with a modern web framework like FastAPI, Django, or Flask.
+  examples:
+    bad: |
+      import cgi
+    good: |
+      # Use a web framework instead
+      from fastapi import FastAPI
+  references:
+    - "https://docs.python.org/3/library/cgi.html"
+    - "https://docs.python.org/3/whatsnew/3.11.html#removed"

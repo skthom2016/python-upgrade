@@ -1,0 +1,23 @@
+# Syntax changes when upgrading from Python 3.10 to 3.11+
+
+- id: "PY3120"
+  name: "ExceptionGroup not available"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.10"
+  target_version: "3.11"
+  description: |
+    ExceptionGroup and exception* syntax are not available in Python 3.10.
+    They were introduced in Python 3.11.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Name"
+    attributes:
+      id: "PLACEHOLDER"
+  message: |
+    Exception groups are not available until Python 3.11.
+  suggestion: |
+    Upgrade to Python 3.11+ to use exception groups.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.11.html#pep-654-exception-groups-and-except"

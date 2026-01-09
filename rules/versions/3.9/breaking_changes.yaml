@@ -1,0 +1,27 @@
+# Breaking changes when upgrading from Python 3.9 to 3.10+
+
+- id: "PY3901"
+  name: "distutils deprecated"
+  category: "deprecation"
+  severity: "high"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    The distutils module was deprecated in Python 3.10 and will be removed
+    in Python 3.12. Use setuptools or packaging instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "distutils"
+  message: |
+    The 'distutils' module is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Migrate to setuptools or use the 'packaging' library for version parsing.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#distutils"
+    - "https://peps.python.org/pep-0632/"

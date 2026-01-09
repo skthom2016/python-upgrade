@@ -1,0 +1,35 @@
+# Deprecated features when upgrading from Python 3.7 to 3.8+
+
+- id: "PY3710"
+  name: "time.clock() removed"
+  category: "deprecation"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    time.clock() was removed in Python 3.8.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "time"
+          attr: "clock"
+  message: |
+    time.clock() was removed in Python 3.8. Use time.perf_counter() or
+    time.process_time() instead.
+  suggestion: |
+    Replace time.clock() with time.perf_counter() for performance timing.
+  examples:
+    bad: |
+      start = time.clock()
+    good: |
+      start = time.perf_counter()
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#removed"

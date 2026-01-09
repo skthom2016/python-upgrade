@@ -1,0 +1,103 @@
+# Breaking changes when upgrading from Python 3.6 to 3.7+
+# These changes will cause code to break or behave differently
+
+- id: "PY3601"
+  name: "async and await become reserved keywords"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    In Python 3.7, 'async' and 'await' become fully reserved keywords and
+    cannot be used as variable names, attribute names, or function names.
+    In Python 3.6 they were only soft keywords.
+  detector: "KeywordChangesDetector"
+  pattern:
+    node_type: "Name"
+    attributes:
+      id: "async"
+  condition:
+    not_in_context: ["async_func", "async_for", "async_with"]
+  message: "Using 'async' as a variable name will raise SyntaxError in Python 3.7+"
+  suggestion: |
+    Rename the variable from 'async' to something else like 'async_operation'
+    or 'is_async'.
+  examples:
+    bad: |
+      async = True  # SyntaxError in 3.7+
+      await = False  # SyntaxError in 3.7+
+    good: |
+      is_async = True  # Works in all versions
+      awaiting_result = False  # Works in all versions
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep492"
+    - "https://peps.python.org/pep-0492/"
+
+- id: "PY3602"
+  name: "@asyncio.coroutine decorator deprecated"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.11"
+  description: |
+    The @asyncio.coroutine decorator is deprecated since Python 3.8 and
+    was removed in Python 3.11. Use async def instead.
+  detector: "AsyncChangesDetector"
+  pattern:
+    node_type: "FunctionDef"
+  condition:
+    has_decorator: "asyncio.coroutine"
+  message: |
+    The @asyncio.coroutine decorator is deprecated and was removed in Python 3.11.
+    Use 'async def' syntax instead.
+  suggestion: |
+    Replace @asyncio.coroutine def with async def, and replace yield from
+    with await.
+  examples:
+    bad: |
+      @asyncio.coroutine
+      def my_coroutine():
+          yield from asyncio.sleep(1)
+    good: |
+      async def my_coroutine():
+          await asyncio.sleep(1)
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.coroutine"
+    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
+
+- id: "PY3603"
+  name: "asyncio.sleep() loop parameter removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.10"
+  description: |
+    The 'loop' parameter of asyncio.sleep() was deprecated in Python 3.7
+    and removed in Python 3.10.
+  detector: "AsyncChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "sleep"
+  condition:
+    has_kwarg: "loop"
+  message: |
+    The 'loop' parameter in asyncio.sleep() was removed in Python 3.10.
+    Rely on the running event loop instead.
+  suggestion: |
+    Remove the 'loop' parameter from asyncio.sleep() calls and let
+    asyncio use the running event loop.
+  examples:
+    bad: |
+      await asyncio.sleep(1, loop=loop)
+    good: |
+      await asyncio.sleep(1)
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep"
+    - "https://docs.python.org/3/whatsnew/3.10.html#removed"

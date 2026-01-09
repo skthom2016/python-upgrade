@@ -1,0 +1,24 @@
+# Syntax changes when upgrading from Python 3.11 to 3.12+
+
+- id: "PY3120"
+  name: "Type parameter syntax not available"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    The new type parameter syntax (using [] after function/class names) is
+    not available in Python 3.11. It was introduced in Python 3.12.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Name"
+    attributes:
+      id: "PLACEHOLDER"
+  message: |
+    Type parameter syntax is not available until Python 3.12.
+  suggestion: |
+    Upgrade to Python 3.12+ to use the new type parameter syntax, or use
+    TypeVar/ParamSpec.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-695-type-parameter-syntax"

@@ -1,0 +1,56 @@
+# Breaking changes when upgrading from Python 3.10 to 3.11+
+
+- id: "PY31001"
+  name: "parser module removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.10"
+  target_version: "3.11"
+  description: |
+    The 'parser' module was removed in Python 3.10.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "parser"
+  message: |
+    The 'parser' module was removed in Python 3.10. Use 'ast' instead.
+  suggestion: |
+    Replace 'import parser' with 'import ast'.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#removed"
+
+- id: "PY31002"
+  name: "typing.Text removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.10"
+  target_version: "3.11"
+  description: |
+    typing.Text (alias for str) was removed in Python 3.11. Use str directly.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "typing"
+      attr: "Text"
+  message: |
+    typing.Text was removed in Python 3.11. Use 'str' instead.
+  suggestion: |
+    Replace 'typing.Text' with 'str'.
+  examples:
+    bad: |
+      from typing import Text
+      def greet(name: Text) -> Text:
+    good: |
+      def greet(name: str) -> str:
+  references:
+    - "https://docs.python.org/3/whatsnew/3.11.html#removed"

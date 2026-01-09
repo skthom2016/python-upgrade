@@ -1,0 +1,32 @@
+# Deprecated features in Python 3.12
+# This file lists current deprecations in Python 3.12 that may be removed in future versions
+
+- id: "PY3201"
+  name: "asyncio.get_event_loop() deprecation warnings"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "LOW"
+  source_version: "3.12"
+  target_version: "3.13"
+  description: |
+    asyncio.get_event_loop() raises DeprecationWarning when there is no
+    running event loop in Python 3.12.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "get_event_loop"
+  message: |
+    asyncio.get_event_loop() is deprecated when there's no running event loop.
+  suggestion: |
+    Use asyncio.get_running_loop() instead when inside a running event loop,
+    or explicitly create a new loop with asyncio.new_event_loop().
+  references:
+    - "https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.get_event_loop"

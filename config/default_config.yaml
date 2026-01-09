@@ -1,0 +1,57 @@
+# SecurePythonUpgradeProject Configuration
+# This is the default configuration template
+
+python:
+  # Source Python version: 'auto' for auto-detection, or explicit version like '3.6'
+  source_version: auto
+
+  # Target Python version: Mandatory, specify the version you're upgrading to
+  target_version: null
+
+scan:
+  # Enable resume from checkpoint if analysis was interrupted
+  resume: true
+
+  # Enable parallel processing for faster analysis
+  parallel: true
+
+  # Verbose mode: show file-by-file output during analysis
+  verbose: false
+
+paths:
+  # Source directory to analyze
+  source: "./src"
+
+  # Output directory for reports and cache
+  output: "./output"
+
+performance:
+  # Maximum number of worker processes (null for auto-detect based on CPU cores)
+  max_workers: null
+
+  # Stop spawning new workers when memory usage reaches this percentage
+  memory_limit: 70
+
+  # Stop spawning new workers when CPU usage reaches this percentage
+  cpu_limit: 90
+
+baseline:
+  # Path to baseline file for ignoring known issues
+  file: null
+
+cache:
+  # Enable caching of analysis results
+  enabled: true
+
+  # Cache expiration time in days (null for never expire)
+  expiration_days: 30
+
+reporting:
+  # Include code snippets in the report
+  include_snippets: true
+
+  # Number of lines to show in code snippets
+  snippet_lines: 3
+
+  # Maximum number of files to show in top problematic files list
+  top_files_count: 10

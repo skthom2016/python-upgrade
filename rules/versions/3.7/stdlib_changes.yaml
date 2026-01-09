@@ -1,0 +1,36 @@
+# Standard library changes when upgrading from Python 3.7 to 3.8+
+
+- id: "PY3730"
+  name: "platform.dist() removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    platform.dist() and platform.linux_distribution() were removed in
+    Python 3.8.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "platform"
+          attr: "regex:(dist|linux_distribution)"
+  message: |
+    platform.dist() was removed in Python 3.8. Use the 'distro' package.
+  suggestion: |
+    Install and use the distro package instead.
+  examples:
+    bad: |
+      info = platform.linux_distribution()
+    good: |
+      import distro
+      info = distro.linux_distribution()
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#removed"

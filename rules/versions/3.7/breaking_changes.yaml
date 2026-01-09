@@ -1,0 +1,61 @@
+# Breaking changes when upgrading from Python 3.7 to 3.8+
+
+- id: "PY3701"
+  name: "async and await are fully reserved keywords"
+  category: "breaking_change"
+  severity: "critical"
+  risk_level: "HIGH"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    In Python 3.7+, 'async' and 'await' are fully reserved keywords and
+    cannot be used as variable names, function names, or attribute names.
+  detector: "KeywordChangesDetector"
+  pattern:
+    node_type: "Name"
+    attributes:
+      id: "regex:(async|await)"
+  message: |
+    Using '{name}' as a variable name will raise SyntaxError in Python 3.7+
+  suggestion: |
+    Rename the variable from '{name}' to something else like '{name}_operation'
+    or 'is_{name}'.
+  examples:
+    bad: |
+      async = True  # SyntaxError
+    good: |
+      is_async = True
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep492"
+
+- id: "PY3702"
+  name: "asyncio.Task.current_task() requires argument"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.7"
+  target_version: "3.9"
+  description: |
+    asyncio.Task.current_task() without arguments was deprecated in 3.7
+    and removed in 3.9. Must pass loop=None.
+  detector: "AsyncChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Attribute"
+          attr: "current_task"
+  message: |
+    asyncio.Task.current_task() requires loop=None argument in Python 3.9+
+  suggestion: |
+    Change asyncio.Task.current_task() to asyncio.current_task()
+  examples:
+    bad: |
+      task = asyncio.Task.current_task()
+    good: |
+      task = asyncio.current_task()
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.current_task"

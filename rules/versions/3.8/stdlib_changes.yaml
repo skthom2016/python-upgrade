@@ -1,0 +1,29 @@
+# Standard library changes when upgrading from Python 3.8 to 3.9+
+
+- id: "PY3830"
+  name: "xml.etree.ElementTree.getchildren() removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    xml.etree.ElementTree.getchildren() and getiterator() were removed
+    in Python 3.9.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Call"
+          attr: "regex:(getchildren|getiterator)"
+  message: |
+    getchildren() and getiterator() were removed in Python 3.9.
+  suggestion: |
+    Use list(element) instead of getchildren() and element.iter() instead
+    of getiterator().
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#removed"

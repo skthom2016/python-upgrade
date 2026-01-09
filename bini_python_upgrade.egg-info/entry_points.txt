@@ -1,0 +1,2 @@
+[console_scripts]
+bini-analyzer = bini_analyzer:main

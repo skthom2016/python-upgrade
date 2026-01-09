@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Upgrade Analysis Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .metadata {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Severity-based card colors */
+        .card.critical .value {
+            color: #e53e3e;
+        }
+
+        .card.high .value {
+            color: #dd6b20;
+        }
+
+        .card.medium .value {
+            color: #ed8936;
+        }
+
+        .card.low .value {
+            color: #48bb78;
+        }
+
+        .files {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .file {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .file:last-child {
+            border-bottom: none;
+        }
+
+        .file-path {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .issue-count {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .issues {
+            margin-top: 10px;
+        }
+
+        .issue {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Severity-based issue styling */
+        .issue[data-severity="critical"] {
+            border-left-color: #e53e3e;
+            background: #fff5f5;
+        }
+
+        .issue[data-severity="high"] {
+            border-left-color: #dd6b20;
+            background: #fffaf0;
+        }
+
+        .issue[data-severity="medium"] {
+            border-left-color: #ed8936;
+            background: #fffaf0;
+        }
+
+        .issue[data-severity="low"] {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .issue-id {
+            font-weight: bold;
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .issue-message {
+            margin: 5px 0;
+        }
+
+        .issue-location {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .code-snippet {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .filters {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .filters button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .filters button:hover {
+            background: #5568d3;
+        }
+
+        .filters button.active {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐍 Python Upgrade Analysis Report</h1>
+            <div class="metadata">
+                <p>Source: 3.6 -> Target: 3.12</p>
+                <p>Generated: 2026-01-09T20:41:27.092777</p>
+            </div>
+        </header>
+
+        <div class="summary">
+            <div class="card">
+                <h3>Total Issues</h3>
+                <div class="value">9</div>
+            </div>
+            <div class="card">
+                <h3>Files Analyzed</h3>
+                <div class="value">1</div>
+            </div>
+            <div class="card">
+                <h3>Files with Issues</h3>
+                <div class="value">1</div>
+            </div>
+            <div class="card critical">
+                <h3>Critical Severity</h3>
+                <div class="value">4</div>
+            </div>
+            <div class="card high">
+                <h3>High Severity</h3>
+                <div class="value">2</div>
+            </div>
+            <div class="card medium">
+                <h3>Medium Severity</h3>
+                <div class="value">3</div>
+            </div>
+            <div class="card low">
+                <h3>Low Severity</h3>
+                <div class="value">0</div>
+            </div>
+        </div>
+
+        <div class="files">
+            <h2>Issues by File</h2>
+
+            <div class="filters">
+                <button onclick="filterBySeverity('all')" class="active">All Issues</button>
+                <button onclick="filterBySeverity('critical')">Critical</button>
+                <button onclick="filterBySeverity('high')">High</button>
+                <button onclick="filterBySeverity('medium')">Medium</button>
+                <button onclick="filterBySeverity('low')">Low</button>
+            </div>
+
+            
+            <div class="file">
+                <div class="file-path">..\test-upgrade\deprecated_test_all_versions.py</div>
+                <div class="issue-count">9 issues</div>
+                <div class="issues">
+                    
+            <div class="issue medium" data-severity="medium">
+                <div class="issue-id">PY3603</div>
+                <div class="issue-message">The 'loop' parameter in asyncio.sleep() was removed in Python 3.10.
+Rely on the running event loop instead.
+</div>
+                <div class="issue-location">Line 116, Column 15</div>
+                <div class="code-snippet"> 113: 
+ 114: @asyncio.coroutine
+ 115: def old_coroutine():
+ 116:     yield from asyncio.sleep(1)
+                     ^
+ 117: 
+ 118: try:
+ 119:     loop = asyncio.get_event_loop()</div>
+            </div>
+            
+            <div class="issue medium" data-severity="medium">
+                <div class="issue-id">PY3612</div>
+                <div class="issue-message">The 'cgi' module is deprecated and will be removed in Python 3.13.
+Consider using a modern web framework.
+</div>
+                <div class="issue-location">Line 79, Column 4</div>
+                <div class="code-snippet">  76: 
+  77: # deprecated cgi
+  78: try:
+  79:     import cgi
+          ^
+  80: except Exception as e:
+  81:     print("cgi:", e)
+  82: </div>
+            </div>
+            
+            <div class="issue high" data-severity="high">
+                <div class="issue-id">PY3632</div>
+                <div class="issue-message">The 'imp' module was removed in Python 3.12. Use 'importlib' instead.
+</div>
+                <div class="issue-location">Line 37, Column 4</div>
+                <div class="code-snippet">  34: 
+  35: # Removed in Python 3.8
+  36: try:
+  37:     import imp
+          ^
+  38:     imp.find_module("sys")
+  39: except Exception as e:
+  40:     print("imp module:", e)</div>
+            </div>
+            
+            <div class="issue high" data-severity="critical">
+                <div class="issue-id">PY3701</div>
+                <div class="issue-message">Using '{name}' as a variable name will raise SyntaxError in Python 3.7+
+</div>
+                <div class="issue-location">Line 114, Column 1</div>
+                <div class="code-snippet"> 111: # Deprecated @asyncio.coroutine
+ 112: import asyncio
+ 113: 
+ 114: @asyncio.coroutine
+       ^
+ 115: def old_coroutine():
+ 116:     yield from asyncio.sleep(1)
+ 117: </div>
+            </div>
+            
+            <div class="issue high" data-severity="critical">
+                <div class="issue-id">PY3701</div>
+                <div class="issue-message">Using '{name}' as a variable name will raise SyntaxError in Python 3.7+
+</div>
+                <div class="issue-location">Line 119, Column 11</div>
+                <div class="code-snippet"> 116:     yield from asyncio.sleep(1)
+ 117: 
+ 118: try:
+ 119:     loop = asyncio.get_event_loop()
+                 ^
+ 120:     loop.run_until_complete(old_coroutine())
+ 121: except Exception as e:
+ 122:     print("asyncio.coroutine:", e)</div>
+            </div>
+            
+            <div class="issue high" data-severity="critical">
+                <div class="issue-id">PY3701</div>
+                <div class="issue-message">Using '{name}' as a variable name will raise SyntaxError in Python 3.7+
+</div>
+                <div class="issue-location">Line 116, Column 15</div>
+                <div class="code-snippet"> 113: 
+ 114: @asyncio.coroutine
+ 115: def old_coroutine():
+ 116:     yield from asyncio.sleep(1)
+                     ^
+ 117: 
+ 118: try:
+ 119:     loop = asyncio.get_event_loop()</div>
+            </div>
+            
+            <div class="issue medium" data-severity="high">
+                <div class="issue-id">PY3901</div>
+                <div class="issue-message">The 'distutils' module is deprecated and will be removed in Python 3.12.
+</div>
+                <div class="issue-location">Line 61, Column 4</div>
+                <div class="code-snippet">  58: 
+  59: # distutils removed in Python 3.12
+  60: try:
+  61:     import distutils
+          ^
+  62: except Exception as e:
+  63:     print("distutils:", e)
+  64: </div>
+            </div>
+            
+            <div class="issue medium" data-severity="medium">
+                <div class="issue-id">PY3110</div>
+                <div class="issue-message">The 'cgi' module is deprecated. Consider using a modern web framework.
+</div>
+                <div class="issue-location">Line 79, Column 4</div>
+                <div class="code-snippet">  76: 
+  77: # deprecated cgi
+  78: try:
+  79:     import cgi
+          ^
+  80: except Exception as e:
+  81:     print("cgi:", e)
+  82: </div>
+            </div>
+            
+            <div class="issue high" data-severity="critical">
+                <div class="issue-id">PY31101</div>
+                <div class="issue-message">The 'distutils' module was removed in Python 3.12.
+</div>
+                <div class="issue-location">Line 61, Column 4</div>
+                <div class="code-snippet">  58: 
+  59: # distutils removed in Python 3.12
+  60: try:
+  61:     import distutils
+          ^
+  62: except Exception as e:
+  63:     print("distutils:", e)
+  64: </div>
+            </div>
+            
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        const reportData = {"metadata": {"source_version": "3.6", "target_version": "3.12", "project_path": "D:\\Santhosh\\latestdev\\test-upgrade", "generated_at": "2026-01-09T20:41:27.092777", "analyzer_version": "1.0.0", "config_hash": ""}, "summary": {"total_files": 1, "total_issues": 9, "files_with_issues": 1, "files_without_issues": 0, "by_risk": {"MEDIUM": 4, "HIGH": 5}, "by_severity": {"medium": 3, "high": 2, "critical": 4}, "by_category": {"breaking_change": 6, "deprecation": 3}, "top_files": [{"path": "..\\test-upgrade\\deprecated_test_all_versions.py", "total_issues": 9, "by_risk": {"MEDIUM": 4, "HIGH": 5}}], "analysis_duration_seconds": 0.0839688777923584, "rules_executed": 32, "cache_hits": 0}, "files": [{"path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "relative_path": "..\\test-upgrade\\deprecated_test_all_versions.py", "total_issues": 9, "by_severity": {"medium": 3, "high": 2, "critical": 4}, "by_category": {"breaking_change": 6, "deprecation": 3}, "by_risk": {"MEDIUM": 4, "HIGH": 5}, "analysis_time_ms": 0.0, "issues": [{"id": "PY3603", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 116, "column": 15, "end_line": 116, "end_column": 31}, "severity": "medium", "category": "breaking_change", "risk_level": "MEDIUM", "message": "The 'loop' parameter in asyncio.sleep() was removed in Python 3.10.\nRely on the running event loop instead.\n", "suggestion": "Remove the 'loop' parameter from asyncio.sleep() calls and let\nasyncio use the running event loop.\n", "code_snippet": " 113: \n 114: @asyncio.coroutine\n 115: def old_coroutine():\n 116:     yield from asyncio.sleep(1)\n                     ^\n 117: \n 118: try:\n 119:     loop = asyncio.get_event_loop()", "affected_versions": ["3.6", "3.7", "3.8", "3.9", "3.10"], "references": ["https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep", "https://docs.python.org/3/whatsnew/3.10.html#removed"]}, {"id": "PY3612", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 79, "column": 4, "end_line": 79, "end_column": 14}, "severity": "medium", "category": "deprecation", "risk_level": "MEDIUM", "message": "The 'cgi' module is deprecated and will be removed in Python 3.13.\nConsider using a modern web framework.\n", "suggestion": "Replace CGI with a modern web framework like FastAPI, Django, or Flask.\n", "code_snippet": "  76: \n  77: # deprecated cgi\n  78: try:\n  79:     import cgi\n          ^\n  80: except Exception as e:\n  81:     print(\"cgi:\", e)\n  82: ", "affected_versions": ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"], "references": ["https://docs.python.org/3/library/cgi.html", "https://docs.python.org/3/whatsnew/3.11.html#removed"]}, {"id": "PY3632", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 37, "column": 4, "end_line": 37, "end_column": 14}, "severity": "high", "category": "breaking_change", "risk_level": "HIGH", "message": "The 'imp' module was removed in Python 3.12. Use 'importlib' instead.\n", "suggestion": "Replace 'import imp' with 'import importlib' and use the equivalent\nimportlib functions.\n", "code_snippet": "  34: \n  35: # Removed in Python 3.8\n  36: try:\n  37:     import imp\n          ^\n  38:     imp.find_module(\"sys\")\n  39: except Exception as e:\n  40:     print(\"imp module:\", e)", "affected_versions": ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"], "references": ["https://docs.python.org/3/library/imp.html", "https://docs.python.org/3/whatsnew/3.12.html#removed"]}, {"id": "PY3701", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 114, "column": 1, "end_line": 114, "end_column": 8}, "severity": "critical", "category": "breaking_change", "risk_level": "HIGH", "message": "Using '{name}' as a variable name will raise SyntaxError in Python 3.7+\n", "suggestion": "Rename the variable from '{name}' to something else like '{name}_operation'\nor 'is_{name}'.\n", "code_snippet": " 111: # Deprecated @asyncio.coroutine\n 112: import asyncio\n 113: \n 114: @asyncio.coroutine\n       ^\n 115: def old_coroutine():\n 116:     yield from asyncio.sleep(1)\n 117: ", "affected_versions": ["3.7", "3.8"], "references": ["https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep492"]}, {"id": "PY3701", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 119, "column": 11, "end_line": 119, "end_column": 18}, "severity": "critical", "category": "breaking_change", "risk_level": "HIGH", "message": "Using '{name}' as a variable name will raise SyntaxError in Python 3.7+\n", "suggestion": "Rename the variable from '{name}' to something else like '{name}_operation'\nor 'is_{name}'.\n", "code_snippet": " 116:     yield from asyncio.sleep(1)\n 117: \n 118: try:\n 119:     loop = asyncio.get_event_loop()\n                 ^\n 120:     loop.run_until_complete(old_coroutine())\n 121: except Exception as e:\n 122:     print(\"asyncio.coroutine:\", e)", "affected_versions": ["3.7", "3.8"], "references": ["https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep492"]}, {"id": "PY3701", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 116, "column": 15, "end_line": 116, "end_column": 22}, "severity": "critical", "category": "breaking_change", "risk_level": "HIGH", "message": "Using '{name}' as a variable name will raise SyntaxError in Python 3.7+\n", "suggestion": "Rename the variable from '{name}' to something else like '{name}_operation'\nor 'is_{name}'.\n", "code_snippet": " 113: \n 114: @asyncio.coroutine\n 115: def old_coroutine():\n 116:     yield from asyncio.sleep(1)\n                     ^\n 117: \n 118: try:\n 119:     loop = asyncio.get_event_loop()", "affected_versions": ["3.7", "3.8"], "references": ["https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep492"]}, {"id": "PY3901", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 61, "column": 4, "end_line": 61, "end_column": 20}, "severity": "high", "category": "deprecation", "risk_level": "MEDIUM", "message": "The 'distutils' module is deprecated and will be removed in Python 3.12.\n", "suggestion": "Migrate to setuptools or use the 'packaging' library for version parsing.\n", "code_snippet": "  58: \n  59: # distutils removed in Python 3.12\n  60: try:\n  61:     import distutils\n          ^\n  62: except Exception as e:\n  63:     print(\"distutils:\", e)\n  64: ", "affected_versions": ["3.9", "3.10", "3.11", "3.12"], "references": ["https://docs.python.org/3/whatsnew/3.10.html#distutils", "https://peps.python.org/pep-0632/"]}, {"id": "PY3110", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 79, "column": 4, "end_line": 79, "end_column": 14}, "severity": "medium", "category": "deprecation", "risk_level": "MEDIUM", "message": "The 'cgi' module is deprecated. Consider using a modern web framework.\n", "suggestion": "Replace CGI with FastAPI, Django, or Flask.\n", "code_snippet": "  76: \n  77: # deprecated cgi\n  78: try:\n  79:     import cgi\n          ^\n  80: except Exception as e:\n  81:     print(\"cgi:\", e)\n  82: ", "affected_versions": ["3.10", "3.11"], "references": ["https://docs.python.org/3/library/cgi.html"]}, {"id": "PY31101", "file_path": "D:\\Santhosh\\latestdev\\test-upgrade\\deprecated_test_all_versions.py", "location": {"line": 61, "column": 4, "end_line": 61, "end_column": 20}, "severity": "critical", "category": "breaking_change", "risk_level": "HIGH", "message": "The 'distutils' module was removed in Python 3.12.\n", "suggestion": "Use setuptools for packaging tasks or packaging.version for version parsing.\n", "code_snippet": "  58: \n  59: # distutils removed in Python 3.12\n  60: try:\n  61:     import distutils\n          ^\n  62: except Exception as e:\n  63:     print(\"distutils:\", e)\n  64: ", "affected_versions": ["3.11", "3.12"], "references": ["https://docs.python.org/3/whatsnew/3.12.html#removed"]}]}], "timeline": [{"timestamp": "2026-01-09T20:41:27.092777", "total_issues": 9, "total_files": 1, "source_version": "3.6", "target_version": "3.12"}]};
+
+        function filterBySeverity(severity) {
+            const issues = document.querySelectorAll('.issue');
+            const buttons = document.querySelectorAll('.filters button');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            issues.forEach(issue => {
+                const issueSeverity = issue.getAttribute('data-severity');
+                if (severity === 'all' || issueSeverity === severity) {
+                    issue.style.display = 'block';
+                } else {
+                    issue.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

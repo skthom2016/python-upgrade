@@ -1,0 +1,109 @@
+# Syntax changes when upgrading from Python 3.6 to 3.7+
+# New syntax features that become available (not errors, just informational)
+
+- id: "PY3620"
+  name: "Walrus operator not available"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    The walrus operator := (assignment expressions) is not available in
+    Python 3.7. It was introduced in Python 3.8.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Name"
+    attributes:
+      id: "PLACEHOLDER"
+  message: |
+    If you want to use the walrus operator :=, you'll need to upgrade to
+    Python 3.8 or later.
+  suggestion: |
+    Upgrade to Python 3.8+ to use assignment expressions, or use traditional
+    assignment statements.
+  examples:
+    bad: |
+      # This is a syntax error in Python 3.7
+      if (n := len(items)) > 10:
+          print(n)
+    good: |
+      # Traditional approach works in all versions
+      n = len(items)
+      if n > 10:
+          print(n)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions"
+    - "https://peps.python.org/pep-0572/"
+
+- id: "PY3621"
+  name: "Positional-only parameters not available"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Positional-only parameters (using /) are not available in Python 3.7.
+    They were introduced in Python 3.8.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Name"
+    attributes:
+      id: "PLACEHOLDER"
+  message: |
+    Positional-only parameters are not available in Python 3.7.
+    Use Python 3.8+ if you need this feature.
+  suggestion: |
+    Upgrade to Python 3.8+ to use positional-only parameters with / syntax.
+  examples:
+    bad: |
+      # This is a syntax error in Python 3.7
+      def greet(name, /, greeting="Hello"):
+          print(f"{greeting}, {name}!")
+    good: |
+      # Traditional approach works in all versions
+      def greet(name, greeting="Hello"):
+          print(f"{greeting}, {name}!")
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#positional-only-parameters"
+    - "https://peps.python.org/pep-0570/"
+
+- id: "PY3622"
+  name: "Match statement not available"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Structural pattern matching (match/case statements) is not available
+    in Python 3.7. It was introduced in Python 3.10.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Name"
+    attributes:
+      id: "PLACEHOLDER"
+  message: |
+    Pattern matching with match/case is not available in Python 3.7.
+    Use Python 3.10+ if you need this feature.
+  suggestion: |
+    Upgrade to Python 3.10+ to use structural pattern matching, or use
+    traditional if/elif/else chains.
+  examples:
+    bad: |
+      # This is a syntax error in Python 3.7
+      match status:
+          case 200:
+              return "OK"
+          case 404:
+              return "Not Found"
+    good: |
+      # Traditional approach works in all versions
+      if status == 200:
+          return "OK"
+      elif status == 404:
+          return "Not Found"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#pep-634-structural-pattern-matching"
+    - "https://peps.python.org/pep-0634/"
