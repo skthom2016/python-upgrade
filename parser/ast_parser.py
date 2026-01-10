@@ -122,7 +122,7 @@ class ASTParser:
         self,
         line: int,
         column: int,
-        context_lines: int = 3
+        context_lines: int = 1
     ) -> str:
         """
         Extract code snippet around a location.

@@ -1,36 +1,2135 @@
 # Standard library changes when upgrading from Python 3.7 to 3.8+
+# Changes to modules, functions, and classes in the Python standard library
 
-- id: "PY3730"
-  name: "platform.dist() removed"
+# --- NEW MODULES IN PYTHON 3.8 ---
+
+- id: "PY37SL01"
+  name: "New importlib.metadata module"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 introduces the new importlib.metadata module (provisional) for
+    reading metadata from third-party packages.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "ImportFrom"
+    children:
+      module:
+        node_type: "str"
+        value: "importlib.metadata"
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "regex:(version|requires|files|packages|distribution)"
+  message: |
+    The importlib.metadata module is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, avoid using importlib.metadata or provide
+    alternative implementations using pkg_resources or setuptools.
+  examples:
+    good: |
+      # Python 3.8+
+      from importlib.metadata import version, requires, files
+      version('requests')
+      list(requires('requests'))
+  references:
+    - "https://docs.python.org/3/library/importlib.html#importlib.metadata"
+    - "https://bugs.python.org/issue34632"
+
+# --- MATH MODULE ADDITIONS ---
+
+- id: "PY37SL02"
+  name: "New math.dist() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds math.dist() for computing Euclidean distance between
+    two points.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "math.dist"
+  message: |
+    The math.dist() function is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, implement your own distance calculation:
+    math.sqrt(sum((a - b) ** 2 for a, b in zip(x1, x2))).
+  examples:
+    good: |
+      # Python 3.8+
+      import math
+      distance = math.dist((x1, y1), (x2, y2))
+  references:
+    - "https://docs.python.org/3/library/math.html#math.dist"
+    - "https://bugs.python.org/issue33089"
+
+- id: "PY37SL03"
+  name: "math.hypot() expanded to multiple dimensions"
+  category: "api_change"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The math.hypot() function has been expanded to handle multiple dimensions.
+    Formerly, it only supported the 2-D case.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "math.hypot"
+    num_args_greater_than: 2
+  message: |
+    math.hypot() now supports multiple dimensions in Python 3.8+. This code
+    will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use math.sqrt(sum(x**2 for x in coordinates))
+    instead.
+  examples:
+    good: |
+      # Python 3.8+
+      import math
+      distance = math.hypot(x1, y1, z1)
+  references:
+    - "https://docs.python.org/3/library/math.html#math.hypot"
+    - "https://bugs.python.org/issue33089"
+
+- id: "PY37SL04"
+  name: "New math.prod() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds math.prod(), as analogous function to sum() that returns
+    the product of a 'start' value (default: 1) times an iterable of numbers.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "math.prod"
+  message: |
+    The math.prod() function is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use functools.reduce(operator.mul, iterable, 1)
+    instead.
+  examples:
+    good: |
+      # Python 3.8+
+      import math
+      product = math.prod([1, 2, 3, 4])
+  references:
+    - "https://docs.python.org/3/library/math.html#math.prod"
+    - "https://bugs.python.org/issue35606"
+
+- id: "PY37SL05"
+  name: "New math.perm() and math.comb() functions"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds two new combinatoric functions math.perm() and
+    math.comb() for permutations and combinations.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(math\\.perm|math\\.comb)"
+  message: |
+    The math.perm() and math.comb() functions are new in Python 3.8. This
+    code will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use manual calculation or third-party
+    libraries like scipy instead.
+  examples:
+    good: |
+      # Python 3.8+
+      import math
+      n = math.perm(10, 3)  # Permutations of 10 things taken 3 at a time
+      k = math.comb(10, 3)  # Combinations of 10 things taken 3 at a time
+  references:
+    - "https://docs.python.org/3/library/math.html#math.perm"
+    - "https://docs.python.org/3/library/math.html#math.comb"
+    - "https://bugs.python.org/issue37128"
+    - "https://bugs.python.org/issue37178"
+
+- id: "PY37SL06"
+  name: "New math.isqrt() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds math.isqrt() for computing accurate integer square roots
+    without conversion to floating point.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "math.isqrt"
+  message: |
+    The math.isqrt() function is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use int(math.sqrt(n)) instead.
+  examples:
+    good: |
+      # Python 3.8+
+      import math
+      root = math.isqrt(100)  # Returns 10
+  references:
+    - "https://docs.python.org/3/library/math.html#math.isqrt"
+    - "https://bugs.python.org/issue36887"
+
+- id: "PY37SL07"
+  name: "New functools.cached_property decorator"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds functools.cached_property() decorator for computed
+    properties cached for the life of the instance.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "FunctionDef"
+  condition:
+    has_decorator: "cached_property"
+    is_in_functools_module
+  message: |
+    The functools.cached_property decorator is new in Python 3.8. This code will
+    not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use a custom property with caching or
+    third-party libraries.
+  examples:
+    good: |
+      # Python 3.8+
+      import functools
+      class Dataset:
+          def __init__(self, sequence_of_numbers):
+              self.data = sequence_of_numbers
+
+          @functools.cached_property
+          def variance(self):
+              return statistics.variance(self.data)
+  references:
+    - "https://docs.python.org/3/library/functools.html#functools.cached_property"
+    - "https://bugs.python.org/issue21145"
+
+- id: "PY37SL08"
+  name: "New functools.singledispatchmethod decorator"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds functools.singledispatchmethod() decorator that converts
+    methods into generic functions using single dispatch.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "FunctionDef"
+  condition:
+    has_decorator: "singledispatchmethod"
+    is_in_functools_module
+  message: |
+    The functools.singledispatchmethod() decorator is new in Python 3.8. This code
+    will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use @functools.singledispatch with a
+    third-party library or manual dispatch logic.
+  examples:
+    good: |
+      # Python 3.8+
+      import functools
+      from functools import singledispatchmethod
+
+      class TaskManager:
+          def __init__(self, tasks):
+              self.tasks = list(tasks)
+
+          @singledispatchmethod
+          def discard(self, value):
+              with suppress(ValueError):
+                  self.tasks.remove(value)
+
+          @discard.register(list)
+          def _(self, tasks):
+              targets = set(tasks)
+              self.tasks = [x for x in self.tasks if x not in targets]
+  references:
+    - "https://docs.python.org/3/library/functools.html#functools.singledispatchmethod"
+    - "https://bugs.python.org/issue32380"
+
+# --- STATISTICS MODULE ADDITIONS ---
+
+- id: "PY37SL09"
+  name: "New statistics.fmean() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds statistics.fmean() as a faster, floating-point variant of
+    statistics.mean().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "statistics.fmean"
+  message: |
+    The statistics.fmean() function is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use statistics.mean() or implement your own
+    fast mean calculation using sum()/len().
+  examples:
+    good: |
+      # Python 3.8+
+      import statistics
+      avg = statistics.fmean([1.0, 2.0, 3.0, 4.0])
+  references:
+    - "https://docs.python.org/3/library/statistics.html#statistics.fmean"
+    - "https://bugs.python.org/issue35904"
+
+- id: "PY37SL10"
+  name: "New statistics.geometric_mean() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds statistics.geometric_mean().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "statistics.geometric_mean"
+  message: |
+    The statistics.geometric_mean() function is new in Python 3.8. This code
+    will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, implement your own geometric mean calculation or
+    use a third-party library.
+  examples:
+    good: |
+      # Python 3.8+
+      import statistics
+      gmean = statistics.geometric_mean([1, 2, 4, 8, 16])
+  references:
+    - "https://docs.python.org/3/library/statistics.html#statistics.geometric_mean"
+    - "https://bugs.python.org/issue27181"
+
+- id: "PY37SL11"
+  name: "New statistics.multimode() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds statistics.multimode() that returns a list of the most
+    common values.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "statistics.multimode"
+  message: |
+    The statistics.multimode() function is new in Python 3.8. This code will not
+    work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use statistics.mode() with Counter or
+    custom multimode logic.
+  examples:
+    good: |
+      # Python 3.8+
+      import statistics
+      modes = statistics.multimode([1, 1, 2, 3, 3, 4])  # Returns [1, 3, 4]
+  references:
+    - "https://docs.python.org/3/library/statistics.html#statistics.multimode"
+    - "https://bugs.python.org/issue35892"
+
+- id: "PY37SL12"
+  name: "New statistics.quantiles() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds statistics.quantiles() that divides data or a distribution
+    into equiprobable intervals (e.g. quartiles, deciles, or percentiles).
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "statistics.quantiles"
+  message: |
+    The statistics.quantiles() function is new in Python 3.8. This code will not
+    work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use numpy.percentile() or implement
+    manual quantile calculation.
+  examples:
+    good: |
+      # Python 3.8+
+      import statistics
+      quartiles = statistics.quantiles([1, 2, 3, 4, 5, 6, 7, 8, 9], n=4)
+  references:
+    - "https://docs.python.org/3/library/statistics.html#statistics.quantiles"
+    - "https://bugs.python.org/issue36546"
+
+- id: "PY37SL13"
+  name: "New statistics.NormalDist class"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds statistics.NormalDist for creating and manipulating normal
+    distributions of a random variable.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "statistics.NormalDist"
+  message: |
+    The statistics.NormalDist class is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use random.gauss() or implement your own
+    normal distribution class.
+  examples:
+    good: |
+      # Python 3.8+
+      import statistics
+      temperature_feb = statistics.NormalDist(4, 2)
+      print(temperature_feb.mean)
+      print(temperature_feb.stdev)
+  references:
+    - "https://docs.python.org/3/library/statistics.html#statistics.NormalDist"
+    - "https://bugs.python.org/issue36018"
+
+# --- UNITTEST ADDITIONS ---
+
+- id: "PY37SL14"
+  name: "unittest.AsyncMock added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds AsyncMock to support an asynchronous version of Mock.
+    Appropriate new assert functions for testing have been added as well.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "unittest.mock.AsyncMock"
+  message: |
+    unittest.mock.AsyncMock is new in Python 3.8. This code will not
+    work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use Mock with AsyncMockMixin or create
+    your own async mock.
+  examples:
+    good: |
+      # Python 3.8+
+      from unittest.mock import AsyncMock
+      async def my_test():
+          mock = AsyncMock()
+          await mock.some_async_method()
+  references:
+    - "https://docs.python.org/3/library/unittest.mock.html#unittest.mock.AsyncMock"
+    - "https://bugs.python.org/issue26467"
+
+- id: "PY37SL15"
+  name: "unittest addModuleCleanup and addClassCleanup"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds addModuleCleanup() and addClassCleanup() to unittest
+    to support cleanups for setUpModule() and setUpClass().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(unittest\\.addModuleCleanup|unittest\\.addClassCleanup)"
+  message: |
+    unittest.addModuleCleanup() and addClassCleanup() are new in Python 3.8.
+  examples:
+    good: |
+      # Python 3.8+
+      import unittest
+
+      class TestModule(unittest.TestCase):
+          @classmethod
+      def setUpModule(cls):
+              cls.resource = cls.get_resource()
+
+          @classmethod
+      def tearDownModule(cls):
+              cls.resource.close()
+
+          @classmethod
+      def addCleanup(cls):
+              cls.resource.close()
+
+      class TestClass(unittest.TestCase):
+          @classmethod
+          def setUpClass(cls):
+              cls.conn = create_connection()
+
+          @classmethod
+          def tearDownClass(cls):
+              cls.conn.close()
+
+          @classmethod
+          def addCleanup(cls):
+              cls.conn.close()
+  references:
+    - "https://docs.python.org/3/library/unittest.html#unittest.addModuleCleanup"
+    - "https://docs.python.org/3/library/unittest.html#unittest.addClassCleanup"
+    - "https://bugs.python.org/issue24412"
+
+- id: "PY37SL16"
+  name: "unittest.IsolatedAsyncioTestCase added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds unittest.IsolatedAsyncioTestCase to support coroutines
+    to be used as test cases with async def setUp/tearDown methods.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "ClassDef"
+  condition:
+    inherits_from: "unittest.IsolatedAsyncioTestCase"
+  message: |
+    unittest.IsolatedAsyncioTestCase is new in Python 3.8. This code will not
+    work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use TestCase with
+    @asyncio.coroutine or create your own async test infrastructure.
+  examples:
+    good: |
+      # Python 3.8+
+      import unittest
+
+      class TestRequest(unittest.IsolatedAsyncioTestCase):
+
+          async def asyncSetUp(self):
+              self.connection = await AsyncConnection()
+
+          async def asyncTest_get(self):
+              response = await self.connection.get("https://example.com")
+              self.assertEqual(response.status_code, 200)
+
+          async def asyncTearDown(self):
+              await self.connection.close()
+  references:
+    - "https://docs.python.org/3/library/unittest.html#unittest.IsolatedAsyncioTestCase"
+    - "https://bugs.python.org/issue32972"
+
+# --- FUNCTOOLS & COLLECTIONS ---
+
+- id: "PY37SL17"
+  name: "functools.lru_cache() can be used as decorator"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 allows functools.lru_cache() to be used as a straight decorator
+    rather than as a function returning a decorator.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "FunctionDef"
+  condition:
+    has_decorator: "lru_cache"
+    is_in_functools_module
+  message: |
+    Using @lru_cache() as a decorator directly is new in Python 3.8. This code
+    will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use @lru_cache(maxsize=128) instead.
+  examples:
+    good: |
+      # Python 3.8+
+      import functools
+
+      @functools.lru_cache
+      def factorial(n):
+      return n * factorial(n-1) if n else 1
+  references:
+    - "https://docs.python.org/3/library/functools.html#functools.lru_cache"
+    - "https://bugs.python.org/issue36772"
+
+- id: "PY37SL18"
+  name: "collections.namedtuple() supports default values"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.7 adds support for default values in collections.namedtuple().
+  Python 3.8 further allows default values.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "collections.namedtuple"
+    has_default_values: true
+  message: |
+    Default values in collections.namedtuple() are new in Python 3.8. This code
+    will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use defaults via inheritance or a helper
+    function instead.
+  examples:
+    good: |
+      # Python 3.8+
+      from collections import namedtuple
+      Point = namedtuple('Point', [('x', float), ('y', float), ('z', float)],
+                       defaults=(0.0, 0.0, 0.0))
+      p = Point()  # Creates Point(0.0, 0.0, 0.0)
+  references:
+    - "https://docs.python.org/3/library/collections.html#collections.namedtuple"
+    - "https://bugs.python.org/issue32320"
+
+- id: "PY37SL19"
+  name: "collections.namedtuple._asdict() returns dict instead of OrderedDict"
+  category: "api_change"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The _asdict() method for collections.namedtuple() now returns a dict instead of a
+    collections.OrderedDict. This works because regular dicts have guaranteed
+    ordering since Python 3.7.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "_asdict"
+    on_namedtuple
+  message: |
+    collections.namedtuple._asdict() now returns dict in Python 3.8 instead of
+    OrderedDict.
+  suggestion: |
+    If you need OrderedDict features, cast the result: OrderedDict(nt._asdict()).
+  examples:
+    good: |
+      # Python 3.8+
+      from collections import namedtuple
+      Point = namedtuple('Point', [('x', int), ('y', int)])
+      p = Point(1, 2)
+      result = p._asdict()  # dict in 3.8
+
+      # For OrderedDict features:
+      from collections import OrderedDict, namedtuple
+      Point = namedtuple('Point', [('x', int), ('y', int)])
+      p = Point(1, 2)
+      result = OrderedDict(p._asdict())
+  references:
+    - "https://docs.python.org/3/library/collections.html#collections.namedtuple._asdict"
+    - "https://bugs.python.org/issue35864"
+
+- id: "PY37SL20"
+  name: "csv.DictReader returns dict instead of OrderedDict"
+  category: "api_change"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The csv.DictReader now returns instances of dict instead of
+    collections.OrderedDict. The tool is now faster and uses less
+    memory while still preserving the field order.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "csv.DictReader"
+  message: |
+    csv.DictReader now returns dict instead of OrderedDict in Python 3.8.
+  suggestion: |
+    If you need OrderedDict behavior, cast the result to OrderedDict().
+  examples:
+    good: |
+      # Python 3.8+
+      import csv
+      with open('data.csv') as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+              # row is now a dict, not OrderedDict
+              print(row)
+  references:
+    - "https://docs.python.org/3/library/csv.html#csv.DictReader"
+    - "https://bugs.python.org/issue34003"
+
+# --- TYPING MODULE ADDITIONS ---
+
+- id: "PY37SL21"
+  name: "typing.TypedDict added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds typing.TypedDict for dictionary types with per-key types.
+  See PEP 589.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "ClassDef"
+  condition:
+    has_base: "typing.TypedDict"
+  message: |
+    typing.TypedDict is new in Python 3.8. This code will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use dict with explicit type checking or
+    third-party libraries like mypy or pyright.
+  examples:
+    good: |
+      # Python 3.8+
+      from typing import TypedDict
+
+      class Location(TypedDict):
+          lat_long: tuple
+          grid_square: str
+          xy_coordinate: tuple
+
+      loc = Location(lat_long=(1.0, 2.0), grid_square="A1")
+  references:
+    - "https://docs.python.org/3/library/typing.html#typing.TypedDict"
+    - "https://peps.python.org/pep-0589/"
+
+- id: "PY37SL22"
+  name: "typing.Literal added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds typing.Literal for literal types. See PEP 586.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Subscript"
+  condition:
+    has_annotation: "typing.Literal"
+  message: |
+    typing.Literal is new in Python 3.8. This code will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use Union[str, bytes] or enum.Enum or
+    third-party type checkers.
+  examples:
+    good: |
+      # Python 3.8+
+      from typing import Literal
+
+      def get_status(port: int) -> Literal['connected', 'disconnected']:
+          ...
+  references:
+    - "https://docs.python.org/3/library/typing.html#typing.Literal"
+    - "https://peps.python.org/pep-0586/"
+
+- id: "PY37SL23"
+  name: "typing.Final added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds typing.Final and typing.final() for final variables,
+    functions, methods and classes. See PEP 591.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "AnnAssign"
+  condition:
+    has_annotation: "typing.Final"
+  message: |
+    typing.Final is new in Python 3.8. This code will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use typing_extensions.Final or
+    @final decorator or enforce via type checker.
+  examples:
+    >- "https://docs.python.org/3/library/typing.html#typing.Final"
+    - "https://peps.python.org/pep-0591/"
+
+# --- OTHER MODULE ADDITIONS ---
+
+- id: "PY37SL24"
+  name: "shlex.join() function added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds shlex.join() function which acts as the inverse of
+    shlex.split().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "shlex.join"
+  message: |
+    The shlex.join() function is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use ' '.join(components) instead.
+  examples:
+    good: |
+      # Python 3.8+
+      import shlex
+      command_line = 'ls -la /'
+      args = shlex.split(command_line)
+      restored = shlex.join(args)  # Restores original command line
+  references:
+    - "https://docs.python.org/3/library/shlex.html#shlex.join"
+    - "https://bugs.python.org/issue32102"
+
+- id: "PY37SL25"
+  name: "shutil.copytree() dirs_exist_ok added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds the dirs_exist_ok keyword argument to shutil.copytree().
+  This allows copying into existing directories.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+    condition:
+    func_is: "shutil.copytree"
+    has_kwarg: "dirs_exist_ok"
+  message: |
+    shutil.copytree() dirs_exist_ok parameter is new in Python 3.8. This code
+    will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, handle existing directories manually or
+    remove/delete them first.
+  examples:
+    good: |
+      # Python 3.8+
+      import shutil
+      shutil.copytree('src', 'dest', dirs_exist_ok=True)
+  references:
+    - "https://docs.python.org/3/library/shutil.html#shutil.copytree"
+    - "https://bugs.python.org/issue20849"
+
+- id: "PY37SL26"
+  name: "pprint.pp() and sort_dicts parameter added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds pprint.pp() convenience function with sort_dicts defaulting to
+    False, and adds sort_dicts parameter to several pprint functions.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(pprint\\.pp|pprint\\.pprint|pprint\\.pformat)"
+  message: |
+    The sort_dicts parameter and pprint.pp() function are new in Python 3.8.
+  examples:
+    good: |
+      # Python 3.8+
+      import pprint
+
+      # pp() - preserves insertion order, same as pprint(..., sort_dicts=False)
+      pprint.pp({'a': 1, 'b': 2})
+
+      # pprint() - sorts alphabetically by default
+      pprint({'a': 1, 'b': 2}, sort_dicts=True)
+
+      # pformat() also accepts sort_dicts
+      print(pprint.pformat({'a': 1, 'b': 2}, sort_dicts=True))
+  references:
+    - "https://docs.python.org/3/library/pprint.html"
+    - "https://bugs.python.org/issue30670"
+
+- id: "PY37SL27"
+  name: "xml.etree.ElementTree canonicalize() added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds xml.etree.ElementTree.canonicalize() which implements
+    C14N 2.0.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "xml.etree.ElementTree.canonicalize"
+  message: |
+    xml.etree.ElementTree.canonicalize() is new in Python 3.8. This code
+    will not work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, implement C14N manually or use a third-party
+    XML library.
+  examples:
+  good: |
+      # Python 3.8+
+      import xml.etree.ElementTree as ET
+      canonical = ET.canonicalize(root_element)
+  references:
+    - "https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.canonicalize"
+    - "https://bugs.python.org/issue13611"
+
+- id: "PY37SL28"
+  name: "xml.etree.ElementTree wildcard searches added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds wildcard searches to xml.etree.ElementTree.find*() methods:
+    {*}tag (ignores namespace) and {namespace}* (returns all tags in namespace).
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(xml\\.etree\\.ElementTree\\.find|xml\\.etree\\.ElementTree\\.findall|xml\\.etree\\.ElementTree\\.findall)"
+    has_wildcard_in_pattern: true
+  message: |
+    Wildcard searches in xml.etree.ElementTree are new in Python 3.8.
+  examples:
+    good: |
+      # Python 3.8+
+      import xml.etree.ElementTree as ET
+      # Ignore namespace
+      for elem in root.findall('.//*{*}tag'):
+          print(elem.tag)
+
+      # Specific namespace
+      for elem in root.findall('{*}tag'):
+          print(elem.tag)
+  references:
+    - "https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.find"
+    - "https://bugs.python.org/issue28238"
+
+- id: "PY37SL29"
+  name: "datetime.fromisoformat() added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds datetime.fromisoformat() to construct a datetime object from
+    a string in ISO format.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "datetime.fromisoformat"
+  message: |
+    datetime.fromisoformat() is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use datetime.strptime() with appropriate
+    format string.
+  examples:
+  good: |
+      # Python 3.8+
+      from datetime import datetime
+      dt = datetime.fromisoformat('2011-11-04T14:32:47')
+  references:
+    - "https://docs.python.org/3/library/datetime.html#datetime.fromisoformat"
+    - "https://bugs.python.org/issue15873"
+
+- id: "PY37SL30"
+  name: "datetime.fromisocalendar() added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds datetime.date.fromisoformat() and
+    datetime.datetime.fromisoformat() for constructing date/datetime objects from
+    ISO year, week number, and weekday.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(datetime\\.fromisocalendar)"
+  message: |
+    datetime.fromisoformat() methods are new in Python 3.8. This code will not
+    work in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use manual calculation or a third-party
+    library for calendar calculations.
+  examples:
+  good: |
+      # Python 3.8+
+      from datetime import date
+      d = date.fromisocalendar(2021, 3, 1)  # March 1, 2021 (week 1)
+  references:
+    - "https://docs.python.org/3/library/datetime.html#date.fromisocalendar"
+    - "https://bugs.python.org/issue36004"
+
+- id: "PY37SL31"
+  name: "time.thread_time() and thread_time_ns() added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds time.thread_time() and time.thread_time_ns() for per-thread
+    CPU time measurements.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(time\\.thread_time|time\\.thread_time_ns)"
+  message: |
+    time.thread_time() functions are new in Python 3.8. This code will not work
+    in Python 7.
+  suggestion: |
+    If you need to support Python 3.7, use time.process_time() instead or a
+    third-party profiler.
+  examples:
+    good: |
+      # Python 3.8+
+      import time
+      cpu_time = time.thread_time()
+      cpu_time_ns = time.thread_time_ns()
+  references:
+    - "https://docs.python.org/3/library/time.html#time.thread_time"
+    - "https://bugs.python.org/issue32025"
+
+- id: "PY37SL32"
+  name: "pathlib.Path.link_to() for hard links added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds pathlib.Path.link_to() which creates a hard link pointing to a path.
+  Note that link_to was deprecated in 3.10 and removed in 3.12 in favor of
+    hardlink_to added in 3.10.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "pathlib.Path.link_to"
+  message: |
+    pathlib.Path.link_to() is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion:
+    If you need to support Python 3.7, use os.link() instead (Unix) or third-party
+    cross-platform libraries.
+  examples:
+    good: |
+      # Python 3.8-3.11 only
+      from pathlib import Path
+      Path('file.txt').link_to('link_to_file')
+  references:
+    - "https://docs.python.org/3/library/pathlib.html#pathlib.Path.link_to"
+    - "https://bugs.python.org/issue26978"
+    - "https://github.com/python/cpython/pull/29136"
+
+- id: "PY37SL33"
+  name: "types.CodeType.replace() added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 8.0 adds types.CodeType.replace() to create a clone with a few altered
+    parameters without modifying the original code object.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "types.CodeType.replace"
+  message: |
+    types.CodeType.replace() is new in Python 3.8. This code will not work in
+    Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use types.new_code() with modified
+    parameters instead.
+  examples:
+    good: |
+      # Python 3.8+
+      import types
+      # Prevent data parameter from being used as keyword argument
+      mean.__code__ = mean.__code__.replace(co_posonlyargcount=1)
+  references:
+    - "https://docs.python.org/3/library/types.html#types.CodeType.replace"
+    - "https://bugs.python.org/issue37032"
+
+# --- ASYNCIO ADDITIONS (targeting 3.8) ---
+
+- id: "PY37SL34"
+  name: "asyncio.run() graduates to stable API"
+  category: "api_change"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 graduates asyncio.run() from the provisional to stable API.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "asyncio.run"
+  message: |
+    asyncio.run() is now stable API in Python 3.8. Previously provisional.
+  suggestion: |
+    Use asyncio.run() as the preferred way to run asyncio programs.
+  examples:
+    good: |
+      # Python 3.8+
+      import asyncio
+
+      async def main():
+          await asyncio.sleep(0)
+          return 42
+
+      asyncio.run(main())
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.run"
+    - "https://bugs.python.org/issue32314"
+
+- id: "PY37SL35"
+  name: "asyncio REPL (python -m asyncio)"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds natively async REPL with 'python -m asyncio'.
+  This allows rapid experimentation with code that has a top-level await.
+  detector: "CommandUsageDetector"
+  pattern:
+    node_type: "Str"
+  condition:
+    contains: "python -m asyncio"
+  message: |
+    The 'python -m asyncio' REPL is new in Python 3.8.
+  suggestion: |
+    Use 'python -m asyncio' to launch an async REPL for interactive testing with
+    await expressions.
+  examples:
+    good: |
+      # In terminal:
+      python -m asyncio
+      await asyncio.sleep(1, result='hello')
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.run"
+    - "https://bugs.python.org/issue37028"
+
+- id: "PY37SL36"
+  name: "asyncio.Task.get_coro() added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds asyncio.Task.get_coro() for getting the wrapped coroutine
+    within an asyncio.Task.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "asyncio.Task.get_coro"
+  message: |
+    asyncio.Task.get_coro() is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to Python 3.7, use task._coro instead or keep your own
+    reference.
+  examples:
+    good: |
+      # Python 3.8+
+      import asyncio
+
+      task = asyncio.create_task(coro())
+      coro = task.get_coro()  # Get back the wrapped coroutine
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.Task.get_coro"
+    - "https://bugs.python.org/issue36999"
+
+- id: "PY37SL37"
+  name: "asyncio.Task naming support"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds support for task naming: asyncio.create_task(name='task_name',
+    loop) or loop.create_task(name='task_name'), and
+    task.set_name(), task.get_name().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    is_asyncio_task_method: "regex:(create_task|set_name|get_name)"
+  message: |
+    AsyncIO task naming is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, keep your own task references or use
+    the _coro attribute instead.
+  examples:
+    good: |
+      # Python 3.8+
+      import asyncio
+
+      task = asyncio.create_task(coro, name='my_task')
+      print(task.get_name())  # 'my_task'
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.Task"
+    - "https://bugs.python.org/issue34270"
+
+# --- SSL/TLS ADDITIONS (targeting 3.8) ---
+
+- id: "PY37SL38"
+  name: "ssl.post_handshake_auth added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds ssl.post_handshake_auth to enable and
+    ssl.SSLSocket.verify_client_post_handshake() to initiate TLS 1.3
+    post-handshake authentication.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(ssl\\.post_handshake_auth|ssl\\.SSLSocket\\.verify_client_post_handshake)"
+  message: |
+    ssl.post_handshake_auth and verify_client_post_handshake are new in
+    Python 3.8.
+  suggestion: |
+    Use these to implement TLS 1.3 post-handshake authentication.
+  examples:
+    good: |
+      # Python 3.8+
+      import ssl
+
+      context = ssl.SSLContext(PROTOCOL_TLS_SERVER)
+      context.post_handshake_auth = True
+      context.verify_client_post_handshake = True
+  references:
+    - "https://docs.python.org/3/library/ssl.html#ssl.SSLContext.post_handshake_auth"
+    - "https://docs.python.org/3/ssl.html#ssl.SSLSocket.verify_client_post_handshake"
+    - "https://bugs.python.org/issue34670"
+    - "https://github.com/python/cpython/pull/gh78851"
+
+# --- OTHER MODULE CHANGES ---
+
+- id: "PY37SL39"
+  name: "os.add_dll_directory() added on Windows"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3"
+  description: |
+    Python 3.8 adds os.add_dll_directory() on Windows for providing
+    additional search paths for native dependencies when importing extension
+    modules or loading DLLs with ctypes.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+    condition:
+    func_is: "os.add_dll_directory"
+  message: |
+    os.add_dll_directory() is new in Python 3.8 on Windows.
+  suggestion: |
+    Use os.add_dll_directory() to add directories for DLL dependency resolution.
+  examples:
+    good: |
+      # Python 3.8+ on Windows
+      import os
+      os.add_dll_directory('path_to_dlls')
+  references:
+    - "https://docs.python.org/3/library/os.html#os.add_dll_directory"
+    - "https://bugs.python.org/issue36085"
+
+- id: "PY37SL40"
+  name: "os.memfd_create() added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds os.memfd_create() to wrap the memfd_create() syscall.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "os.memfd_create"
+  message: |
+    os.memfd_create() is new in Python 3.8. This code will not work
+    in Python 3.7.
+  suggestion: |
+    If you need to support Python 3.7, use platform-specific APIs instead.
+  examples:
+    good: |
+      # Python 8+
+      import os
+      fd = os.memfd_create('name', flags=os.MFD_CLOEXEC | os.O_RDWR)
+  references:
+    - "https://docs.python.org/3/library/os.html#os.memfd_create"
+    - "https://bugs.python.org/issue26836"
+
+- id: "PY37SL41"
+  name: "os.path.expanduser() prefers USERPROFILE on Windows"
+  category: "api_change"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 changes os.path.expanduser() on Windows to prefer the
+    USERPROFILE environment variable and does not use HOME.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "os.path.expanduser"
+  message: |
+    os.path.expanduser() behavior changed on Windows in Python 3.8 to prefer
+    USERPROFILE over HOME.
+  suggestion: |
+    Be aware that os.path.expanduser() may behave differently on Windows 3.8+ if
+    USERPROFILE is not set or HOME is used.
+  examples:
+    good: |
+      import os
+      user_profile = os.path.expanduser('~')
+  references:
+    - "https://docs.python.org/3/library/os.path.html#os.path.expanduser"
+    - "https://bugs.python.org/issue36264"
+
+- id: "PY37SL42"
+  name: "os.path.realpath() resolves reparse points on Windows"
+  category: "api_change"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 changes os.path.realpath() on Windows to resolve reparse points,
+    including symlinks and directory junctions.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "os.path.realpath"
+  message: |
+    os.path.realpath() behavior changed in Python 3.8 on Windows - now
+    resolves reparse points including directory junctions.
+  suggestion: |
+    Be aware that os.path.realpath() now correctly resolves directory junctions
+    in Python 3.8+ on Windows.
+  examples:
+    good: |
+      import os.path
+      real_path = os.path.realpath('junction_path')
+  references:
+    - "https://docs.python.org/3/os.path.html#os.path.realpath"
+    - "https://bugs.python.org/issue37834"
+
+- id: "PY37SL43"
+  name: "pathlib.Path.is_mount() on POSIX"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.7 adds pathlib.Path.is_mount() method on POSIX systems and can be
+    used to determine whether a path is a mount point.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "pathlib.Path.is_mount"
+  message: |
+    pathlib.Path.is_mount() is new in Python 3.7 on POSIX systems. This code
+    will not work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use os.path.ismount() instead.
+  examples:
+    good: |
+      # Python 3.7+
+      from pathlib import Path
+      if Path('/mnt/data').is_mount():
+          print("Is a mount point")
+  references:
+    - "https://docs.python.org/3/library/pathlib.html#pathlib.Path.is_mount"
+    - "https://bugs.python.org/issue30897"
+
+- id: "PY37SL44"
+  name: "xml.dom.minidom and xml.sax no external entities by default"
+  category: "security_change"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    As mitigation against DTD and external entity retrieval, the
+    xml.dom.minidom and xml.sax modules no longer process external
+    entities by default in Python 3.8.
+  detector: "SecurityChangesDetector"
+  pattern:
+    node_type: "ImportFrom"
+  children:
+      module:
+        node_type: "str"
+        value: "regex:(xml\\.dom\\.minidom|xml\\.sax)"
+  message: |
+    xml.dom.minidom and xml.sax no longer process external entities by default in
+    Python 3.8+. This is a security enhancement.
+  suggestion: |
+    If you need external entities, explicitly enable them. Be aware of the
+    security implications.
+  examples:
+    good: |
+      # Python 3.8+
+      import xml.dom.minidom
+      doc = xml.dom.minidom.parse('file.xml')
+      # To explicitly enable (not recommended for untrusted input):
+      parser = xml.sax.make_parser()
+      parser.setFeature(feature_external_ges=True)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#xml"
+    - "https://bugs.python.org/issue17239"
+
+- id: "PY37SL45"
+  name: "urllib.parse strips newlines and tabs from URLs"
+  category: "security_change"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 changes urllib.parse() to prevent attacks using newline
+    characters in URLs. ASCII newline \n, \r and tab \t characters are
+    stripped from the URL.
+  description: |
+    Due to significant security concerns, the presence of newline or tab
+    characters in parts of a URL allows for some forms of attacks. Following
+    WHATWG specification that updates RFC 3986, ASCII newline \n, \r and tab \t characters
+    are stripped from the URL by the parser in urllib.parse preventing such attacks.
+  detector: "SecurityChangesDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is_one_of: "urllib.parse.parse_qs|urllib.parse.parse_qsl|urllib.parse.urlparse"
+    has_newline_or_tab: true
+  message: |
+    urllib.parse() and related functions now strip newlines and tabs from URLs in
+    Python 3.8+. This is a security enhancement.
+  suggestion: |
+    Be aware that URLs with newlines/tabs may be truncated. Use proper URL
+    encoding.
+  examples:
+    good: |
+      import urllib.parse
+      result = urllib.parse("file.py\n\r")  # Newline and tab are stripped
+  references:
+    - "https://docs.python.org/3/urllib.parse.html"
+    - "https://bugs.python.org/issue43882"
+    - "https://github.com/python/cpython/pull/gh-88048"
+
+- id: "PY37SL46"
+  name: "unittest addModuleCleanup and addClassCleanup added"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds addModuleCleanup() and addClassCleanup() methods to
+    unittest to support cleanups for setUpModule() and setUpClass().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is_one_of: "unittest\\.addModuleCleanup|unittest\\.addClassCleanup"
+  message: |
+    unittest.addModuleCleanup() and addClassCleanup() are new in Python 3.8.
+  examples:
+    good: |
+      # Python 3.8+
+      import unittest
+
+      class TestModule(unittest.TestCase):
+          @classmethod
+          def setUpModule(cls):
+              cls.resource = cls.get_resource()
+
+          @classmethod
+          def tearDownModule(cls):
+              cls.resource.close()
+
+          @classmethod
+          def addCleanup(cls):
+              cls.resource.close()
+
+      class TestClass(unittest.TestCase):
+          @classmethod
+          def setUpClass(cls):
+              cls.conn = create_connection()
+
+          @classmethod
+          def tearDownClass(cls):
+              cls.conn.close()
+
+          @classmethod
+          def addCleanup(cls):
+              cls.conn.close()
+  references:
+    - "https://docs.python.org/3/library/unittest.html#unittest.addModuleCleanup"
+    - "https://docs.python.org/3/library/unittest.html#unittest.addClassCleanup"
+    - "https://bugs.python.org/issue24412"
+
+# --- API CHANGES ---
+
+- id: "PY37SL47"
+  name: "asyncio.CancelledError inherits from BaseException"
+  category: "api_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The exception asyncio.CancelledError now inherits from BaseException rather than
+    Exception and no longer inherits from concurrent.futures.CancelledError.
+  detector: "APIChangeDetector"
+  pattern:
+    node_type: "ClassDef"
+  condition:
+    inherits_from: "asyncio.CancelledError"
+  message: |
+    asyncio.CancelledError now inherits from BaseException in Python 3.8+, not
+    Exception. This changes exception handling behavior.
+  suggestion: |
+    Update exception handling code to catch BaseException instead of Exception
+    if appropriate, specifically for CancelledError.
+  examples:
+    bad: |
+      # In Python 3.7, CancelledError inherits from Exception
+      try:
+          task.run()
+      except Exception as e:
+          pass
+    good: |
+      # In Python 3.8+, CancelledError inherits from BaseException
+      try:
+          task.run()
+      except BaseException as e:
+          pass
+  references:
+    - "https://docs.python.org/3/library/asyncio-exception.html#asyncio.CancelledError"
+    - "https://docs.python.org/3/whatsnew/3.8.html#asyncio"
+    - "https://bugs.python.org/issue32528"
+
+- id: "PY37SL48"
+  name: "asyncio.wait_for() timeout behavior change"
+  category: "api_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The function asyncio.wait_for() now correctly waits for cancellation when using
+    an instance of asyncio.Task. Previously, upon reaching timeout,
+    it was cancelled and immediately returned.
+  detector: "APIChangeDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "asyncio.wait_for"
+    passes_task_object: true
+  message: |
+    asyncio.wait_for() now correctly waits for Task cancellation in
+    Python 3.8+. Previously it returned immediately on timeout.
+  suggestion: |
+    Ensure your code handles TaskCancellationException correctly.
+  references:
+    - "https://docs.python.org/3/library/asyncio-sync.html#asyncio.wait_for"
+    - "https://bugs.python.org/issue32751"
+
+- id: "PY37SL49"
+  name: "mmap.flush() behavior change"
+  category: "api_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The mmap.flush() method now returns None on success and raises an
+    exception on error under all platforms.
+    Previously, behavior was platform-dependent.
+  detector: "APIChangeDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "mmap.flush"
+  message: |
+    mmap.flush() now returns None on success and raises exception on error in
+    Python 3.8+. Previously returned nonzero on success (Windows) or zero on error
+    (Unix).
+  suggestion: |
+    Update mmap.flush() calls to expect None return value and proper
+    exception handling.
+  references:
+    - "https://docs.python.org/3/library/mmap.html#mmap.flush"
+    - "https://bugs.python.org/issue2122"
+
+- id: "PY37SL50"
+  name: "collections ABC import changes"
   category: "breaking_change"
   severity: "high"
   risk_level: "HIGH"
   source_version: "3.7"
   target_version: "3.8"
   description: |
-    platform.dist() and platform.linux_distribution() were removed in
-    Python 3.8.
+    Starting with Python 3.3, importing ABCs from collections was deprecated,
+    and importing should be done from collections.abc instead. Being able to import
+    from collections was marked for removal in 3.8. This was delayed to 3.9.
+    However, Python 3.7 code using collections ABCs should still work with a
+    DeprecationWarning.
+  detector: "ImportChangesDetector"
+  pattern:
+    node_type: "ImportFrom"
+    children:
+      module:
+        node_type: "str"
+        value: "collections"
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "regex:(Callable|Iterator|Collection|Mapping|MutableMapping|Sequence|MutableSet)"
+  message: |
+    Importing ABCs from collections is deprecated in Python 3.8+. This will be
+    removed in Python 3.9. Use collections.abc instead.
+  suggestion: |
+    Replace 'from collections import' with 'from collections.abc import'.
+  examples:
+    bad: |
+      from collections import Callable
+      from collections import Iterator
+    good: |
+      from collections.abc import Callable
+      from collections.abc import Iterator
+  references:
+    - "https://docs.python.org/3/library/collections.html#collections.abc"
+    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
+    - "https://bugs.python.org/issue25988"
+
+- id: "PY37SL51"
+  name: "dict comprehension key order change"
+  category: "api_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Dict comprehensions are synced-up with dict literals so that the key is
+    computed first and the value second. This is important for
+    assignment expressions where variables assigned in the key expression will be
+    available in the value expression.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "DictComp"
+  condition:
+    has_dict_comprehension_with_assignment_expr_in_key
+  message: |
+    In Python 3.8, dict comprehensions compute key before value. This
+    changes behavior for code using assignment expressions.
+  suggestion: |
+    Verify your dict comprehension still works correctly, especially with
+    assignment expressions.
+  examples:
+    good: |
+      # Python 3.8+ (key is computed first, then value)
+      {(n := normalize('NFC', name)).casefold(): n for name in names}
+
+      # For backward compatibility (all versions):
+      {n.casefold() for n in names if (clean_name := normalize('NFC', n))}
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#other-language-changes"
+    - "https://bugs.python.org/issue35224"
+
+- id: "PY37SL52"
+  name: "ast classes Num, Str, Bytes, NameConstant, Ellipsis deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.7"
+  target_version: "3.9"
+  description: |
+    ast classes Num, Str, Bytes, NameConstant, and Ellipsis are considered
+    deprecated and will be removed in future Python versions.
+    Constant should be used instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "ClassDef"
+  condition:
+    has_base_class: "regex:(ast\\.Num|ast\\.Str|ast\\.Bytes|ast\\.NameConstant|ast\\.Ellipsis)"
+  message: |
+    AST classes Num, Str, Bytes, NameConstant, and Ellipsis are deprecated in
+    Python 3.8+. Use ast.Constant instead.
+  suggestion: |
+    Update AST visitors to use ast.Constant instead of the deprecated
+    classes.
+  examples:
+    bad: |
+      import ast
+      class MyVisitor(ast.NodeVisitor):
+          def visit_Num(self, node):
+              print(f"Number: {node.n}")
+          def visit_Str(self, node):
+              print(f"String: {node.s}")
+    good: |
+      import ast
+      class MyVisitor(ast.NodeVisitor):
+          def visit_Constant(self, node):
+              print(f"Constant: {node.value}")
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
+    - "https://bugs.python.org/issue32892"
+
+- id: "PY37SL53"
+  name: "ast.NodeVisitor visit_Num, visit_Str, etc. deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.7"
+  target_version: "3.9"
+  description: |
+    ast.NodeVisitor methods visit_Num(), visit_Str(), visit_Bytes(),
+    visit_NameConstant(), and visit_Ellipsis() are deprecated now and will
+    not be called in future Python versions.
+  Add visit_Constant() to handle all constant nodes instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "FunctionDef"
+  condition:
+    has_visitor_method: "regex:(visit_Num|visit_Str|visit_Bytes|visit_NameConstant|visit_Ellipsis)"
+  message: |
+    AST visitor methods for deprecated AST node types are deprecated.
+    Add visit_Constant() to handle all constant nodes instead.
+  suggestion: |
+    Add visit_Constant() method to handle all constants, and remove the
+    deprecated visitor methods.
+  examples:
+    bad: |
+      import ast
+      class MyVisitor(ast.NodeVisitor):
+          def visit_Num(self, node):
+              print(f"Number: {node.n}")
+          def visit_Str(self, node):
+              print(f"String: {node.s}")
+    good: |
+      import ast
+      class MyVisitor(ast.NodeVisitor):
+          def visit_Constant(self, node):
+              print(f"Constant: {node.value}")
+  references:
+    - "https://docs.python.org/3/ast.html#ast.NodeVisitor"
+    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
+    - "https://bugs.python.org/issue36917"
+
+- id: "PY37SL54"
+  name: "Decimal and Fraction deprecation in int() functions"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.7"
+  target_version: "3.9"
+  description: |
+    Many builtin and extension functions that take integer arguments will now emit a
+    deprecation warning for Decimals, Fractions and any other objects that can be
+    converted to integers only with a loss.
   detector: "DeprecatedAPIsDetector"
   pattern:
     node_type: "Call"
-    children:
-      func:
-        node_type: "Attribute"
-        children:
-          value:
-            node_type: "Name"
-            attributes:
-              id: "platform"
-          attr: "regex:(dist|linux_distribution)"
+  condition:
+    argument_type_is_float_or_decimal: true
+    func_accepts_only_integers: true
   message: |
-    platform.dist() was removed in Python 3.8. Use the 'distro' package.
+    Passing Decimal or Fraction to functions that expect integers is deprecated
+    in Python 3.8+. Use int() conversion first.
   suggestion: |
-    Install and use the distro package instead.
+    Convert Decimal or Fraction to int explicitly before passing to
+    integer-only functions.
   examples:
     bad: |
-      info = platform.linux_distribution()
+      from decimal import Decimal
+      n = Decimal('10')
+      os.open('file', n, flags=os.O_CREAT)  # Deprecated
+    good: |
+      from decimal import Decimal
+      n = Decimal('10')
+      os.open('file', int(n), flags=os.O_CREAT)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
+    - "https://bugs.python.org/issue36048"
+
+- id: "PY37SL55"
+  name: "Keyword arguments becoming positional-only"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.7"
+  target_version: "3.9"
+  description: |
+    Deprecated passing the following arguments as keyword arguments:
+    - func in functools.partialmethod(), weakref.finalize(),
+      profile.Profile.runcall(), cProfile.Profile.runcall(),
+      bdb.Bdb.runcall(), trace.Trace.runfunc() and
+      curses.wrapper().
+    - function in unittest.TestCase.addCleanup().
+    - fn in concurrent.futures.ThreadPoolExecutor and
+      concurrent.futures.ProcessPoolExecutor.submit().
+    - callback in contextlib.ExitStack.callback(),
+      contextlib.AsyncExitStack.callback() and
+      contextlib.AsyncExitStack.push_async_callback().
+    - c and typeid in multiprocessing.managers.Server and
+      multiprocessing.managers.SharedMemoryServer.create().
+    - obj in weakref.finalize().
+
+    In future releases of Python, they will be positional-only.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    has_positional_kwarg_becoming_positional_only: true
+  message: |
+    Keyword argument will become positional-only in Python 3.9+.
+  suggestion: |
+    Convert keyword argument to positional argument.
+  examples:
+    bad: |
+      functools.partialmethod(func, func=my_func)
+      unittest.TestCase.addCleanup(cleanup, 'arg')
+      concurrent.futures.ThreadPoolExecutor.submit(task, fn=callback)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
+    - "https://bugs.python.org/issue36492"
+
+- id: "PY37SL56"
+  name: "platform.dist() and linux_distribution() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The platform.dist() and platform.linux_distribution() functions were deprecated
+    in Python 3.5 and removed in Python 3.8. Use the 'distro' package
+    instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(platform\\.dist|platform\\.linux_distribution)"
+  message: |
+    platform.dist() and platform.linux_distribution() are deprecated and
+    removed in Python 3.8. Use 'distro' package instead.
+  suggestion: |
+    Install and use the 'distro' package: pip install distro
+  examples:
+    bad: |
+      import platform
+      distro_info = platform.linux_distribution()
     good: |
       import distro
-      info = distro.linux_distribution()
+      distro_info = distro.linux_distribution()
+  references:
+    - "https://docs.python.org/3/library/platform.html#platform.linux_distribution"
+    - "https://docs.python.org/3/whatsnew/3.8.html#removed"
+    - "https://bugs.python.org/issue35471"
+
+- id: "PY37SL57"
+  name: "time.clock() and platform.popen() removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The time.clock() and platform.popen() functions have been removed.
+    time.clock() was deprecated since 3.3 and platform.popen() since 3.3.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is_one_of: "time\\.clock|platform\\.popen"
+  message: |
+    time.clock() and platform.popen() were removed in Python 3.8.
+  suggestion: |
+    Replace time.clock() with time.perf_counter() or time.process_time().
+    Replace platform.popen() with os.popen().
+  examples:
+    bad: |
+      start = time.clock()  # Removed
+      stream = platform.popen('command')  # Removed
+    good: |
+      start = time.perf_counter()
+      stream = os.popen('command')
+  references:
+    - "https://docs.python.org/3/library/time.html#time.clock"
+    - "https://docs.python.org/3/library/os.html#os.popen"
+    - "https://docs.python.org/3/whatsnew/3.8.html#removed"
+
+- id: "PY37SL58"
+  name: "macpath module removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The macpath module, deprecated in Python 3.7, has been removed.
+    Use os.path instead.
+  detector: "ImportChangesDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "macpath"
+  message: |
+    The macpath module was removed in Python 3.8. Use os.path instead.
+  suggestion: |
+    Replace 'import macpath' with 'import os.path' and use os.path functions.
+  examples:
+    bad: |
+      import macpath
+      path = macpath.join('a', 'b')
+    good: |
+      import os.path
+      path = os.path.join('a', 'b')
   references:
     - "https://docs.python.org/3/whatsnew/3.8.html#removed"
+    - "https://bugs.python.org/issue35471"
+
+- id: "PY37SL59"
+  name: "pyvenv script removed"
+  category: "breaking_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    The pyvenv script has been removed in favor of 'python3.8 -m venv' to
+    help eliminate confusion as to what Python interpreter the pyvenv
+    script is tied to.
+  detector: "CommandUsageDetector"
+  pattern:
+    node_type: "Str"
+  condition:
+    contains: "pyvenv"
+  message: |
+    The pyvenv script was removed in Python 3.8. Use 'python -m venv' instead.
+  suggestion: |
+    Replace 'pyvenv env' with 'python3.8 -m venv env' or 'python -m venv env'.
+  examples:
+    bad: |
+      pyvenv myenv
+    good: |
+      python -m venv myenv
+      python3.8 -m venv myenv
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#removed"
+    - "https://bugs.python.org/issue25427"
+
+- id: "PY37SL60"
+  name: "csv.DictReader returns dict instead of OrderedDict"
+  category: "api_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    csv.DictReader now returns dict instances instead of OrderedDict.
+    Regular dicts now preserve insertion order, making this change safe
+    for most code, but code that explicitly relies on OrderedDict type
+    may need updating.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "csv.DictReader"
+  message: |
+    csv.DictReader returns dict instead of OrderedDict in Python 3.8+.
+  suggestion: |
+    If you need OrderedDict specifically, wrap the result in OrderedDict().
+  examples:
+    bad: |
+      import csv
+      from collections import OrderedDict
+      reader = csv.DictReader(f)
+      row = next(reader)
+      assert isinstance(row, OrderedDict)  # Fails in 3.8+
+    good: |
+      import csv
+      reader = csv.DictReader(f)
+      row = next(reader)
+      # row is a dict in 3.8+
+  references:
+    - "https://docs.python.org/3/library/csv.html#csv.DictReader"
+    - "https://docs.python.org/3/whatsnew/3.8.html#csv"
+    - "https://bugs.python.org/issue34003"
+
+- id: "PY37SL61"
+  name: "New typing module features (TypedDict, Literal, Final, Protocol)"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds several major typing features: TypedDict (PEP 589),
+    Literal (PEP 586), Final (PEP 591), and Protocol (PEP 544).
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "ImportFrom"
+  condition:
+    imports_from_typing: "TypedDict|Literal|Final|Protocol"
+  message: |
+    typing.TypedDict, Literal, Final, and Protocol are new in Python 3.8.
+  suggestion: |
+    If you need to support Python 3.7, use typing_extensions backport.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#typing"
+
+- id: "PY37SL62"
+  name: "New statistics module features"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds statistics.fmean(), geometric_mean(), multimode(),
+    quantiles(), and NormalDist class.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "statistics\\.(fmean|geometric_mean|multimode|quantiles|NormalDist)"
+  message: |
+    New statistics features are not available in Python 3.7.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#statistics"
+
+- id: "PY37SL63"
+  name: "New functools features (cached_property, singledispatchmethod)"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds functools.cached_property and singledispatchmethod.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Name"
+  condition:
+    imported_from_functools: "cached_property|singledispatchmethod"
+  message: |
+    functools.cached_property and singledispatchmethod are new in Python 3.8.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#functools"
+
+- id: "PY37SL64"
+  name: "New unittest features (AsyncMock, IsolatedAsyncioTestCase)"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds unittest.mock.AsyncMock and IsolatedAsyncioTestCase
+    for async testing.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Name"
+  condition:
+    imported_from_unittest: "AsyncMock|IsolatedAsyncioTestCase"
+  message: |
+    unittest async testing features are new in Python 3.8.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#unittest"
+
+- id: "PY37SL65"
+  name: "New shlex.join() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.7"
+  target_version: "3.8"
+  description: |
+    Python 3.8 adds shlex.join() as the inverse of shlex.split().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "shlex.join"
+  message: |
+    shlex.join() is new in Python 3.8.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.8.html#shlex"

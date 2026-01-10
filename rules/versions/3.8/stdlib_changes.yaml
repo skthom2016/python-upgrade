@@ -1,6 +1,6 @@
 # Standard library changes when upgrading from Python 3.8 to 3.9+
 
-- id: "PY3830"
+- id: "PY38SL01"
   name: "xml.etree.ElementTree.getchildren() removed"
   category: "breaking_change"
   severity: "high"
@@ -27,3 +27,227 @@
     of getiterator().
   references:
     - "https://docs.python.org/3/whatsnew/3.9.html#removed"
+
+- id: "PY38SL02"
+  name: "New str.removeprefix() and removesuffix() methods"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    Python 3.9 adds str.removeprefix() and str.removesuffix() methods
+    (PEP 616). Also available for bytes, bytearray, and collections.UserString.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    calls_method: "removeprefix|removesuffix"
+  message: |
+    str.removeprefix() and removesuffix() are not available in Python 3.8.
+  suggestion: |
+    For Python 3.8 compatibility, use string slicing or str.replace().
+  examples:
+    good: |
+      # Python 3.9+
+      "Hello World".removeprefix("Hello ")  # "World"
+      "Hello World".removesuffix(" World")  # "Hello"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#str-removeprefix-and-str-removesuffix"
+    - "https://www.python.org/dev/peps/pep-0616/"
+
+- id: "PY38SL03"
+  name: "New zoneinfo module"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    Python 3.9 adds the zoneinfo module for IANA time zone database
+    support (PEP 615).
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Import"
+  condition:
+    imports: "zoneinfo"
+  message: |
+    The zoneinfo module is not available in Python 3.8.
+  suggestion: |
+    For Python 3.8, use third-party packages like pytz or dateutil.
+  examples:
+    good: |
+      # Python 3.9+
+      from zoneinfo import ZoneInfo
+      from datetime import datetime
+      dt = datetime(2020, 10, 31, 12, tzinfo=ZoneInfo("America/Los_Angeles"))
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#zoneinfo"
+    - "https://www.python.org/dev/peps/pep-0615/"
+
+- id: "PY38SL04"
+  name: "New graphlib module"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    Python 3.9 adds the graphlib module with TopologicalSorter class
+    for topological sorting.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Import"
+  condition:
+    imports: "graphlib"
+  message: |
+    The graphlib module is not available in Python 3.8.
+  suggestion: |
+    For Python 3.8, implement your own topological sort or use third-party
+    libraries.
+  examples:
+    good: |
+      # Python 3.9+
+      from graphlib import TopologicalSorter
+      ts = TopologicalSorter()
+      ts.add('a', 'b', 'c')
+      list(ts.static_order())
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#graphlib"
+
+- id: "PY38SL05"
+  name: "New math.gcd() with multiple arguments"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    math.gcd() now accepts multiple arguments in Python 3.9.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "math.gcd"
+    arg_count_greater_than: 2
+  message: |
+    math.gcd() with more than 2 arguments requires Python 3.9+.
+  suggestion: |
+    For Python 3.8, chain gcd calls: gcd(gcd(a, b), c).
+  examples:
+    good: |
+      # Python 3.9+
+      import math
+      result = math.gcd(12, 18, 30)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#math"
+
+- id: "PY38SL06"
+  name: "New math.lcm() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    Python 3.9 adds math.lcm() for least common multiple.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "math.lcm"
+  message: |
+    math.lcm() is not available in Python 3.8.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#math"
+
+- id: "PY38SL07"
+  name: "New asyncio.to_thread() coroutine"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    Python 3.9 adds asyncio.to_thread() for running IO-bound functions
+    in a separate thread.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "asyncio.to_thread"
+  message: |
+    asyncio.to_thread() is not available in Python 3.8.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#asyncio"
+
+- id: "PY38SL08"
+  name: "New typing.Annotated type"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    Python 3.9 adds typing.Annotated (PEP 593) for adding metadata
+    to type hints.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Subscript"
+  condition:
+    subscripts: "typing.Annotated"
+  message: |
+    typing.Annotated is not available in Python 3.8.
+  suggestion: |
+    For Python 3.8, use typing_extensions or avoid Annotated.
+  examples:
+    good: |
+      # Python 3.9+
+      from typing import Annotated
+      def foo(x: Annotated[int, "positive"]) -> None:
+          pass
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#typing"
+    - "https://www.python.org/dev/peps/pep-0593/"
+
+- id: "PY38SL09"
+  name: "datetime.isocalendar() returns namedtuple"
+  category: "api_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    datetime.isocalendar() now returns a namedtuple instead of a regular tuple.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    calls_method: "isocalendar"
+  message: |
+    datetime.isocalendar() returns namedtuple in Python 3.9+ (was tuple).
+  suggestion: |
+    Code that uses tuple unpacking or indexing continues to work, but
+    code that checks type or uses isinstance may need updating.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#datetime"
+
+- id: "PY38SL10"
+  name: "inspect.BoundArguments.arguments returns dict"
+  category: "api_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    inspect.BoundArguments.arguments now returns a regular dict instead
+    of OrderedDict.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Attribute"
+  condition:
+    accesses: "BoundArguments.arguments"
+  message: |
+    inspect.BoundArguments.arguments returns dict in Python 3.9+.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#inspect"

@@ -1,7 +1,7 @@
 # Deprecated features in Python 3.12
 # This file lists current deprecations in Python 3.12 that may be removed in future versions
 
-- id: "PY3201"
+- id: "PY312DF01"
   name: "asyncio.get_event_loop() deprecation warnings"
   category: "deprecation"
   severity: "medium"

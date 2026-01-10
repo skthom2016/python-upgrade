@@ -1,7 +1,479 @@
 # Standard library changes when upgrading from Python 3.6 to 3.7+
 # Changes to modules, functions, and classes in the Python standard library
 
-- id: "PY3630"
+# --- NEW MODULES IN PYTHON 3.7 ---
+
+- id: "PY36SL01"
+  name: "New contextvars module"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 introduces the new contextvars module for context
+    variables. Context variables are conceptually similar to thread-local
+    variables but support asynchronous code correctly.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "contextvars"
+  message: |
+    The contextvars module is new in Python 3.7. This code will not work
+    in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, avoid using the contextvars module
+    or provide an alternative implementation.
+  examples:
+    good: |
+      import contextvars
+      request_id = contextvars.ContextVar('request_id')
+  references:
+    - "https://docs.python.org/3/library/contextvars.html"
+    - "https://peps.python.org/pep-0567/"
+
+- id: "PY36SL02"
+  name: "New dataclasses module"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 introduces the new dataclasses module with the @dataclass
+    decorator for declaring data classes.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "ImportFrom"
+    children:
+      module:
+        node_type: "str"
+        value: "dataclasses"
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "regex:(dataclass|field)"
+  message: |
+    The dataclasses module is new in Python 3.7. This code will not work
+    in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use attrs package or manual
+    __init__ implementation instead.
+  examples:
+    good: |
+      from dataclasses import dataclass
+
+      @dataclass
+      class Point:
+          x: float
+          y: float
+  references:
+    - "https://docs.python.org/3/library/dataclasses.html"
+    - "https://peps.python.org/pep-0557/"
+
+- id: "PY36SL03"
+  name: "New importlib.resources module"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 introduces the new importlib.resources module for accessing
+    package resources (data files) inside packages.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "ImportFrom"
+    children:
+      module:
+        node_type: "str"
+        value: "importlib.resources"
+  message: |
+    The importlib.resources module is new in Python 3.7. This code will not
+    work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use pkg_resources or __file__
+    based approaches.
+  examples:
+    good: |
+      from importlib import resources
+      with resources.path('mypackage', 'data.txt') as p:
+          data = p.read_text()
+  references:
+    - "https://docs.python.org/3/library/importlib.html#importlib.resources"
+    - "https://bugs.python.org/issue32248"
+
+# --- NEW FUNCTIONS AND METHODS ---
+
+- id: "PY36SL04"
+  name: "New breakpoint() built-in function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 introduces the new built-in breakpoint() function as an
+    easy and consistent way to enter the Python debugger.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "breakpoint"
+  message: |
+    The breakpoint() built-in function is new in Python 3.7. This code
+    will not work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use pdb.set_trace() instead or
+    conditionally use breakpoint().
+  examples:
+    good: |
+      # Python 3.7+
+      breakpoint()
+
+      # For 3.6 compatibility:
+      try:
+          breakpoint
+      except NameError:
+          from pdb import set_trace as breakpoint
+      breakpoint()
+  references:
+    - "https://docs.python.org/3/library/functions.html#breakpoint"
+    - "https://peps.python.org/pep-0553/"
+
+- id: "PY36SL05"
+  name: "New asyncio.run() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 adds asyncio.run() to run a coroutine from synchronous
+    code by automatically creating and destroying the event loop.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "run"
+  message: |
+    The asyncio.run() function is new in Python 3.7. This code will not
+    work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use loop.run_until_complete()
+    instead.
+  examples:
+    good: |
+      # Python 3.7+
+      import asyncio
+      asyncio.run(main())
+
+      # For 3.6 compatibility:
+      import asyncio
+      loop = asyncio.get_event_loop()
+      loop.run_until_complete(main())
+      loop.close()
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.run"
+    - "https://bugs.python.org/issue32314"
+
+- id: "PY36SL06"
+  name: "New asyncio.create_task() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 adds asyncio.create_task() as a shortcut to
+    asyncio.get_event_loop().create_task().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "create_task"
+  message: |
+    The asyncio.create_task() function is new in Python 3.7. This code
+    will not work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use loop.create_task() instead.
+  examples:
+    good: |
+      # Python 3.7+
+      task = asyncio.create_task(coro())
+
+      # For 3.6 compatibility:
+      loop = asyncio.get_event_loop()
+      task = loop.create_task(coro())
+  references:
+    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task"
+    - "https://bugs.python.org/issue32311"
+
+- id: "PY36SL07"
+  name: "New asyncio.get_running_loop() function"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 adds asyncio.get_running_loop() which returns the currently
+    running loop and raises RuntimeError if no loop is running.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "get_running_loop"
+  message: |
+    The asyncio.get_running_loop() function is new in Python 3.7. This
+    code will not work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use asyncio.get_event_loop() instead.
+  examples:
+    good: |
+      # Python 3.7+
+      loop = asyncio.get_running_loop()
+
+      # For 3.6 compatibility:
+      loop = asyncio.get_event_loop()
+  references:
+    - "https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.get_running_loop"
+    - "https://bugs.python.org/issue32269"
+
+# --- TIME MODULE ADDITIONS ---
+
+- id: "PY36SL08"
+  name: "New time functions with nanosecond resolution"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 adds six new time functions with nanosecond resolution:
+    time.clock_gettime_ns(), time.clock_settime_ns(),
+    time.monotonic_ns(), time.perf_counter_ns(),
+    time.process_time_ns(), and time.time_ns().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(time\\.clock_gettime_ns|time\\.clock_settime_ns|time\\.monotonic_ns|time\\.perf_counter_ns|time\\.process_time_ns|time\\.time_ns)"
+  message: |
+    The *_ns() time functions are new in Python 3.7. This code will not
+    work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use the regular time functions
+    (without _ns suffix).
+  examples:
+    good: |
+      # Python 3.7+
+      ns = time.time_ns()
+
+      # For 3.6 compatibility:
+      ns = int(time.time() * 1e9)
+  references:
+    - "https://docs.python.org/3/library/time.html#time.time_ns"
+    - "https://peps.python.org/pep-0564/"
+
+- id: "PY36SL09"
+  name: "New time.thread_time() functions"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 adds time.thread_time() and time.thread_time_ns() to get
+    per-thread CPU time measurements.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(time\\.thread_time|time\\.thread_time_ns)"
+  message: |
+    The time.thread_time() functions are new in Python 3.7. This code
+    will not work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use time.process_time() or
+    threading-specific alternatives.
+  examples:
+    good: |
+      # Python 3.7+
+      cpu_time = time.thread_time()
+
+      # For 3.6 compatibility:
+      cpu_time = time.process_time()
+  references:
+    - "https://docs.python.org/3/library/time.html#time.thread_time"
+    - "https://bugs.python.org/issue32025"
+
+# --- SIGNIFICANT API CHANGES ---
+
+- id: "PY36SL10"
+  name: "asyncio loop methods now return coroutines"
+  category: "api_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    In Python 3.7, asyncio methods loop.sock_recv(), loop.sock_sendall(),
+    loop.sock_accept(), loop.getaddrinfo(), and loop.getnameinfo() have
+    been changed to be proper coroutine methods. Previously they returned
+    asyncio.Future instances.
+  detector: "AsyncChangesDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(loop\\.sock_recv|loop\\.sock_sendall|loop\\.sock_accept|loop\\.getaddrinfo|loop\\.getnameinfo)"
+    not_awaited: true
+  message: |
+    These asyncio loop methods now return coroutines in Python 3.7+ and
+    must be awaited.
+  suggestion: |
+    Ensure all calls to these methods are properly awaited.
+  examples:
+    bad: |
+      # Python 3.6 style
+      data = loop.sock_recv(sock, 1024)
+    good: |
+      # Python 3.7+ style
+      data = await loop.sock_recv(sock, 1024)
+  references:
+    - "https://docs.python.org/3/library/asyncio-eventloop.html"
+    - "https://bugs.python.org/issue32327"
+
+- id: "PY36SL11"
+  name: "asyncio.Server.sockets now returns a copy"
+  category: "api_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    asyncio.Server.sockets now returns a copy of the internal list of
+    server sockets, instead of returning it directly.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    accesses_server_sockets: true
+  message: |
+    asyncio.Server.sockets now returns a copy in Python 3.7. Direct
+    modification of the returned list will not affect the server.
+  suggestion: |
+    If you need to modify the server's sockets list, use the server's
+    methods instead of modifying the list directly.
+  examples:
+    bad: |
+      server.sockets.append(new_socket)  # Won't affect server in 3.7+
+    good: |
+      # Use server's methods to modify sockets
+  references:
+    - "https://bugs.python.org/issue32662"
+
+- id: "PY36SL12"
+  name: "socket type no longer has SOCK_NONBLOCK/SOCK_CLOEXEC bits"
+  category: "api_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    On OSes that support socket.SOCK_NONBLOCK or socket.SOCK_CLOEXEC bit
+    flags, socket.type no longer has them applied. Checks like
+    'if sock.type == socket.SOCK_STREAM' now work as expected.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Compare"
+  condition:
+    compares_socket_type: true
+  message: |
+    socket.type no longer includes SOCK_NONBLOCK or SOCK_CLOEXEC bits in
+    Python 3.7. Direct comparisons now work correctly.
+  suggestion: |
+    Update socket type comparisons to work with the new behavior. Most
+    code that used bitwise masking will now work correctly with direct
+    equality checks.
+  examples:
+    bad: |
+      # Old workaround
+      if sock.type & ~socket.SOCK_NONBLOCK == socket.SOCK_STREAM:
+          pass
+    good: |
+      # Python 3.7+ allows direct comparison
+      if sock.type == socket.SOCK_STREAM:
+          pass
+  references:
+    - "https://bugs.python.org/issue32331"
+
+- id: "PY36SL13"
+  name: "subprocess default close_fds changed on Windows"
+  category: "api_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    On Windows, the default for close_fds argument of subprocess.Popen
+    was changed from False to True when redirecting the standard handles.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "subprocess.Popen"
+  condition:
+    depends_on_inherited_handles: true
+  message: |
+    On Windows, subprocess.Popen now defaults to close_fds=True when
+    redirecting standard handles. This may break code that depends on
+    handle inheritance.
+  suggestion: |
+    If your code depends on inheriting handles when redirecting I/O,
+    explicitly pass close_fds=False.
+  examples:
+    bad: |
+      # May break in 3.7+ on Windows
+      subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    good: |
+      # Explicit if you need handle inheritance
+      subprocess.Popen(cmd, stdout=subprocess.PIPE, close_fds=False)
+  references:
+    - "https://bugs.python.org/issue19764"
+
+- id: "PY36SL14"
   name: "xml.etree.ElementTree.getchildren() deprecated"
   category: "deprecation"
   severity: "medium"
@@ -36,7 +508,7 @@
     - "https://docs.python.org/3/library/xml.etree.elementtree.html"
     - "https://docs.python.org/3/whatsnew/3.9.html#removed"
 
-- id: "PY3631"
+- id: "PY36SL15"
   name: "parser module deprecated"
   category: "deprecation"
   severity: "medium"
@@ -70,7 +542,7 @@
     - "https://docs.python.org/3/library/parser.html"
     - "https://docs.python.org/3/whatsnew/3.10.html#removed"
 
-- id: "PY3632"
+- id: "PY36SL16"
   name: "imp module removed"
   category: "breaking_change"
   severity: "high"
@@ -105,3 +577,106 @@
   references:
     - "https://docs.python.org/3/library/imp.html"
     - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY36SL17"
+  name: "xml modules no longer process external entities by default"
+  category: "security_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    As mitigation against DTD and external entity retrieval, the
+    xml.dom.minidom and xml.sax modules no longer process external
+    entities by default.
+  detector: "SecurityChangesDetector"
+  pattern:
+    node_type: "ImportFrom"
+    children:
+      module:
+        node_type: "str"
+        value: "regex:(xml.dom.minidom|xml.sax)"
+  message: |
+    xml.dom.minidom and xml.sax no longer process external entities by
+    default in Python 3.7+. This is a security enhancement.
+  suggestion: |
+    If you need external entities, explicitly enable them. Be aware of
+    the security implications.
+  examples:
+    bad: |
+      # In 3.6 and earlier, external entities were processed by default
+      doc = xml.dom.minidom.parse('file.xml')
+    good: |
+      # In 3.7+, external entities are disabled by default
+      # To explicitly enable (not recommended for untrusted input):
+      import xml.sax
+      parser = xml.sax.make_parser()
+      parser.setFeature(feature_external_ges, True)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#xml"
+    - "https://bugs.python.org/issue17239"
+
+- id: "PY36SL18"
+  name: "str, bytes, bytearray gain isascii() method"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 adds the isascii() method to str, bytes, and bytearray,
+    which can be used to test if they contain only ASCII characters.
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    calls_isascii: true
+  message: |
+    The isascii() method is new in Python 3.7. This code will not work
+    in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use all(ord(c) < 128 for c in s)
+    or regular expressions instead.
+  examples:
+    good: |
+      # Python 3.7+
+      if text.isascii():
+          pass
+
+      # For 3.6 compatibility:
+      if all(ord(c) < 128 for c in text):
+          pass
+  references:
+    - "https://bugs.python.org/issue32677"
+
+- id: "PY36SL19"
+  name: "datetime.fromisoformat() new method"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Python 3.7 adds datetime.fromisoformat() to construct a datetime
+    object from a string in one of the formats output by
+    datetime.isoformat().
+  detector: "NewFeatureDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "datetime.datetime.fromisoformat"
+  message: |
+    The datetime.fromisoformat() method is new in Python 3.7. This code
+    will not work in Python 3.6.
+  suggestion: |
+    If you need to support Python 3.6, use datetime.strptime() with
+    appropriate format string.
+  examples:
+    good: |
+      # Python 3.7+
+      dt = datetime.fromisoformat('2011-11-04')
+
+      # For 3.6 compatibility:
+      dt = datetime.strptime('2011-11-04', '%Y-%m-%d')
+  references:
+    - "https://bugs.python.org/issue15873"

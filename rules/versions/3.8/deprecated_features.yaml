@@ -1,6 +1,6 @@
 # Deprecated features when upgrading from Python 3.8 to 3.9+
 
-- id: "PY3810"
+- id: "PY38DF01"
   name: "parser module deprecated"
   category: "deprecation"
   severity: "medium"
@@ -24,3 +24,308 @@
     Replace 'import parser' with 'import ast'.
   references:
     - "https://docs.python.org/3/whatsnew/3.10.html#removed"
+
+- id: "PY38DF02"
+  name: "symbol module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.8"
+  target_version: "3.10"
+  description: |
+    The 'symbol' module was deprecated in Python 3.9 and removed in
+    Python 3.10. Use 'ast' module instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+  condition:
+    imports: "symbol"
+  message: |
+    The 'symbol' module was removed in Python 3.10. Use 'ast' instead.
+  suggestion: |
+    Replace 'import symbol' with 'import ast'.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF03"
+  name: "math.factorial() accepting float deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.8"
+  target_version: "3.10"
+  description: |
+    Passing float instances to math.factorial() is deprecated and will
+    raise TypeError in Python 3.10.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "math.factorial"
+    has_float_argument: true
+  message: |
+    Passing float to math.factorial() is deprecated in Python 3.9.
+  suggestion: |
+    Convert float to int explicitly: math.factorial(int(x)).
+  examples:
+    bad: |
+      import math
+      result = math.factorial(5.0)
+    good: |
+      import math
+      result = math.factorial(5)
+      result = math.factorial(int(5.0))
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF04"
+  name: "NotImplemented in boolean context deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.8"
+  target_version: "3.10"
+  description: |
+    Using NotImplemented in a boolean context has been deprecated.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Name"
+  condition:
+    id_is: "NotImplemented"
+    in_boolean_context: true
+  message: |
+    Using NotImplemented in boolean context is deprecated in Python 3.9.
+  suggestion: |
+    Check explicitly for NotImplemented using 'is' or 'is not'.
+  examples:
+    bad: |
+      result = some_op()
+      if result:  # Bad if result can be NotImplemented
+          use_result(result)
+    good: |
+      result = some_op()
+      if result is not NotImplemented:
+          use_result(result)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF05"
+  name: "random module non-deterministic seed deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.8"
+  target_version: "3.11"
+  description: |
+    The random module will restrict seeds to None, int, float, str, bytes,
+    and bytearray in Python 3.11. Other types are deprecated.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "random.seed"
+    has_non_deterministic_argument: true
+  message: |
+    Using non-deterministic hash types as random seeds is deprecated.
+  suggestion: |
+    Use None, int, float, str, bytes, or bytearray as seeds.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF06"
+  name: "Opening GzipFile without mode deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.8"
+  target_version: "3.10"
+  description: |
+    Opening GzipFile for writing without specifying mode is deprecated.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "gzip.GzipFile"
+    missing_mode_argument: true
+  message: |
+    Opening GzipFile without specifying mode is deprecated.
+  suggestion: |
+    Specify the mode argument explicitly: gzip.GzipFile(filename, 'rb').
+  examples:
+    bad: |
+      import gzip
+      f = gzip.GzipFile('file.gz')
+    good: |
+      import gzip
+      f = gzip.GzipFile('file.gz', 'rb')
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF07"
+  name: "_tkinter.TkappType.split() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.8"
+  target_version: "3.10"
+  description: |
+    The _tkinter.TkappType.split() method is deprecated.
+    Use splitlist() instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    calls_method: "split"
+    on_tkapp_object: true
+  message: |
+    _tkinter.TkappType.split() is deprecated. Use splitlist().
+  suggestion: |
+    Replace tkapp.split() with tkapp.splitlist().
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF08"
+  name: "binhex module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.8"
+  target_version: "3.11"
+  description: |
+    The binhex module is deprecated and will be removed in Python 3.11.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+  condition:
+    imports: "binhex"
+  message: |
+    The binhex module is deprecated and will be removed in Python 3.11.
+  suggestion: |
+    Use modern data encoding formats instead of binhex.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF09"
+  name: "ast deprecated classes (slice, Index, ExtSlice, Suite, Param)"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.8"
+  target_version: "3.10"
+  description: |
+    AST classes slice, Index, ExtSlice, Suite, Param, AugLoad, and
+    AugStore are deprecated and will be removed.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Name"
+  condition:
+    imported_from_ast: "slice|Index|ExtSlice|Suite|Param|AugLoad|AugStore"
+  message: |
+    This AST class is deprecated and will be removed.
+  suggestion: |
+    Use updated AST node types. Index(value) becomes value,
+    ExtSlice(slices) becomes Tuple(slices, Load()).
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF10"
+  name: "lib2to3 module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.8"
+  target_version: "3.13"
+  description: |
+    The lib2to3 module is deprecated and may be removed in a future
+    Python version.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+  condition:
+    imports: "lib2to3"
+  message: |
+    The lib2to3 module is deprecated and may be removed in future.
+  suggestion: |
+    Consider alternative code migration tools.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF11"
+  name: "random.shuffle() random parameter deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.8"
+  target_version: "3.11"
+  description: |
+    The optional random parameter of random.shuffle() is deprecated.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "random.shuffle"
+    has_random_parameter: true
+  message: |
+    The random parameter of random.shuffle() is deprecated.
+  suggestion: |
+    Remove the random parameter from random.shuffle() calls.
+  examples:
+    bad: |
+      import random
+      random.shuffle(mylist, random=custom_random)
+    good: |
+      import random
+      random.shuffle(mylist)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF12"
+  name: "distutils.bdist_msi command deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.8"
+  target_version: "3.10"
+  description: |
+    The distutils bdist_msi command is deprecated. Use bdist_wheel
+    or other installers instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Str"
+  condition:
+    contains: "bdist_msi"
+  message: |
+    The distutils bdist_msi command is deprecated.
+  suggestion: |
+    Use bdist_wheel or other modern installers.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"
+
+- id: "PY38DF13"
+  name: "Passing coroutines to asyncio.wait() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.8"
+  target_version: "3.11"
+  description: |
+    Passing coroutine objects directly to asyncio.wait() is deprecated.
+    Wrap them in Tasks first.
+  detector: "AsyncChangesDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "asyncio.wait"
+    passes_coroutine: true
+  message: |
+    Passing coroutines directly to asyncio.wait() is deprecated.
+  suggestion: |
+    Wrap coroutines in asyncio.create_task() before passing to wait().
+  examples:
+    bad: |
+      await asyncio.wait([coro1(), coro2()])
+    good: |
+      await asyncio.wait([asyncio.create_task(coro1()),
+                          asyncio.create_task(coro2())])
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#deprecated"

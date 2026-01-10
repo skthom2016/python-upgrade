@@ -1,3 +1,676 @@
 # Standard library changes when upgrading from Python 3.9 to 3.10+
-# No significant stdlib changes detected for this version upgrade path
-[]
+
+- id: "PY39SL01"
+  name: "int.bit_count() method available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    int.bit_count() method returns the number of ones in the binary representation
+    of the integer (population count). Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "bit_count"
+  message: |
+    int.bit_count() method is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, use: bin(n).count('1')
+  examples:
+    bad: "n.bit_count()"
+    good: "bin(n).count('1')"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#int"
+
+- id: "PY39SL02"
+  name: "zip() strict parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    zip() function's strict parameter (PEP 618) raises ValueError if iterables
+    have different lengths. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "zip"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "strict"
+  message: |
+    zip(strict=True) parameter is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, manually check lengths or use itertools.zip_longest().
+  examples:
+    bad: "zip(a, b, strict=True)"
+    good: "# Check lengths manually in Python 3.9\nassert len(a) == len(b)\nzip(a, b)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#pep-618-add-optional-length-checking-to-zip"
+    - "https://peps.python.org/pep-0618/"
+
+- id: "PY39SL03"
+  name: "itertools.pairwise() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    itertools.pairwise() returns successive overlapping pairs from an iterable.
+    Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "itertools"
+          attr: "pairwise"
+  message: |
+    itertools.pairwise() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, use: zip(iterable, itertools.islice(iterable, 1, None))
+  examples:
+    bad: "itertools.pairwise('ABCDE')"
+    good: "import itertools\nit = 'ABCDE'\nzip(it, itertools.islice(it, 1, None))"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#itertools"
+
+- id: "PY39SL04"
+  name: "statistics module new functions"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    statistics module adds covariance(), correlation(), and linear_regression()
+    functions. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "statistics"
+          attr: "regex:(covariance|correlation|linear_regression)"
+  message: |
+    statistics.{function}() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, use numpy or scipy for statistical functions.
+  examples:
+    bad: "statistics.covariance(x, y)"
+    good: "import numpy as np\nnp.cov(x, y)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#statistics"
+
+- id: "PY39SL05"
+  name: "base64 hex encoding functions available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    base64.b32hexencode() and base64.b32hexdecode() for Base32 encoding with
+    extended hex alphabet. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "base64"
+          attr: "regex:(b32hexencode|b32hexdecode)"
+  message: |
+    base64.{function}() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, use base64.b32encode() with standard alphabet.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#base64"
+
+- id: "PY39SL06"
+  name: "bisect module key parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    bisect module functions now accept key parameter for custom comparison.
+    Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "bisect"
+          attr: "regex:(bisect|bisect_left|bisect_right|insort|insort_left|insort_right)"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "key"
+  message: |
+    bisect functions' key parameter is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, transform the list before using bisect functions.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#bisect"
+
+- id: "PY39SL07"
+  name: "codecs.unregister() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    codecs.unregister() unregisters a codec search function. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "codecs"
+          attr: "unregister"
+  message: |
+    codecs.unregister() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, there is no direct equivalent.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#codecs"
+
+- id: "PY39SL08"
+  name: "contextlib.aclosing() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    contextlib.aclosing() is a context manager for asynchronously closing things.
+    Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "contextlib"
+          attr: "aclosing"
+  message: |
+    contextlib.aclosing() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, use contextlib.asynccontextmanager to create custom context manager.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#contextlib"
+
+- id: "PY39SL09"
+  name: "dataclasses slots parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    dataclass decorator's slots parameter generates __slots__. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "dataclass"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "slots"
+  message: |
+    dataclass(slots=True) parameter is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, manually define __slots__ in the class.
+  examples:
+    bad: "@dataclass(slots=True)\nclass Point: ..."
+    good: "@dataclass\nclass Point:\n    __slots__ = ('x', 'y')\n    x: float\n    y: float"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#dataclasses"
+
+- id: "PY39SL10"
+  name: "dataclasses kw_only parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    dataclass decorator's kw_only parameter makes fields keyword-only.
+    Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "regex:(dataclass|field)"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "kw_only"
+  message: |
+    dataclass kw_only parameter is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, use explicit keyword-only parameters with * separator.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#dataclasses"
+
+- id: "PY39SL11"
+  name: "dict views mapping attribute available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    dict.keys(), dict.values(), dict.items() views now have a mapping attribute
+    returning MappingProxyType. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Call"
+        children:
+          func:
+            node_type: "Attribute"
+            attributes:
+              attr: "regex:(keys|values|items)"
+      attr: "mapping"
+  message: |
+    dict views' mapping attribute is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, there is no direct equivalent.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#dict"
+
+- id: "PY39SL12"
+  name: "pathlib.Path.hardlink_to() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    pathlib.Path.hardlink_to() creates a hard link. Available in Python 3.10+.
+    Supersedes link_to() which is deprecated.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "hardlink_to"
+  message: |
+    pathlib.Path.hardlink_to() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, use path.link_to() (deprecated) or os.link().
+  examples:
+    bad: "path.hardlink_to(target)"
+    good: "import os\nos.link(target, path)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#pathlib"
+
+- id: "PY39SL13"
+  name: "pathlib.Path.parents slice support"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    pathlib.Path.parents now supports slicing and negative indexing.
+    Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Subscript"
+    children:
+      value:
+        node_type: "Attribute"
+        attributes:
+          attr: "parents"
+      slice:
+        node_type: "Slice"
+  message: |
+    Slicing pathlib.Path.parents is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, convert to list first: list(path.parents)[0:2]
+  examples:
+    bad: "path.parents[0:2]"
+    good: "list(path.parents)[0:2]"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#pathlib"
+
+- id: "PY39SL14"
+  name: "platform.freedesktop_os_release() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    platform.freedesktop_os_release() retrieves OS identification from
+    freedesktop.org standard. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "platform"
+          attr: "freedesktop_os_release"
+  message: |
+    platform.freedesktop_os_release() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, manually read /etc/os-release or use distro package.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#platform"
+
+- id: "PY39SL15"
+  name: "sys.orig_argv available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    sys.orig_argv contains the original command line arguments passed to Python.
+    Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "sys"
+      attr: "orig_argv"
+  message: |
+    sys.orig_argv is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, use sys.argv (but may be modified).
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#sys"
+
+- id: "PY39SL16"
+  name: "sys.stdlib_module_names available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    sys.stdlib_module_names contains a frozenset of standard library module names.
+    Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "sys"
+      attr: "stdlib_module_names"
+  message: |
+    sys.stdlib_module_names is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, maintain your own list or use stdlib_list package.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#sys"
+
+- id: "PY39SL17"
+  name: "threading trace/profile getters available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    threading.gettrace() and threading.getprofile() retrieve trace/profile
+    functions. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "threading"
+          attr: "regex:(gettrace|getprofile)"
+  message: |
+    threading.gettrace() and threading.getprofile() are not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, there is no direct equivalent.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#threading"
+
+- id: "PY39SL18"
+  name: "typing.is_typeddict() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    typing.is_typeddict() checks if a type is a TypedDict. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "typing"
+          attr: "is_typeddict"
+  message: |
+    typing.is_typeddict() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, check for __annotations__ and __total__ attributes.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#typing"
+
+- id: "PY39SL19"
+  name: "unittest.TestCase.assertNoLogs() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    unittest.TestCase.assertNoLogs() asserts no logs were emitted.
+    Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "assertNoLogs"
+  message: |
+    unittest.TestCase.assertNoLogs() is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, check logs manually or use context manager.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#unittest"
+
+- id: "PY39SL20"
+  name: "SSL OpenSSL 1.1.1+ required"
+  category: "requirement_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    Python 3.10 requires OpenSSL 1.1.1 or newer (PEP 644). OpenSSL 1.0.2 is
+    no longer supported.
+  detector: "EnvironmentDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "ssl"
+  message: |
+    Python 3.10 requires OpenSSL 1.1.1+ (OpenSSL 1.0.2 is no longer supported).
+  suggestion: |
+    Ensure your system has OpenSSL 1.1.1 or newer before upgrading to Python 3.10.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#build-changes"
+    - "https://peps.python.org/pep-0644/"
+
+- id: "PY39SL21"
+  name: "SSL improved security defaults"
+  category: "security_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    Python 3.10 ssl module has more secure defaults: disabled ciphers without
+    forward secrecy/SHA-1 MAC, security level 2, TLS 1.2 minimum by default.
+  detector: "SecurityDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "ssl"
+          attr: "regex:(SSLContext|create_default_context)"
+  message: |
+    Python 3.10 ssl module has stricter security defaults (TLS 1.2 minimum).
+  suggestion: |
+    Test SSL connections after upgrading. Legacy servers may require explicit configuration.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#ssl"
+
+- id: "PY39SL22"
+  name: "os.path.realpath() strict parameter"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    os.path.realpath() strict parameter raises OSError if path doesn't exist
+    or has symlink loops. Available in Python 3.10+.
+  detector: "StdlibChangesDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Attribute"
+            children:
+              value:
+                node_type: "Name"
+                attributes:
+                  id: "os"
+              attr: "path"
+          attr: "realpath"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "strict"
+  message: |
+    os.path.realpath(strict=True) parameter is not available in Python 3.9.
+  suggestion: |
+    For Python 3.9, manually check if path exists before calling realpath().
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#os-path"
+
+- id: "PY39SL23"
+  name: "typing.Literal behavior changes"
+  category: "behavior_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.10"
+  description: |
+    typing.Literal in Python 3.10 de-duplicates parameters, has order-independent
+    equality, and correctly distinguishes types (e.g., Literal[0] != Literal[False]).
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "Subscript"
+    children:
+      value:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "typing"
+          attr: "Literal"
+  message: |
+    typing.Literal behavior changed in Python 3.10 (type-aware equality).
+  suggestion: |
+    Review Literal comparisons - Literal[0] != Literal[False] in Python 3.10.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#typing"

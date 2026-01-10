@@ -1,4 +1,1025 @@
 # Standard library changes when upgrading from Python 3.11 to 3.12+
-# No significant stdlib changes detected for this version upgrade path
-[]
 
+- id: "PY311SL01"
+  name: "asyncio eager task factory available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    asyncio.eager_task_factory() and create_eager_task_factory() enable
+    eager task execution for 2-5x performance improvement in some cases.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "regex:(eager_task_factory|create_eager_task_factory)"
+  message: |
+    asyncio eager task factories are available in Python 3.12+.
+  suggestion: |
+    This feature provides significant performance improvements in Python 3.12.
+  examples:
+    bad: "# Not available in Python 3.11"
+    good: "asyncio.get_event_loop().set_task_factory(asyncio.eager_task_factory)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#asyncio"
+
+- id: "PY311SL02"
+  name: "asyncio.run() loop_factory parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    asyncio.run() now accepts a loop_factory parameter to customize
+    the event loop implementation.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "run"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "loop_factory"
+  message: |
+    asyncio.run() loop_factory parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, manually create and manage the event loop.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#asyncio"
+
+- id: "PY311SL03"
+  name: "calendar.Month and calendar.Day enums available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    calendar.Month and calendar.Day enums replace old constants like calendar.January.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "calendar"
+      attr: "regex:(Month|Day)"
+  message: |
+    calendar.Month and calendar.Day enums are available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use the old constants: calendar.JANUARY, calendar.MONDAY, etc.
+  examples:
+    bad: "month = calendar.Month.JANUARY"
+    good: "month = calendar.JANUARY  # Python 3.11"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#calendar"
+
+- id: "PY311SL04"
+  name: "csv.QUOTE_NOTNULL and csv.QUOTE_STRINGS available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    csv module now supports QUOTE_NOTNULL and QUOTE_STRINGS quoting modes.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "csv"
+      attr: "regex:(QUOTE_NOTNULL|QUOTE_STRINGS)"
+  message: |
+    csv.QUOTE_NOTNULL and csv.QUOTE_STRINGS are available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use existing quoting modes or custom logic.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#csv"
+
+- id: "PY311SL05"
+  name: "inspect.markcoroutinefunction() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    inspect.markcoroutinefunction() marks sync functions that return coroutines
+    as coroutine functions for introspection purposes.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "inspect"
+          attr: "markcoroutinefunction"
+  message: |
+    inspect.markcoroutinefunction() is available in Python 3.12+.
+  suggestion: |
+    This feature requires Python 3.12+.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#inspect"
+
+- id: "PY311SL06"
+  name: "inspect.getasyncgenstate() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    inspect.getasyncgenstate() and getasyncgenlocals() provide introspection
+    for async generators.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "inspect"
+          attr: "regex:(getasyncgenstate|getasyncgenlocals)"
+  message: |
+    inspect async generator introspection functions are available in Python 3.12+.
+  suggestion: |
+    This feature requires Python 3.12+.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#inspect"
+
+- id: "PY311SL07"
+  name: "itertools.batched() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    itertools.batched() batches items into even-sized tuples.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "itertools"
+          attr: "batched"
+  message: |
+    itertools.batched() is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use custom batching function or more-itertools package.
+  examples:
+    bad: "for batch in itertools.batched(items, 3): ..."
+    good: "# For 3.11: pip install more-itertools\nfrom more_itertools import batched"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#itertools"
+
+- id: "PY311SL08"
+  name: "math.sumprod() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    math.sumprod() computes the sum of products efficiently.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "math"
+          attr: "sumprod"
+  message: |
+    math.sumprod() is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use: sum(x * y for x, y in zip(list1, list2))
+  examples:
+    bad: "result = math.sumprod(a, b)"
+    good: "result = sum(x * y for x, y in zip(a, b))"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#math"
+
+- id: "PY311SL09"
+  name: "math.nextafter() steps parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    math.nextafter() now accepts a steps parameter to move multiple steps
+    toward the target value.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "math"
+          attr: "nextafter"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "steps"
+  message: |
+    math.nextafter() steps parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, call nextafter() in a loop for multiple steps.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#math"
+
+- id: "PY311SL10"
+  name: "os.PIDFD_NONBLOCK flag available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    os.PIDFD_NONBLOCK flag for opening PID file descriptors in non-blocking mode.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "os"
+      attr: "PIDFD_NONBLOCK"
+  message: |
+    os.PIDFD_NONBLOCK is available in Python 3.12+ on Linux.
+  suggestion: |
+    This feature requires Python 3.12+ and Linux kernel support.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#os"
+
+- id: "PY311SL11"
+  name: "os.listdrives() and os.listvolumes() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    os.listdrives(), os.listvolumes(), and os.listmounts() provide Windows
+    drive and volume enumeration.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "os"
+          attr: "regex:(listdrives|listvolumes|listmounts)"
+  message: |
+    os.listdrives/listvolumes/listmounts are available in Python 3.12+ on Windows.
+  suggestion: |
+    For Python 3.11, use platform-specific APIs or custom implementations.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#os"
+
+- id: "PY311SL12"
+  name: "os.DirEntry.is_junction() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    os.DirEntry.is_junction() checks if a directory entry is a Windows junction.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "is_junction"
+  message: |
+    os.DirEntry.is_junction() is available in Python 3.12+ on Windows.
+  suggestion: |
+    For Python 3.11, use os.path.isjunction() if available.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#os"
+
+- id: "PY311SL13"
+  name: "os.path.isjunction() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    os.path.isjunction() checks if a path is a Windows junction point.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Attribute"
+            children:
+              value:
+                node_type: "Name"
+                attributes:
+                  id: "os"
+              attr: "path"
+          attr: "isjunction"
+  message: |
+    os.path.isjunction() is available in Python 3.12+ on Windows.
+  suggestion: |
+    For Python 3.11, check if path is a symlink with os.path.islink() on Windows.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#os"
+
+- id: "PY311SL14"
+  name: "pathlib.Path subclassing support"
+  category: "enhancement"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    pathlib.Path subclassing is now properly supported in Python 3.12
+    with the with_segments() method.
+  detector: "EnhancementDetector"
+  pattern:
+    node_type: "ClassDef"
+    children:
+      bases:
+        - node_type: "Attribute"
+          children:
+            value:
+              node_type: "Name"
+              attributes:
+                id: "pathlib"
+            attr: "Path"
+  message: |
+    pathlib.Path subclassing is properly supported in Python 3.12.
+  suggestion: |
+    Subclassing may have issues in Python 3.11. Override with_segments() in Python 3.12.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pathlib"
+
+- id: "PY311SL15"
+  name: "pathlib.Path.walk() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    pathlib.Path.walk() walks the directory tree like os.walk().
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "walk"
+  message: |
+    pathlib.Path.walk() is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use os.walk() or manually traverse with iterdir().
+  examples:
+    bad: "for root, dirs, files in Path('.').walk(): ..."
+    good: "import os\nfor root, dirs, files in os.walk('.'): ..."
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pathlib"
+
+- id: "PY311SL16"
+  name: "pathlib.Path.relative_to() walk_up parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    pathlib.Path.relative_to() now accepts walk_up parameter to allow .. entries.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "relative_to"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "walk_up"
+  message: |
+    pathlib.Path.relative_to() walk_up parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, manually construct relative paths with .. if needed.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pathlib"
+
+- id: "PY311SL17"
+  name: "pathlib.Path.is_junction() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    pathlib.Path.is_junction() checks if path is a Windows junction point.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "is_junction"
+  message: |
+    pathlib.Path.is_junction() is available in Python 3.12+ on Windows.
+  suggestion: |
+    For Python 3.11, use os.path.isjunction() if available.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pathlib"
+
+- id: "PY311SL18"
+  name: "pathlib.Path.glob() case_sensitive parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    pathlib.Path.glob() and rglob() now accept case_sensitive parameter.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "regex:(glob|rglob)"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "case_sensitive"
+  message: |
+    pathlib.Path.glob() case_sensitive parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, manually filter results for case-sensitivity.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pathlib"
+
+- id: "PY311SL19"
+  name: "random.binomialvariate() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    random.binomialvariate() generates random variates from binomial distribution.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "random"
+          attr: "binomialvariate"
+  message: |
+    random.binomialvariate() is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use numpy.random.binomial() or implement custom distribution.
+  examples:
+    bad: "value = random.binomialvariate(n=100, p=0.5)"
+    good: "# For 3.11: import numpy.random\nvalue = numpy.random.binomial(100, 0.5)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#random"
+
+- id: "PY311SL20"
+  name: "random.expovariate() default lambda available"
+  category: "enhancement"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    random.expovariate() now has a default lambda=1.0 parameter in Python 3.12.
+  detector: "EnhancementDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "random"
+          attr: "expovariate"
+  message: |
+    random.expovariate() has default lambda=1.0 in Python 3.12.
+  suggestion: |
+    For Python 3.11, explicitly pass lambda parameter.
+  examples:
+    bad: "value = random.expovariate()"
+    good: "value = random.expovariate(1.0)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#random"
+
+- id: "PY311SL21"
+  name: "shutil.rmtree() onexc parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    shutil.rmtree() onexc parameter replaces onerror, receiving exception
+    instance instead of (type, value, tb) tuple.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "shutil"
+          attr: "rmtree"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "onexc"
+  message: |
+    shutil.rmtree() onexc parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use onerror parameter (receives (type, value, tb) tuple).
+  examples:
+    bad: "shutil.rmtree(path, onexc=handler)"
+    good: "shutil.rmtree(path, onerror=handler)  # Python 3.11"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#shutil"
+
+- id: "PY311SL22"
+  name: "sqlite3 command-line interface available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sqlite3 module can now be invoked as command-line interface: python -m sqlite3
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "sqlite3"
+  message: |
+    sqlite3 command-line interface is available in Python 3.12+.
+  suggestion: |
+    Run: python -m sqlite3 database.db
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#sqlite3"
+
+- id: "PY311SL23"
+  name: "sqlite3.Connection autocommit mode available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sqlite3.Connection now supports autocommit mode control.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "sqlite3"
+          attr: "connect"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "autocommit"
+  message: |
+    sqlite3 autocommit parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, manually manage transactions with commit().
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#sqlite3"
+
+- id: "PY311SL24"
+  name: "sqlite3.Connection.load_extension() entrypoint parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sqlite3.Connection.load_extension() now accepts entrypoint parameter
+    to specify custom initialization function.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "load_extension"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "entrypoint"
+  message: |
+    sqlite3.Connection.load_extension() entrypoint parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, extensions must use default entry point.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#sqlite3"
+
+- id: "PY311SL25"
+  name: "sqlite3.Connection configuration methods available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sqlite3.Connection.getconfig() and setconfig() allow runtime configuration.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "regex:(getconfig|setconfig)"
+  message: |
+    sqlite3.Connection.getconfig/setconfig are available in Python 3.12+.
+  suggestion: |
+    This feature requires Python 3.12+.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#sqlite3"
+
+- id: "PY311SL26"
+  name: "statistics.correlation() ranked parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    statistics.correlation() now accepts ranked parameter for Spearman correlation.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "statistics"
+          attr: "correlation"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "ranked"
+  message: |
+    statistics.correlation() ranked parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use scipy.stats.spearmanr() for ranked correlation.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#statistics"
+
+- id: "PY311SL27"
+  name: "sys.monitoring module available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sys.monitoring module provides low-impact monitoring API (PEP 669)
+    for profilers and debuggers.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "sys"
+      attr: "monitoring"
+  message: |
+    sys.monitoring module (PEP 669) is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use sys.settrace() or sys.setprofile().
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#sys"
+    - "https://peps.python.org/pep-0669/"
+
+- id: "PY311SL28"
+  name: "sys stack trampoline API available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sys.activate_stack_trampoline(), deactivate_stack_trampoline(), and
+    is_stack_trampoline_active() for perf profiler support.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "sys"
+          attr: "regex:(activate_stack_trampoline|deactivate_stack_trampoline|is_stack_trampoline_active)"
+  message: |
+    sys stack trampoline API is available in Python 3.12+.
+  suggestion: |
+    This feature requires Python 3.12+ for perf profiler integration.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#sys"
+
+- id: "PY311SL29"
+  name: "sys.last_exc available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sys.last_exc provides single exception instance, replacing sys.last_type,
+    sys.last_value, and sys.last_traceback.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "sys"
+      attr: "last_exc"
+  message: |
+    sys.last_exc is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use sys.last_type, sys.last_value, sys.last_traceback.
+  examples:
+    bad: "exc = sys.last_exc"
+    good: "exc_type, exc_value, exc_tb = sys.last_type, sys.last_value, sys.last_traceback"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#sys"
+
+- id: "PY311SL30"
+  name: "tempfile delete_on_close parameter available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    tempfile.NamedTemporaryFile() now accepts delete_on_close parameter
+    for finer control over file deletion.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "tempfile"
+          attr: "NamedTemporaryFile"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "delete_on_close"
+  message: |
+    tempfile.NamedTemporaryFile() delete_on_close parameter is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use delete=False and manually manage file deletion.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#tempfile"
+
+- id: "PY311SL31"
+  name: "types.get_original_bases() available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    types.get_original_bases() retrieves the original generic type bases
+    of a class for introspection.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "types"
+          attr: "get_original_bases"
+  message: |
+    types.get_original_bases() is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, access __orig_bases__ attribute if available.
+  examples:
+    bad: "bases = types.get_original_bases(MyClass)"
+    good: "bases = getattr(MyClass, '__orig_bases__', ())"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#types"
+
+- id: "PY311SL32"
+  name: "unittest --durations option available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    unittest command-line interface now supports --durations option to show
+    slowest tests with timing information.
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "unittest"
+  message: |
+    unittest --durations option is available in Python 3.12+.
+  suggestion: |
+    Run: python -m unittest --durations=10 tests
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#unittest"
+
+- id: "PY311SL33"
+  name: "uuid command-line interface available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    uuid module can now be invoked as command-line interface: python -m uuid
+  detector: "NewAPIDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "uuid"
+  message: |
+    uuid command-line interface is available in Python 3.12+.
+  suggestion: |
+    Run: python -m uuid or python -m uuid --namespace dns --name example.com
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#uuid"
+
+- id: "PY311SL34"
+  name: "unicodedata updated to Unicode 15.0"
+  category: "enhancement"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    The unicodedata module has been updated to Unicode 15.0.0.
+  detector: "EnhancementDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "unicodedata"
+  message: |
+    unicodedata is updated to Unicode 15.0.0 in Python 3.12.
+  suggestion: |
+    Python 3.11 uses Unicode 14.0.0. Be aware of differences in character support.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#unicodedata"
+
+- id: "PY311SL35"
+  name: "typing isinstance() with protocols performance"
+  category: "enhancement"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    isinstance() checks against runtime-checkable protocols are now 2-20x faster
+    in Python 3.12, but with behavioral changes (uses inspect.getattr_static).
+  detector: "EnhancementDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "isinstance"
+  message: |
+    isinstance() with protocols is 2-20x faster in Python 3.12 but with behavioral changes.
+  suggestion: |
+    Behavior differs: uses inspect.getattr_static() instead of hasattr().
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#typing"
+
+- id: "PY311SL36"
+  name: "Performance improvements in Python 3.12"
+  category: "informational"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Python 3.12 includes numerous performance improvements: comprehension inlining (2x faster),
+    asyncio optimizations (75% faster), super() optimization, reduced memory usage.
+  detector: "InformationalDetector"
+  pattern:
+    node_type: "Module"
+  message: |
+    Python 3.12 provides significant performance improvements across many operations.
+  suggestion: |
+    Consider upgrading to Python 3.12 for performance benefits.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#optimizations"

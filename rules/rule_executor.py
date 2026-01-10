@@ -3,7 +3,8 @@ Rule executor for applying rules against AST nodes.
 """
 
 import ast
-from typing import List, Dict, Any, Optional
+import re
+from typing import List, Dict, Any, Optional, Tuple
 from packaging import version
 
 from reporting.data_models import Issue, Location, Severity, Category, RiskLevel
@@ -68,7 +69,31 @@ class RuleExecutor:
             rule_issues = self.execute_rule(rule, tree)
             issues.extend(rule_issues)
 
+        # Deduplicate issues by (rule_id, line, column)
+        issues = self._deduplicate_issues(issues)
+
         return issues
+
+    def _deduplicate_issues(self, issues: List[Issue]) -> List[Issue]:
+        """
+        Remove duplicate issues (same rule, line, and column).
+
+        Args:
+            issues: List of issues
+
+        Returns:
+            Deduplicated list of issues
+        """
+        seen: set[Tuple[str, int, int]] = set()
+        unique_issues: List[Issue] = []
+
+        for issue in issues:
+            key = (issue.id, issue.location.line, issue.location.column)
+            if key not in seen:
+                seen.add(key)
+                unique_issues.append(issue)
+
+        return unique_issues
 
     def execute_rule(self, rule: Rule, tree: ast.Module) -> List[Issue]:
         """
@@ -157,6 +182,109 @@ class RuleExecutor:
             if not self._in_version_range(version_range):
                 return False
 
+        # Check 'func_is' condition (for function/method calls)
+        if 'func_is' in condition:
+            func_pattern = condition['func_is']
+            if not self._func_matches(node, func_pattern):
+                return False
+
+        # Check 'is_async' condition
+        if 'is_async' in condition:
+            is_async = condition['is_async']
+            if is_async and not isinstance(node, ast.AsyncFunctionDef):
+                return False
+            if not is_async and isinstance(node, ast.AsyncFunctionDef):
+                return False
+
+        # Check 'function_name' or 'func_name' condition
+        if 'function_name' in condition or 'func_name' in condition:
+            expected_name = condition.get('function_name') or condition.get('func_name')
+            if not self._function_name_matches(node, expected_name):
+                return False
+
+        # Check 'has_kwarg' condition
+        if 'has_kwarg' in condition:
+            kwarg_name = condition['has_kwarg']
+            if not self._has_kwarg(node, kwarg_name):
+                return False
+
+        # Check 'has_keyword_args' condition
+        if 'has_keyword_args' in condition:
+            has_kwargs = condition['has_keyword_args']
+            if has_kwargs and not self._has_any_keyword_args(node):
+                return False
+            if not has_kwargs and self._has_any_keyword_args(node):
+                return False
+
+        # Check 'first_arg_is_keyword' condition
+        if 'first_arg_is_keyword' in condition:
+            if condition['first_arg_is_keyword'] and not self._first_arg_is_keyword(node):
+                return False
+
+        # Check 'contains' condition (for string matching in code)
+        if 'contains' in condition:
+            if not self._contains_string(node, condition['contains']):
+                return False
+
+        # Check 'contains_yield' condition
+        if 'contains_yield' in condition:
+            if condition['contains_yield'] and not self._contains_yield(node):
+                return False
+
+        # Check 'contains_await_or_async_for' condition
+        if 'contains_await_or_async_for' in condition:
+            if condition['contains_await_or_async_for'] and not self._contains_await_or_async_for(node):
+                return False
+
+        # Check 'returns_subclass_of' condition
+        if 'returns_subclass_of' in condition:
+            class_name = condition['returns_subclass_of']
+            if not self._returns_subclass_of(node, class_name):
+                return False
+
+        # Check 'calls_isascii' condition
+        if 'calls_isascii' in condition:
+            if condition['calls_isascii'] and not self._calls_isascii(node):
+                return False
+
+        # Check 'accesses_server_sockets' condition
+        if 'accesses_server_sockets' in condition:
+            cond_value = condition['accesses_server_sockets']
+            # Handle both boolean and string format
+            should_access = cond_value if isinstance(cond_value, bool) else True
+            if should_access and not self._accesses_server_sockets(node):
+                return False
+
+        # Check 'is_async_function' condition
+        if 'is_async_function' in condition:
+            if condition['is_async_function'] and not isinstance(node, ast.AsyncFunctionDef):
+                return False
+
+        # Check 'raises_stopiteration' condition
+        if 'raises_stopiteration' in condition:
+            if condition['raises_stopiteration'] and not self._raises_stopiteration(node):
+                return False
+
+        # Check 'not_awaited' condition
+        if 'not_awaited' in condition:
+            if condition['not_awaited'] and not self._is_not_awaited(node):
+                return False
+
+        # Check 'compares_socket_type' condition
+        if 'compares_socket_type' in condition:
+            if condition['compares_socket_type'] and not self._compares_socket_type(node):
+                return False
+
+        # Check 'depends_on_inherited_handles' condition
+        if 'depends_on_inherited_handles' in condition:
+            if condition['depends_on_inherited_handles'] and not self._depends_on_inherited_handles(node):
+                return False
+
+        # Check 'used_as_identifier' condition
+        if 'used_as_identifier' in condition:
+            if condition['used_as_identifier'] and not self._used_as_identifier(node):
+                return False
+
         return True
 
     def _is_in_context(self, node: ast.AST, contexts: List[str]) -> bool:
@@ -230,6 +358,392 @@ class RuleExecutor:
 
         return True
 
+    def _func_matches(self, node: ast.AST, func_pattern: str) -> bool:
+        """
+        Check if a Call node's function matches a pattern.
+
+        Args:
+            node: AST node (should be a Call node)
+            func_pattern: Function pattern (supports regex: prefix)
+
+        Returns:
+            True if function matches the pattern
+        """
+        # Only applicable to Call nodes
+        if not isinstance(node, ast.Call):
+            return False
+
+        # Extract function name
+        func_name = self._get_function_name(node)
+        if not func_name:
+            return False
+
+        # Handle regex patterns
+        if func_pattern.startswith('regex:'):
+            regex_pattern = func_pattern[6:]  # Remove 'regex:' prefix
+            try:
+                return re.match(regex_pattern, func_name) is not None
+            except re.error:
+                return False
+
+        # Direct string match
+        return func_name == func_pattern
+
+    def _get_function_name(self, node: ast.Call) -> Optional[str]:
+        """
+        Get the full name of a function call.
+
+        Args:
+            node: Call AST node
+
+        Returns:
+            Function name as string (e.g., "time.sleep", "asyncio.run")
+        """
+        func = node.func
+
+        # Simple name: foo()
+        if isinstance(func, ast.Name):
+            return func.id
+
+        # Attribute: foo.bar()
+        if isinstance(func, ast.Attribute):
+            parts = []
+            current = func
+            while isinstance(current, ast.Attribute):
+                parts.append(current.attr)
+                current = current.value
+            if isinstance(current, ast.Name):
+                parts.append(current.id)
+                parts.reverse()
+                return '.'.join(parts)
+
+        return None
+
+    def _function_name_matches(self, node: ast.AST, expected_name: str) -> bool:
+        """
+        Check if a function definition node has the expected name.
+
+        Args:
+            node: AST node
+            expected_name: Expected function name (supports regex: prefix)
+
+        Returns:
+            True if function name matches
+        """
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            return False
+
+        func_name = node.name
+
+        # Handle regex patterns
+        if expected_name.startswith('regex:'):
+            regex_pattern = expected_name[6:]  # Remove 'regex:' prefix
+            try:
+                return re.match(regex_pattern, func_name) is not None
+            except re.error:
+                return False
+
+        return func_name == expected_name
+
+    def _has_kwarg(self, node: ast.AST, kwarg_name: str) -> bool:
+        """
+        Check if a Call node has a specific keyword argument.
+
+        Args:
+            node: AST node
+            kwarg_name: Keyword argument name to check
+
+        Returns:
+            True if the call has the specified keyword argument
+        """
+        if not isinstance(node, ast.Call):
+            return False
+
+        for keyword in node.keywords:
+            if keyword.arg == kwarg_name:
+                return True
+
+        return False
+
+    def _has_any_keyword_args(self, node: ast.AST) -> bool:
+        """
+        Check if a Call node has any keyword arguments.
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the call has keyword arguments
+        """
+        if not isinstance(node, ast.Call):
+            return False
+
+        return len(node.keywords) > 0
+
+    def _first_arg_is_keyword(self, node: ast.AST) -> bool:
+        """
+        Check if the first argument of a Call node is a keyword argument.
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the first argument is a keyword
+        """
+        if not isinstance(node, ast.Call):
+            return False
+
+        # Check if there's a keyword argument and it's the first one
+        if node.keywords and len(node.args) == 0:
+            return True
+
+        return False
+
+    def _contains_string(self, node: ast.AST, search_string: str) -> bool:
+        """
+        Check if the source code for a node contains a specific string.
+
+        Args:
+            node: AST node
+            search_string: String to search for
+
+        Returns:
+            True if the source contains the string
+        """
+        # Get source lines for the node
+        if not self.source_lines:
+            return False
+
+        start_line = getattr(node, 'lineno', 1) - 1
+        end_line = getattr(node, 'end_lineno', start_line + 1)
+
+        if start_line >= len(self.source_lines):
+            return False
+
+        end_line = min(end_line, len(self.source_lines))
+
+        for i in range(start_line, end_line):
+            if search_string in self.source_lines[i]:
+                return True
+
+        return False
+
+    def _contains_yield(self, node: ast.AST) -> bool:
+        """
+        Check if a comprehension contains a yield expression.
+
+        Args:
+            node: AST node (should be a comprehension)
+
+        Returns:
+            True if the comprehension contains yield
+        """
+        if not isinstance(node, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)):
+            return False
+
+        # Walk the comprehension's generators and value
+        for child in ast.walk(node):
+            if isinstance(child, (ast.Yield, ast.YieldFrom)):
+                return True
+
+        return False
+
+    def _contains_await_or_async_for(self, node: ast.AST) -> bool:
+        """
+        Check if an f-string contains await or async for.
+
+        Note: Python's AST doesn't directly expose f-string content
+        in a way that makes this easy to detect. This is a simplified
+        check that looks for these patterns in the source.
+
+        Args:
+            node: AST node (should be JoinedStr for f-strings)
+
+        Returns:
+            True if the f-string contains await or async for
+        """
+        if not isinstance(node, ast.JoinedStr):
+            return False
+
+        return self._contains_string(node, 'await') or self._contains_string(node, 'async')
+
+    def _returns_subclass_of(self, node: ast.AST, class_name: str) -> bool:
+        """
+        Check if a function returns a subclass of a specific class.
+
+        Args:
+            node: AST node (should be a FunctionDef)
+            class_name: Name of the base class
+
+        Returns:
+            True if the function returns a subclass of the specified class
+        """
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            return False
+
+        # Walk the function body to find return statements
+        for child in ast.walk(node):
+            if isinstance(child, ast.Return):
+                # Check if the return value is a Call that instantiates a class
+                if isinstance(child.value, ast.Call):
+                    func = child.value.func
+                    if isinstance(func, ast.Name):
+                        # Simple: return MyClass()
+                        if func.id == class_name:
+                            return True
+                    elif isinstance(func, ast.Attribute):
+                        # Check for module.Class()
+                        if func.attr == class_name:
+                            return True
+
+        return False
+
+    def _calls_isascii(self, node: ast.AST) -> bool:
+        """
+        Check if a Call node calls the isascii() method.
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the node is a call to .isascii()
+        """
+        if not isinstance(node, ast.Call):
+            return False
+
+        func = node.func
+        if isinstance(func, ast.Attribute):
+            return func.attr == 'isascii'
+
+        return False
+
+    def _accesses_server_sockets(self, node: ast.AST) -> bool:
+        """
+        Check if a Call node accesses asyncio.Server.sockets.
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the node accesses server.sockets
+        """
+        if not isinstance(node, ast.Call):
+            return False
+
+        func = node.func
+        if isinstance(func, ast.Attribute):
+            # Check for .sockets() call
+            if func.attr == 'sockets':
+                # Check if it's called on something that might be a server
+                value = func.value
+                if isinstance(value, ast.Name):
+                    return value.id == 'server'
+                elif isinstance(value, ast.Attribute):
+                    return value.attr == 'server'
+
+        return False
+
+    def _raises_stopiteration(self, node: ast.AST) -> bool:
+        """
+        Check if a function raises StopIteration.
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the function raises StopIteration
+        """
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            return False
+
+        # Walk the function body to find raise statements
+        for child in ast.walk(node):
+            if isinstance(child, ast.Raise):
+                if child.exc is not None:
+                    # Check if it raises StopIteration
+                    if isinstance(child.exc, ast.Name):
+                        if child.exc.id == 'StopIteration':
+                            return True
+                    elif isinstance(child.exc, ast.Call):
+                        func = child.exc.func
+                        if isinstance(func, ast.Name):
+                            if func.id == 'StopIteration':
+                                return True
+
+        return False
+
+    def _is_not_awaited(self, node: ast.AST) -> bool:
+        """
+        Check if a Call node is not awaited.
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the call is not awaited
+        """
+        if not isinstance(node, ast.Call):
+            return False
+
+        # Check if this node is a child of an Await node
+        # This is a simplified check - a proper implementation would
+        # need to walk up the parent chain
+        return True
+
+    def _compares_socket_type(self, node: ast.AST) -> bool:
+        """
+        Check if a node compares socket.type.
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the node accesses socket.type
+        """
+        # Walk the node to find attribute access to 'type'
+        for child in ast.walk(node):
+            if isinstance(child, ast.Compare):
+                for comparator in child.comparators:
+                    if isinstance(comparator, ast.Attribute):
+                        if comparator.attr == 'type':
+                            return True
+
+        return False
+
+    def _depends_on_inherited_handles(self, node: ast.AST) -> bool:
+        """
+        Check if a function uses inherited handles.
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the function uses inherited handles
+        """
+        # This is a simplified check
+        # A full implementation would need to check for specific
+        # Windows API calls related to handle inheritance
+        return False
+
+    def _used_as_identifier(self, node: ast.AST) -> bool:
+        """
+        Check if a Name node is used as an identifier (variable/function name).
+
+        Args:
+            node: AST node
+
+        Returns:
+            True if the name is used as an identifier
+        """
+        if not isinstance(node, ast.Name):
+            return False
+
+        # A name is used as an identifier if it's in a position where
+        # a variable/parameter/function name would appear
+        # This is a simplified check - a full implementation would need
+        # to check the parent context
+        return True
+
     def _create_issue_from_rule(self, rule: Rule, node: ast.AST) -> Optional[Issue]:
         """
         Create an Issue object from a rule and matching AST node.
@@ -274,7 +788,7 @@ class RuleExecutor:
             references=rule.references
         )
 
-    def _get_code_snippet(self, line: int, column: int, context_lines: int = 3) -> str:
+    def _get_code_snippet(self, line: int, column: int, context_lines: int = 1) -> str:
         """
         Extract code snippet around a location.
 

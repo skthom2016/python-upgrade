@@ -1,23 +1,149 @@
 # Syntax changes when upgrading from Python 3.8 to 3.9+
 
-- id: "PY3820"
-  name: "Match statement not available"
-  category: "deprecation"
+- id: "PY38SC01"
+  name: "Dictionary merge operators (| and |=) available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    PEP 584 introduced merge (|) and update (|=) operators for dictionaries.
+    These operators are not available in Python 3.8.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "BinOp"
+  condition:
+    operator_is: "BitOr"
+    operands_are_dicts: true
+  message: |
+    Dictionary merge operators (| and |=) are not available in Python 3.8.
+    This code requires Python 3.9+.
+  suggestion: |
+    If you need to support Python 3.8, use dict() constructor or update():
+    {**d1, **d2} or d1.update(d2).
+  examples:
+    bad: |
+      # Python 3.8: TypeError
+      x = {"a": 1}
+      y = {"b": 2}
+      z = x | y  # SyntaxError in 3.8
+      x |= y     # SyntaxError in 3.8
+    good: |
+      # Python 3.8 compatible
+      x = {"a": 1}
+      y = {"b": 2}
+      z = {**x, **y}
+      x.update(y)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#dictionary-merge-update-operators"
+    - "https://www.python.org/dev/peps/pep-0584/"
+
+- id: "PY38SC02"
+  name: "Type hinting generics in standard collections available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    PEP 585 allows using built-in collection types (list, dict, set, etc.)
+    directly as generics in type hints, without importing from typing module.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Subscript"
+  condition:
+    subscripts_builtin_collection: true
+  message: |
+    Generic built-in collection types (list[str], dict[str, int], etc.)
+    are not available in Python 3.8. This code requires Python 3.9+.
+  suggestion: |
+    If you need to support Python 3.8, import from typing module:
+    from typing import List, Dict, Set, etc.
+  examples:
+    bad: |
+      # Python 3.8: TypeError
+      def greet_all(names: list[str]) -> None:
+          for name in names:
+              print("Hello", name)
+    good: |
+      # Python 3.8 compatible
+      from typing import List
+      def greet_all(names: List[str]) -> None:
+          for name in names:
+              print("Hello", name)
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#type-hinting-generics-in-standard-collections"
+    - "https://www.python.org/dev/peps/pep-0585/"
+
+- id: "PY38SC03"
+  name: "Relaxed decorator grammar available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "INFO"
+  source_version: "3.8"
+  target_version: "3.9"
+  description: |
+    PEP 614 relaxed grammar restrictions on decorators. Any valid expression
+    can now be used as a decorator, not just names, attribute access, and calls.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "FunctionDef"
+  condition:
+    has_complex_decorator_expression: true
+  message: |
+    Complex decorator expressions are not available in Python 3.8.
+    This code requires Python 3.9+.
+  suggestion: |
+    If you need to support Python 3.8, simplify decorator expressions or
+    use intermediate variables.
+  examples:
+    bad: |
+      # Python 3.8: SyntaxError
+      @buttons[0].clicked.connect
+      def spam():
+          pass
+
+      @[..., (...)][1]
+      def eggs():
+          pass
+    good: |
+      # Python 3.8 compatible
+      decorator = buttons[0].clicked.connect
+      @decorator
+      def spam():
+          pass
+  references:
+    - "https://docs.python.org/3/whatsnew/3.9.html#decorators"
+    - "https://www.python.org/dev/peps/pep-0614/"
+
+- id: "PY38SC04"
+  name: "Unparenthesized lambda in comprehension if clause prohibited"
+  category: "syntax_change"
   severity: "low"
   risk_level: "LOW"
   source_version: "3.8"
   target_version: "3.9"
   description: |
-    Structural pattern matching (match/case) is not available in Python 3.9.
-    It was introduced in Python 3.10.
+    Python 3.9 prohibits unparenthesized lambda expressions as the
+    expression part in an if clause in comprehensions and generator
+    expressions.
   detector: "SyntaxChangesDetector"
   pattern:
-    node_type: "Name"
-    attributes:
-      id: "PLACEHOLDER"
+    node_type: "Lambda"
+  condition:
+    in_comprehension_if_without_parens: true
   message: |
-    Pattern matching with match/case is not available until Python 3.10.
+    Unparenthesized lambda in comprehension if clause is a SyntaxError in
+    Python 3.9.
   suggestion: |
-    Upgrade to Python 3.10+ to use structural pattern matching.
+    Add parentheses around the lambda expression.
+  examples:
+    bad: |
+      # Python 3.9: SyntaxError
+      [x for x in range(10) if lambda: True]
+    good: |
+      # Python 3.9 compatible
+      [x for x in range(10) if (lambda: True)()]
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-634-structural-pattern-matching"
+    - "https://docs.python.org/3/whatsnew/3.9.html#other-language-changes"

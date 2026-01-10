@@ -1,15 +1,226 @@
 # Deprecated features when upgrading from Python 3.9 to 3.10+
 
-- id: "PY3910"
-  name: "xml.etree.ElementTree.getchildren() removed"
-  category: "breaking_change"
+- id: "PY39DF01"
+  name: "distutils module deprecated"
+  category: "deprecation"
   severity: "high"
   risk_level: "HIGH"
   source_version: "3.9"
-  target_version: "3.10"
+  target_version: "3.12"
   description: |
-    xml.etree.ElementTree.getchildren() and getiterator() were removed
-    in Python 3.9.
+    The entire distutils module is deprecated in Python 3.10 and will be
+    removed in Python 3.12. Use setuptools or packaging instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "regex:distutils.*"
+  message: |
+    The distutils module is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Migrate to setuptools for package building, or use 'packaging' for version parsing and other utilities.
+  examples:
+    bad: "from distutils.version import LooseVersion"
+    good: "from packaging.version import Version"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+    - "https://peps.python.org/pep-0632/"
+
+- id: "PY39DF02"
+  name: "asynchat module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    The asynchat module is deprecated and will be removed in Python 3.12.
+    Use asyncio instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "asynchat"
+  message: |
+    The asynchat module is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use asyncio for asynchronous programming.
+  examples:
+    bad: "import asynchat"
+    good: "import asyncio"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF03"
+  name: "asyncore module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    The asyncore module is deprecated and will be removed in Python 3.12.
+    Use asyncio instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "asyncore"
+  message: |
+    The asyncore module is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use asyncio for asynchronous programming.
+  examples:
+    bad: "import asyncore"
+    good: "import asyncio"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF04"
+  name: "smtpd module deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    The smtpd module is deprecated and will be removed in Python 3.12.
+    Use aiosmtpd (PyPI) instead.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "smtpd"
+  message: |
+    The smtpd module is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use the aiosmtpd package from PyPI for SMTP server functionality.
+  examples:
+    bad: "import smtpd"
+    good: "# pip install aiosmtpd\nimport aiosmtpd"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF05"
+  name: "Numeric literal followed by keyword"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    Numeric literals immediately followed by keywords emit DeprecationWarning
+    and will become SyntaxError in future versions.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Constant"
+    attributes:
+      value: "regex:^[0-9]"
+  message: |
+    Numeric literals immediately followed by keywords will become SyntaxError.
+  suggestion: |
+    Add whitespace between numeric literals and keywords: '0 in x' not '0in x'
+  examples:
+    bad: "0in x, 1or y, 0if 1else 2"
+    good: "0 in x, 1 or y, 0 if 1 else 2"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF06"
+  name: "importlib.abc.Finder deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    importlib.abc.Finder is deprecated. Use MetaPathFinder or PathEntryFinder.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "regex:importlib\\.abc"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "Finder"
+  message: |
+    importlib.abc.Finder is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Inherit from importlib.abc.MetaPathFinder or importlib.abc.PathEntryFinder instead.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF07"
+  name: "find_loader() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    find_loader() and find_module() methods are deprecated. Use find_spec() instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "regex:(find_loader|find_module)"
+  message: |
+    find_loader() and find_module() are deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use find_spec() instead for import system operations.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF08"
+  name: "load_module() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    load_module() is deprecated. Use exec_module() instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "load_module"
+  message: |
+    load_module() is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use exec_module() instead for loading modules.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF09"
+  name: "random.randrange() non-integer arguments"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.11"
+  description: |
+    Passing non-integer arguments to random.randrange() is deprecated.
   detector: "DeprecatedAPIsDetector"
   pattern:
     node_type: "Call"
@@ -18,11 +229,382 @@
         node_type: "Attribute"
         children:
           value:
-            node_type: "Call"
-          attr: "regex:(getchildren|getiterator)"
+            node_type: "Name"
+            attributes:
+              id: "random"
+          attr: "randrange"
   message: |
-    getchildren() and getiterator() were removed in Python 3.9.
+    Non-integer arguments to random.randrange() are deprecated.
   suggestion: |
-    Use list(element) instead of getchildren().
+    Convert arguments to integers: random.randrange(int(start), int(stop))
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF10"
+  name: "sqlite3.OptimizedUnicode deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    sqlite3.OptimizedUnicode is deprecated (obsolete alias to str).
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "sqlite3"
+      attr: "OptimizedUnicode"
+  message: |
+    sqlite3.OptimizedUnicode is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use str instead of sqlite3.OptimizedUnicode.
+  examples:
+    bad: "sqlite3.OptimizedUnicode"
+    good: "str"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF11"
+  name: "sqlite3.enable_shared_cache() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    sqlite3.enable_shared_cache() is deprecated. Use URI mode with cache=shared.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "sqlite3"
+          attr: "enable_shared_cache"
+  message: |
+    sqlite3.enable_shared_cache() is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use URI mode with cache=shared parameter instead.
+  examples:
+    bad: "sqlite3.enable_shared_cache(True)"
+    good: "sqlite3.connect('file:db.sqlite?cache=shared', uri=True)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF12"
+  name: "pathlib.Path.link_to() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    pathlib.Path.link_to() is deprecated. Use hardlink_to() instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "link_to"
+  message: |
+    pathlib.Path.link_to() is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use path.hardlink_to(target) instead of path.link_to(target).
+  examples:
+    bad: "path.link_to(target)"
+    good: "path.hardlink_to(target)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF13"
+  name: "cgi.log() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    cgi.log() is deprecated and will be removed in Python 3.12.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "cgi"
+          attr: "log"
+  message: |
+    cgi.log() is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use standard logging module instead.
+  examples:
+    bad: "cgi.log('message')"
+    good: "import logging; logging.info('message')"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF14"
+  name: "threading.currentThread() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    Old threading function names are deprecated. Use snake_case versions.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "threading"
+          attr: "regex:(currentThread|activeCount)"
+  message: |
+    Old threading function names are deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use snake_case versions: current_thread(), active_count()
+  examples:
+    bad: "threading.currentThread()"
+    good: "threading.current_thread()"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF15"
+  name: "threading.Thread old methods deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    Old threading.Thread method names are deprecated.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "regex:(setName|getName|isDaemon|setDaemon)"
+  message: |
+    Old threading.Thread methods are deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use properties: thread.name, thread.daemon instead of getter/setter methods.
+  examples:
+    bad: "thread.getName(), thread.setDaemon(True)"
+    good: "thread.name, thread.daemon = True"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF16"
+  name: "threading.Condition.notifyAll() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    threading.Condition.notifyAll() is deprecated. Use notify_all().
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "notifyAll"
+  message: |
+    threading.Condition.notifyAll() is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use condition.notify_all() instead.
+  examples:
+    bad: "condition.notifyAll()"
+    good: "condition.notify_all()"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF17"
+  name: "threading.Event.isSet() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    threading.Event.isSet() is deprecated. Use is_set().
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "isSet"
+  message: |
+    threading.Event.isSet() is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use event.is_set() instead.
+  examples:
+    bad: "event.isSet()"
+    good: "event.is_set()"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF18"
+  name: "ssl old protocol constants deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.11"
+  description: |
+    Old SSL protocol constants are deprecated. Use minimum_version and maximum_version.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "ssl"
+      attr: "regex:(OP_NO_SSLv2|OP_NO_SSLv3|OP_NO_TLSv1|OP_NO_TLSv1_1|PROTOCOL_SSLv2|PROTOCOL_SSLv3|PROTOCOL_SSLv23|PROTOCOL_TLSv1|PROTOCOL_TLSv1_1|PROTOCOL_TLSv1_2|PROTOCOL_TLS)"
+  message: |
+    Old SSL protocol constants are deprecated and will be removed in Python 3.11.
+  suggestion: |
+    Use context.minimum_version and context.maximum_version instead.
+  examples:
+    bad: "ssl.PROTOCOL_TLSv1"
+    good: "context.minimum_version = ssl.TLSVersion.TLSv1_2"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF19"
+  name: "ssl.wrap_socket() deprecated"
+  category: "deprecation"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.9"
+  target_version: "3.11"
+  description: |
+    ssl.wrap_socket() is deprecated. Use SSLContext.wrap_socket().
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "ssl"
+          attr: "wrap_socket"
+  message: |
+    ssl.wrap_socket() is deprecated and will be removed in Python 3.11.
+  suggestion: |
+    Use SSLContext.wrap_socket() instead.
+  examples:
+    bad: "ssl.wrap_socket(sock)"
+    good: "context = ssl.create_default_context()\ncontext.wrap_socket(sock)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF20"
+  name: "typing.io and typing.re deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.9"
+  target_version: "3.13"
+  description: |
+    Importing from typing.io and typing.re submodules is deprecated.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "regex:typing\\.(io|re)"
+  message: |
+    Importing from typing.io and typing.re is deprecated.
+  suggestion: |
+    Import directly from the typing module instead.
+  examples:
+    bad: "from typing.io import IO"
+    good: "from typing import IO"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF21"
+  name: "zipimport.zipimporter.load_module() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    zipimport.zipimporter.load_module() is deprecated. Use exec_module().
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Attribute"
+            children:
+              value:
+                node_type: "Name"
+                attributes:
+                  id: "zipimport"
+              attr: "zipimporter"
+          attr: "load_module"
+  message: |
+    zipimport.zipimporter.load_module() is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use exec_module() instead.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+
+- id: "PY39DF22"
+  name: "code.co_lnotab deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.9"
+  target_version: "3.12"
+  description: |
+    code.co_lnotab is deprecated. Use code.co_lines() method instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    attributes:
+      attr: "co_lnotab"
+  message: |
+    code.co_lnotab is deprecated and will be removed in Python 3.12.
+  suggestion: |
+    Use code.co_lines() method instead for line number information.
+  examples:
+    bad: "code.co_lnotab"
+    good: "list(code.co_lines())"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.10.html#deprecated"
+    - "https://peps.python.org/pep-0626/"

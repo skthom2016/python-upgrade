@@ -1,4 +1,817 @@
 # Deprecated features when upgrading from Python 3.11 to 3.12+
-# No significant deprecations detected for this version upgrade path
-[]
 
+# Pending Removal in Python 3.13 (PEP 594 modules)
+
+- id: "PY311DF01"
+  name: "datetime.utcnow() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    datetime.utcnow() is deprecated in Python 3.12 and will be removed in 3.15.
+    Use timezone-aware datetime instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "datetime"
+          attr: "utcnow"
+  message: |
+    datetime.utcnow() is deprecated in Python 3.12 and will be removed in 3.15.
+  suggestion: |
+    Use datetime.now(tz=datetime.UTC) instead for timezone-aware datetime.
+  examples:
+    bad: "now = datetime.utcnow()"
+    good: "now = datetime.now(tz=datetime.UTC)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF02"
+  name: "datetime.utcfromtimestamp() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    datetime.utcfromtimestamp() is deprecated in Python 3.12 and will be removed in 3.15.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "datetime"
+          attr: "utcfromtimestamp"
+  message: |
+    datetime.utcfromtimestamp() is deprecated in Python 3.12 and will be removed in 3.15.
+  suggestion: |
+    Use datetime.fromtimestamp(timestamp, tz=datetime.UTC) instead.
+  examples:
+    bad: "dt = datetime.utcfromtimestamp(timestamp)"
+    good: "dt = datetime.fromtimestamp(timestamp, tz=datetime.UTC)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF03"
+  name: "ast deprecated node classes"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    ast.Num, ast.Str, ast.Bytes, ast.NameConstant, and ast.Ellipsis are
+    deprecated since Python 3.8 and will be removed in 3.14.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "ast"
+      attr: "regex:(Num|Str|Bytes|NameConstant|Ellipsis)"
+  message: |
+    ast node classes Num, Str, Bytes, NameConstant, Ellipsis are deprecated and will be removed in 3.14.
+  suggestion: |
+    Use ast.Constant instead for all constant values.
+  examples:
+    bad: "node = ast.Num(n=42)"
+    good: "node = ast.Constant(value=42)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF04"
+  name: "asyncio.get_event_loop() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    asyncio.get_event_loop() now emits DeprecationWarning when creating a new
+    event loop implicitly. Will be removed in Python 3.14.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "get_event_loop"
+  message: |
+    asyncio.get_event_loop() is deprecated when creating new event loop implicitly.
+  suggestion: |
+    Use asyncio.new_event_loop() explicitly, or use asyncio.run() for simple cases.
+  examples:
+    bad: "loop = asyncio.get_event_loop()"
+    good: "loop = asyncio.new_event_loop()\nasyncio.set_event_loop(loop)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF05"
+  name: "asyncio child watcher classes deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    asyncio child watcher classes (MultiLoopChildWatcher, FastChildWatcher,
+    AbstractChildWatcher, SafeChildWatcher) are deprecated and will be removed in 3.14.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "asyncio"
+      attr: "regex:(MultiLoopChildWatcher|FastChildWatcher|AbstractChildWatcher|SafeChildWatcher)"
+  message: |
+    asyncio child watcher classes are deprecated and will be removed in Python 3.14.
+  suggestion: |
+    Use PidfdChildWatcher (default on Linux) or remove custom child watcher setup.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF06"
+  name: "asyncio get/set_child_watcher deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    asyncio.get_child_watcher() and set_child_watcher() are deprecated
+    and will be removed in Python 3.14.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "regex:(get_child_watcher|set_child_watcher)"
+  message: |
+    asyncio child watcher functions are deprecated and will be removed in Python 3.14.
+  suggestion: |
+    Remove custom child watcher setup. Default PidfdChildWatcher is used on Linux.
+  examples:
+    bad: "asyncio.set_child_watcher(watcher)"
+    good: "# Remove custom watcher setup"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF07"
+  name: "sys.last_type and sys.last_value deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sys.last_type, sys.last_value, and sys.last_traceback are deprecated in
+    Python 3.12. Use sys.last_exc instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "sys"
+      attr: "regex:(last_type|last_value|last_traceback)"
+  message: |
+    sys.last_type, sys.last_value, sys.last_traceback are deprecated. Use sys.last_exc instead.
+  suggestion: |
+    Replace sys.last_type, sys.last_value, sys.last_traceback with sys.last_exc.
+  examples:
+    bad: "exc_type = sys.last_type\nexc_value = sys.last_value"
+    good: "exc = sys.last_exc"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF08"
+  name: "sqlite3 named placeholders with sequences deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Using named placeholders with sequence parameters in sqlite3 is deprecated
+    and will be removed in Python 3.14.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "execute"
+  message: |
+    Using named placeholders with sequence parameters in sqlite3 is deprecated.
+  suggestion: |
+    Use dictionary parameters for named placeholders: execute(sql, {'name': value}).
+  examples:
+    bad: "cursor.execute('SELECT * FROM users WHERE name = :name', ('Alice',))"
+    good: "cursor.execute('SELECT * FROM users WHERE name = :name', {'name': 'Alice'})"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF09"
+  name: "shutil.rmtree onerror parameter deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    shutil.rmtree() onerror parameter is deprecated and will be removed in 3.14.
+    Use onexc parameter instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "shutil"
+          attr: "rmtree"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "onerror"
+  message: |
+    shutil.rmtree() onerror parameter is deprecated. Use onexc instead.
+  suggestion: |
+    Replace onerror with onexc. Note: onexc receives exception instance, not (type, value, tb).
+  examples:
+    bad: "shutil.rmtree(path, onerror=error_handler)"
+    good: "shutil.rmtree(path, onexc=error_handler)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF10"
+  name: "typing.Hashable deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    typing.Hashable is deprecated in Python 3.12 and will be removed in 3.14.
+    It's an alias for collections.abc.Hashable.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "typing"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "Hashable"
+  message: |
+    typing.Hashable is deprecated. Use collections.abc.Hashable instead.
+  suggestion: |
+    Import from collections.abc: from collections.abc import Hashable
+  examples:
+    bad: "from typing import Hashable"
+    good: "from collections.abc import Hashable"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF11"
+  name: "typing.Sized deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    typing.Sized is deprecated in Python 3.12 and will be removed in 3.14.
+    It's an alias for collections.abc.Sized.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "typing"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "Sized"
+  message: |
+    typing.Sized is deprecated. Use collections.abc.Sized instead.
+  suggestion: |
+    Import from collections.abc: from collections.abc import Sized
+  examples:
+    bad: "from typing import Sized"
+    good: "from collections.abc import Sized"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF12"
+  name: "typing.ByteString deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    typing.ByteString is deprecated in Python 3.12 and will be removed in 3.14.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "typing"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "ByteString"
+  message: |
+    typing.ByteString is deprecated and will be removed in Python 3.14.
+  suggestion: |
+    Use collections.abc.Buffer or union types like bytes | bytearray | memoryview.
+  examples:
+    bad: "from typing import ByteString"
+    good: "from collections.abc import Buffer  # or use: bytes | bytearray | memoryview"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF13"
+  name: "locale.getdefaultlocale() deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    locale.getdefaultlocale() is deprecated and will be removed in Python 3.15.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "locale"
+          attr: "getdefaultlocale"
+  message: |
+    locale.getdefaultlocale() is deprecated and will be removed in Python 3.15.
+  suggestion: |
+    Use locale.getlocale(), locale.setlocale(), or locale.getencoding() instead.
+  examples:
+    bad: "lang, encoding = locale.getdefaultlocale()"
+    good: "encoding = locale.getencoding()"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF14"
+  name: "pathlib.PurePath.is_reserved() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    pathlib.PurePath.is_reserved() is deprecated and will be removed in Python 3.15.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "is_reserved"
+  message: |
+    pathlib.PurePath.is_reserved() is deprecated and will be removed in Python 3.15.
+  suggestion: |
+    On Windows, use os.path.isreserved() instead.
+  examples:
+    bad: "if path.is_reserved(): ..."
+    good: "import os.path\nif os.path.isreserved(path): ..."
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF15"
+  name: "typing.no_type_check_decorator() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    typing.no_type_check_decorator() is deprecated and will be removed in Python 3.15.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "typing"
+          attr: "no_type_check_decorator"
+  message: |
+    typing.no_type_check_decorator() is deprecated and will be removed in Python 3.15.
+  suggestion: |
+    Use @typing.no_type_check directly instead.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF16"
+  name: "asyncio.iscoroutinefunction() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    asyncio.iscoroutinefunction() is deprecated and will be removed in Python 3.16.
+    Use inspect.iscoroutinefunction() instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "iscoroutinefunction"
+  message: |
+    asyncio.iscoroutinefunction() is deprecated. Use inspect.iscoroutinefunction() instead.
+  suggestion: |
+    Replace asyncio.iscoroutinefunction() with inspect.iscoroutinefunction().
+  examples:
+    bad: "import asyncio\nif asyncio.iscoroutinefunction(func): ..."
+    good: "import inspect\nif inspect.iscoroutinefunction(func): ..."
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF17"
+  name: "asyncio event loop policy deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    asyncio event loop policy system is deprecated and will be removed in Python 3.16.
+    This includes get_event_loop_policy() and set_event_loop_policy().
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio"
+          attr: "regex:(get_event_loop_policy|set_event_loop_policy)"
+  message: |
+    asyncio event loop policy system is deprecated and will be removed in Python 3.16.
+  suggestion: |
+    Remove policy management code. Use default event loop behavior.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF18"
+  name: "Bitwise inversion on bool deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Bitwise inversion on bool (~True, ~False) is deprecated and will be
+    removed in Python 3.16.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "UnaryOp"
+    children:
+      op:
+        node_type: "Invert"
+      operand:
+        node_type: "Constant"
+        attributes:
+          value: "regex:(True|False)"
+  message: |
+    Bitwise inversion on bool (~True, ~False) is deprecated and will be removed in Python 3.16.
+  suggestion: |
+    Use 'not' operator or convert to int: not x or ~int(x)
+  examples:
+    bad: "result = ~True"
+    good: "result = not True  # or ~int(True)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF19"
+  name: "collections.abc.ByteString deprecated"
+  category: "deprecation"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    collections.abc.ByteString is deprecated and will be removed in Python 3.17.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "collections.abc"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "ByteString"
+  message: |
+    collections.abc.ByteString is deprecated and will be removed in Python 3.17.
+  suggestion: |
+    Use collections.abc.Buffer or union types like bytes | bytearray | memoryview.
+  examples:
+    bad: "from collections.abc import ByteString"
+    good: "from collections.abc import Buffer  # or use: bytes | bytearray | memoryview"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF20"
+  name: "configparser.LegacyInterpolation deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    configparser.LegacyInterpolation is deprecated and will be removed in Python 3.13.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "configparser"
+      attr: "LegacyInterpolation"
+  message: |
+    configparser.LegacyInterpolation is deprecated and will be removed in Python 3.13.
+  suggestion: |
+    Use BasicInterpolation or ExtendedInterpolation instead.
+  examples:
+    bad: "config = ConfigParser(interpolation=LegacyInterpolation())"
+    good: "config = ConfigParser(interpolation=BasicInterpolation())"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF21"
+  name: "locale.resetlocale() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    locale.resetlocale() is deprecated and will be removed in Python 3.13.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "locale"
+          attr: "resetlocale"
+  message: |
+    locale.resetlocale() is deprecated and will be removed in Python 3.13.
+  suggestion: |
+    Use locale.setlocale(locale.LC_ALL, '') instead.
+  examples:
+    bad: "locale.resetlocale()"
+    good: "locale.setlocale(locale.LC_ALL, '')"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF22"
+  name: "unittest find functions deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    unittest.findTestCases(), getTestCaseNames(), and makeSuite() are deprecated
+    and will be removed in Python 3.13.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "unittest"
+          attr: "regex:(findTestCases|getTestCaseNames|makeSuite)"
+  message: |
+    unittest.findTestCases(), getTestCaseNames(), makeSuite() are deprecated.
+  suggestion: |
+    Use TestLoader methods instead: TestLoader().loadTestsFromModule().
+  examples:
+    bad: "suite = unittest.findTestCases(module)"
+    good: "suite = unittest.TestLoader().loadTestsFromModule(module)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF23"
+  name: "webbrowser.MacOSX deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    webbrowser.MacOSX class is deprecated and will be removed in Python 3.13.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "webbrowser"
+      attr: "MacOSX"
+  message: |
+    webbrowser.MacOSX is deprecated and will be removed in Python 3.13.
+  suggestion: |
+    Use webbrowser.MacOSXOSAScript instead.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF24"
+  name: "calendar deprecated constants"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    calendar.January and other month/day constants are deprecated.
+    Use calendar.Month and calendar.Day enums instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "calendar"
+      attr: "regex:(January|February|March|April|May|June|July|August|September|October|November|December|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)"
+  message: |
+    calendar month/day constants are deprecated. Use calendar.Month and calendar.Day enums.
+  suggestion: |
+    Replace calendar.January with calendar.Month.JANUARY, etc.
+  examples:
+    bad: "month = calendar.January"
+    good: "month = calendar.Month.JANUARY"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#calendar"
+
+- id: "PY311DF25"
+  name: "codecs.open() deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    codecs.open() is soft-deprecated. Use builtin open() instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "codecs"
+          attr: "open"
+  message: |
+    codecs.open() is soft-deprecated. Use builtin open() with encoding parameter.
+  suggestion: |
+    Replace codecs.open() with open(file, encoding='utf-8').
+  examples:
+    bad: "import codecs\nf = codecs.open('file.txt', 'r', 'utf-8')"
+    good: "f = open('file.txt', 'r', encoding='utf-8')"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF26"
+  name: "http.server.CGIHTTPRequestHandler deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    http.server.CGIHTTPRequestHandler is soft-deprecated.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "http"
+          attr: "server"
+      attr: "CGIHTTPRequestHandler"
+  message: |
+    http.server.CGIHTTPRequestHandler is soft-deprecated.
+  suggestion: |
+    Use modern web frameworks like FastAPI, Flask, or Django instead of CGI.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"
+
+- id: "PY311DF27"
+  name: "email.utils.localtime isdst parameter deprecated"
+  category: "deprecation"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    email.utils.localtime() isdst parameter is deprecated.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Attribute"
+            children:
+              value:
+                node_type: "Name"
+                attributes:
+                  id: "email"
+              attr: "utils"
+          attr: "localtime"
+      keywords:
+        - node_type: "keyword"
+          attributes:
+            arg: "isdst"
+  message: |
+    email.utils.localtime() isdst parameter is deprecated.
+  suggestion: |
+    Remove the isdst parameter from localtime() calls.
+  examples:
+    bad: "t = email.utils.localtime(timestamp, isdst=-1)"
+    good: "t = email.utils.localtime(timestamp)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#deprecated"

@@ -1,7 +1,7 @@
 # Breaking changes when upgrading from Python 3.6 to 3.7+
 # These changes will cause code to break or behave differently
 
-- id: "PY3601"
+- id: "PY36BC01"
   name: "async and await become reserved keywords"
   category: "breaking_change"
   severity: "high"
@@ -34,7 +34,7 @@
     - "https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep492"
     - "https://peps.python.org/pep-0492/"
 
-- id: "PY3602"
+- id: "PY36BC02"
   name: "@asyncio.coroutine decorator deprecated"
   category: "breaking_change"
   severity: "medium"
@@ -67,7 +67,7 @@
     - "https://docs.python.org/3/library/asyncio-task.html#asyncio.coroutine"
     - "https://docs.python.org/3/whatsnew/3.11.html#removed"
 
-- id: "PY3603"
+- id: "PY36BC03"
   name: "asyncio.sleep() loop parameter removed"
   category: "breaking_change"
   severity: "medium"
@@ -101,3 +101,531 @@
   references:
     - "https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep"
     - "https://docs.python.org/3/whatsnew/3.10.html#removed"
+
+- id: "PY36BC04"
+  name: "PEP 479: StopIteration becomes RuntimeError in coroutines"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    PEP 479 is enabled for all code in Python 3.7. StopIteration exceptions
+    raised directly or indirectly in coroutines and generators are transformed
+    into RuntimeError exceptions.
+  detector: "AsyncChangesDetector"
+  pattern:
+    node_type: "FunctionDef"
+  condition:
+    is_async_function: true
+    raises_stopiteration: true
+  message: |
+    Raising StopIteration in coroutines is transformed to RuntimeError in
+    Python 3.7+. Use 'return' to signal the end of iteration instead.
+  suggestion: |
+    Replace 'raise StopIteration' with 'return' in coroutines and generators.
+    For generators, use 'return value' instead of 'raise StopIteration(value)'.
+  examples:
+    bad: |
+      async def my_coroutine():
+          raise StopIteration
+    good: |
+      async def my_coroutine():
+          return
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep479"
+    - "https://peps.python.org/pep-0479/"
+
+- id: "PY36BC05"
+  name: "Generator expressions require parentheses"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Due to an oversight, earlier Python versions erroneously accepted syntax
+    like 'f(1 for x in [1],)' and 'class C(1 for x in [1]):'. Python 3.7
+    now correctly raises a SyntaxError.
+  detector: "SyntaxErrorDetector"
+  pattern:
+    node_type: "GeneratorExp"
+  condition:
+    missing_parentheses_in_call_or_class
+  message: |
+    Generator expressions must be directly inside a set of parentheses and
+    cannot have a comma on either side in function calls or class definitions.
+  suggestion: |
+    Add parentheses around the generator expression: 'f((1 for x in [1]))'
+    or use a list comprehension instead.
+  examples:
+    bad: |
+      f(1 for x in [1],)
+      class C(1 for x in [1]):
+          pass
+    good: |
+      f((1 for x in [1]))
+      f([x for x in [1]])
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#other-language-changes"
+
+- id: "PY36BC06"
+  name: "async __aiter__ methods prohibited"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    object.__aiter__() methods can no longer be declared as asynchronous.
+    This was an oversight in the original implementation.
+  detector: "AsyncChangesDetector"
+  pattern:
+    node_type: "FunctionDef"
+  condition:
+    is_async: true
+    function_name: "__aiter__"
+  message: |
+    __aiter__() methods cannot be declared as async in Python 3.7+.
+    Use a synchronous __aiter__() that returns an asynchronous iterator.
+  suggestion: |
+    Remove 'async' from the __aiter__ method definition and return an
+    asynchronous iterator directly.
+  examples:
+    bad: |
+      class AsyncIterator:
+          async def __aiter__(self):
+              return self
+    good: |
+      class AsyncIterator:
+          def __aiter__(self):
+              return self
+          async def __anext__(self):
+              return value
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#other-language-changes"
+    - "https://bugs.python.org/issue31709"
+
+- id: "PY36BC07"
+  name: "os.stat_float_times() removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    The os.stat_float_times() function has been removed. It was introduced in
+    Python 2.3 for backward compatibility and was deprecated since Python 3.1.
+    Since Python 3.1, os.stat() has always returned floats.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "os"
+          attr: "stat_float_times"
+  message: |
+    os.stat_float_times() was removed in Python 3.7. os.stat() now always
+    returns timestamps as floats.
+  suggestion: |
+    Remove calls to os.stat_float_times(). os.stat() already returns float
+    timestamps by default since Python 3.1.
+  examples:
+    bad: |
+      os.stat_float_times(True)
+      mtime = os.stat(path).st_mtime
+    good: |
+      mtime = os.stat(path).st_mtime  # Always a float
+  references:
+    - "https://docs.python.org/3/library/os.html#os.stat_float_times"
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC08"
+  name: "Unknown escapes in re.sub() replacement templates now error"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Unknown escapes consisting of '\' and an ASCII letter in replacement
+    templates for re.sub() were deprecated in Python 3.5 and now raise an error.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "re"
+          attr: "sub"
+  condition:
+    has_unknown_escape_in_replacement
+  message: |
+    Unknown backslash escapes in re.sub() replacement strings now raise an
+    error in Python 3.7+. Use raw strings or double backslashes.
+  suggestion: |
+    Use raw strings (r'...') for replacement patterns or double the backslashes
+    for literal backslashes.
+  examples:
+    bad: |
+      re.sub(pattern, '\g<0>\n', text)  # \n is unknown in replacement
+    good: |
+      re.sub(pattern, r'\g<0>\n', text)  # Raw string for actual newline
+      re.sub(pattern, '\\g<0>\\n', text)  # Double backslash
+  references:
+    - "https://docs.python.org/3/library/re.html#re.sub"
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC09"
+  name: "ntpath.splitunc() removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    The ntpath.splitunc() function was deprecated in Python 3.1 and has now
+    been removed. Use os.path.splitdrive() instead.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "ntpath"
+          attr: "splitunc"
+  message: |
+    ntpath.splitunc() was removed in Python 3.7. Use os.path.splitdrive()
+    instead.
+  suggestion: |
+    Replace ntpath.splitunc(path) with os.path.splitdrive(path).
+  examples:
+    bad: |
+      drive, path = ntpath.splitunc(path)
+    good: |
+      drive, path = os.path.splitdrive(path)
+  references:
+    - "https://docs.python.org/3/library/os.path.html#os.path.splitdrive"
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC10"
+  name: "collections.namedtuple() verbose parameter removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    collections.namedtuple() no longer supports the verbose parameter or
+    _source attribute which showed the generated source code. This was part
+    of an optimization to speed-up class creation.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "collections"
+          attr: "namedtuple"
+  condition:
+    has_kwarg: "verbose"
+  message: |
+    The 'verbose' parameter of collections.namedtuple() was removed in
+    Python 3.7. The _source attribute is also no longer available.
+  suggestion: |
+    Remove the 'verbose' parameter from collections.namedtuple() calls.
+    Use inspect.getsource() on the class to view the generated code.
+  examples:
+    bad: |
+      Point = collections.namedtuple('Point', ['x', 'y'], verbose=True)
+      print(Point._source)
+    good: |
+      Point = collections.namedtuple('Point', ['x', 'y'])
+      import inspect
+      print(inspect.getsource(Point))
+  references:
+    - "https://docs.python.org/3/library/collections.html#collections.namedtuple"
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC11"
+  name: "float(), list(), tuple() keyword arguments removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Functions bool(), float(), list() and tuple() no longer take keyword
+    arguments. This is part of making built-in functions more consistent.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_name: "regex:(bool|float|list|tuple)"
+    has_keyword_args: true
+  message: |
+    bool(), float(), list(), and tuple() no longer accept keyword arguments
+    in Python 3.7+. Use positional arguments only.
+  suggestion: |
+    Replace keyword arguments with positional arguments.
+  examples:
+    bad: |
+      items = list(iterable=[1, 2, 3])
+      coords = tuple(x=1, y=2)
+    good: |
+      items = list([1, 2, 3])
+      coords = tuple((1, 2))
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC12"
+  name: "int() first argument as keyword removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    The first argument of int() can now only be passed as a positional
+    argument, not as a keyword argument.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "int"
+  condition:
+    first_arg_is_keyword: true
+  message: |
+    The first argument of int() cannot be passed as a keyword argument in
+    Python 3.7+.
+  suggestion: |
+    Pass the first argument to int() as a positional argument.
+  examples:
+    bad: |
+      value = int(x="123")
+  good: |
+      value = int("123")
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC13"
+  name: "plistlib.Plist, Dict, _InternalDict removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    The previously deprecated in Python 2.4 classes Plist, Dict and
+    _InternalDict in the plistlib module have been removed. Dict values in
+    the result of readPlist() and readPlistFromBytes() are now normal dicts.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(plistlib.Plist|plistlib.Dict|plistlib._InternalDict)"
+  message: |
+    plistlib.Plist, Dict, and _InternalDict classes were removed in
+    Python 3.7. Attribute access is no longer supported.
+  suggestion: |
+    Use dict key access instead of attribute access for plist data.
+  examples:
+    bad: |
+      from plistlib import Plist, Dict
+      plist = Plist()
+      data = Dict()
+      value = data.key  # Attribute access
+    good: |
+      import plistlib
+      data = plistlib.load(path)
+      value = data['key']  # Dictionary access
+  references:
+    - "https://docs.python.org/3/library/plistlib.html"
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC14"
+  name: "asyncio.windows_utils.socketpair() removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    The asyncio.windows_utils.socketpair() function has been removed. Use
+    socket.socketpair() instead, which is available on all platforms since
+    Python 3.5.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "asyncio.windows_utils"
+          attr: "socketpair"
+  message: |
+    asyncio.windows_utils.socketpair() was removed in Python 3.7.
+    Use socket.socketpair() instead.
+  suggestion: |
+    Replace asyncio.windows_utils.socketpair() with socket.socketpair().
+  examples:
+    bad: |
+      from asyncio.windows_utils import socketpair
+      sock1, sock2 = socketpair()
+    good: |
+      import socket
+      sock1, sock2 = socket.socketpair()
+  references:
+    - "https://docs.python.org/3/library/socket.html#socket.socketpair"
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC15"
+  name: "asyncio.selectors and asyncio._overlapped no longer exported"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    asyncio no longer exports the selectors and _overlapped modules as
+    asyncio.selectors and asyncio._overlapped.
+  detector: "ImportChangesDetector"
+  pattern:
+    node_type: "ImportFrom"
+    children:
+      module:
+        node_type: "str"
+        value: "asyncio"
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "regex:(selectors|_overlapped)"
+  message: |
+    asyncio.selectors and asyncio._overlapped are no longer exported in
+    Python 3.7+. Import these modules directly instead.
+  suggestion: |
+    Replace 'from asyncio import selectors' with 'import selectors'.
+  examples:
+    bad: |
+      from asyncio import selectors
+      from asyncio import _overlapped
+    good: |
+      import selectors
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC16"
+  name: "Direct instantiation of ssl.SSLSocket and ssl.SSLObject prohibited"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    Direct instantiation of ssl.SSLSocket and ssl.SSLObject is now
+    prohibited. The constructors were never documented, tested, or designed
+    as public constructors.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+  condition:
+    func_is: "regex:(ssl.SSLSocket|ssl.SSLObject)"
+  message: |
+    Direct instantiation of ssl.SSLSocket and ssl.SSLObject is prohibited
+    in Python 3.7+. Use SSLContext methods instead.
+  suggestion: |
+    Use ssl.SSLContext.wrap_socket() or ssl.SSLContext.wrap_bio() to create
+    SSL sockets and objects.
+  examples:
+    bad: |
+      import ssl
+      ssl_sock = ssl.SSLSocket(sock)
+  good: |
+      import ssl
+      context = ssl.create_default_context()
+      ssl_sock = context.wrap_socket(sock)
+  references:
+    - "https://docs.python.org/3/library/ssl.html#ssl.SSLContext.wrap_socket"
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+    - "https://bugs.python.org/issue32951"
+
+- id: "PY36BC17"
+  name: "distutils install_misc command removed"
+  category: "breaking_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    The unused distutils install_misc command has been removed.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Str"
+  condition:
+    contains: "install_misc"
+  message: |
+    The distutils install_misc command was removed in Python 3.7.
+  suggestion: |
+    Remove any usage of the install_misc command from setup scripts.
+  examples:
+    bad: |
+      # In setup.py or setup.cfg
+      cmdclass={'install_misc': ...}
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#api-and-feature-removals"
+
+- id: "PY36BC18"
+  name: "fpectl module removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.6"
+  target_version: "3.7"
+  description: |
+    The fpectl module has been removed. It was never enabled by default,
+    never worked correctly on x86-64, and it changed the Python ABI in ways
+    that caused unexpected breakage of C extensions.
+  detector: "ImportChangesDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "fpectl"
+  message: |
+    The fpectl module was removed in Python 3.7.
+  suggestion: |
+    Remove any imports or usage of the fpectl module.
+  examples:
+    bad: |
+      import fpectl
+      fpectl.enable()
+  good: |
+      # Remove fpectl usage - module no longer available
+  references:
+    - "https://docs.python.org/3/whatsnew/3.7.html#module-removals"
+    - "https://bugs.python.org/issue29137"

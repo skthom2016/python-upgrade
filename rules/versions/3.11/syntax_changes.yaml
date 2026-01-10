@@ -1,24 +1,499 @@
 # Syntax changes when upgrading from Python 3.11 to 3.12+
 
-- id: "PY3120"
-  name: "Type parameter syntax not available"
-  category: "deprecation"
+- id: "PY311SC01"
+  name: "Type parameter syntax available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 695 introduces new type parameter syntax in Python 3.12.
+    Functions, classes, and type aliases can declare type parameters using [].
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "TypeParams"
+  message: |
+    Type parameter syntax (PEP 695) is not available in Python 3.11.
+  suggestion: |
+    This code requires Python 3.12+. For Python 3.11, use TypeVar/ParamSpec/TypeVarTuple.
+  examples:
+    bad: "def max[T](items: list[T]) -> T: ..."
+    good: "from typing import TypeVar\nT = TypeVar('T')\ndef max(items: list[T]) -> T: ..."
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-695-type-parameter-syntax"
+    - "https://peps.python.org/pep-0695/"
+
+- id: "PY311SC02"
+  name: "Type alias statement available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 695 introduces the 'type' statement for declaring type aliases in Python 3.12.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "TypeAlias"
+  message: |
+    Type alias statement (type X = ...) is not available in Python 3.11.
+  suggestion: |
+    For Python 3.11, use TypeAlias annotation: X: TypeAlias = ...
+  examples:
+    bad: "type Point = tuple[float, float]"
+    good: "from typing import TypeAlias\nPoint: TypeAlias = tuple[float, float]"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-695-type-parameter-syntax"
+    - "https://peps.python.org/pep-0695/"
+
+- id: "PY311SC03"
+  name: "F-string quote reuse available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 701 allows reusing the same quote type in f-string expressions
+    in Python 3.12. Previously this caused SyntaxError.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "JoinedStr"
+  message: |
+    F-string quote reuse (PEP 701) is not available in Python 3.11.
+  suggestion: |
+    For Python 3.11, escape quotes in f-string expressions or use different quote types.
+  examples:
+    bad: "f\"Value: {\", \".join(items)}\""
+    good: "f\"Value: {', '.join(items)}\"  # Use different quotes"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-701-syntactic-formalization-of-f-strings"
+    - "https://peps.python.org/pep-0701/"
+
+- id: "PY311SC04"
+  name: "F-string backslashes available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 701 allows backslashes in f-string expressions in Python 3.12.
+    Previously backslashes were not allowed.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "JoinedStr"
+  message: |
+    Backslashes in f-string expressions (PEP 701) are not available in Python 3.11.
+  suggestion: |
+    For Python 3.11, assign the value to a variable before using in f-string.
+  examples:
+    bad: "f\"Path: {\"\\n\".join(lines)}\""
+    good: "sep = \"\\n\"\nf\"Path: {sep.join(lines)}\""
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-701-syntactic-formalization-of-f-strings"
+    - "https://peps.python.org/pep-0701/"
+
+- id: "PY311SC05"
+  name: "F-string multi-line expressions available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 701 allows multi-line expressions and comments in f-strings in Python 3.12.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "JoinedStr"
+  message: |
+    Multi-line f-string expressions (PEP 701) are not available in Python 3.11.
+  suggestion: |
+    For Python 3.11, keep f-string expressions on a single line.
+  examples:
+    bad: |
+      f"Sum: {
+          x +
+          y
+      }"
+    good: "f\"Sum: {x + y}\""
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-701-syntactic-formalization-of-f-strings"
+    - "https://peps.python.org/pep-0701/"
+
+- id: "PY311SC06"
+  name: "F-string arbitrary nesting available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 701 allows arbitrary nesting depth for f-strings in Python 3.12.
+    Python 3.11 has a limit on nesting depth.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "JoinedStr"
+  message: |
+    Arbitrary f-string nesting (PEP 701) may not work in Python 3.11.
+  suggestion: |
+    For Python 3.11, limit f-string nesting depth or use string concatenation.
+  examples:
+    bad: "f\"{f\"{f\"{f\"{x}\"}\"}\"}\""
+    good: "str(x)  # Or limit nesting depth"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-701-syntactic-formalization-of-f-strings"
+    - "https://peps.python.org/pep-0701/"
+
+- id: "PY311SC07"
+  name: "TypedDict Unpack for kwargs available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 692 allows using TypedDict with Unpack for **kwargs type hints in Python 3.12.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "FunctionDef"
+    children:
+      args:
+        node_type: "arguments"
+        children:
+          kwarg:
+            node_type: "arg"
+            children:
+              annotation:
+                node_type: "Subscript"
+                children:
+                  value:
+                    node_type: "Name"
+                    attributes:
+                      id: "Unpack"
+  message: |
+    TypedDict Unpack for **kwargs (PEP 692) is not available in Python 3.11.
+  suggestion: |
+    For Python 3.11, use typing_extensions: from typing_extensions import Unpack
+  examples:
+    bad: "def foo(**kwargs: Unpack[Movie]): ..."
+    good: "from typing_extensions import Unpack\ndef foo(**kwargs: Unpack[Movie]): ..."
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-692-using-typeddict-for-more-precise-kwargs-typing"
+    - "https://peps.python.org/pep-0692/"
+
+- id: "PY311SC08"
+  name: "Override decorator available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 698 adds @override decorator for marking methods that override base class methods.
+    Available in Python 3.12+ in the typing module.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "typing"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "override"
+  message: |
+    @override decorator (PEP 698) requires Python 3.12+ or typing_extensions.
+  suggestion: |
+    For Python 3.11, install typing_extensions: pip install typing_extensions
+  examples:
+    bad: "from typing import override"
+    good: "from typing_extensions import override"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-698-override-decorator-for-static-typing"
+    - "https://peps.python.org/pep-0698/"
+
+- id: "PY311SC09"
+  name: "Comprehension inlining behavioral changes"
+  category: "behavioral_change"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 709 inlines comprehensions for performance (up to 2x faster).
+    This changes some behavior: no separate frame in tracebacks, locals() includes
+    outer scope variables, iterating locals() in comprehension may fail under tracing.
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "ListComp"
+  message: |
+    Comprehension inlining (PEP 709) in Python 3.12 changes some behavioral aspects.
+  suggestion: |
+    If iterating locals() in comprehensions, materialize first: [k for k in list(locals())].
+  examples:
+    bad: "[k for k in locals()]  # May fail under coverage in 3.12"
+    good: "keys = list(locals())\n[k for k in keys]"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-709-comprehension-inlining"
+    - "https://peps.python.org/pep-0709/"
+
+- id: "PY311SC10"
+  name: "Improved error messages"
+  category: "informational"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Python 3.12 provides further improved error messages with better suggestions
+    for common mistakes (missing imports, attribute/variable confusion, etc.).
+  detector: "InformationalDetector"
+  pattern:
+    node_type: "Module"
+  message: |
+    Python 3.12 provides further improved error messages and debugging experience.
+  suggestion: |
+    Consider upgrading to Python 3.12 for enhanced error diagnostics.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311SC11"
+  name: "Buffer protocol accessible in Python"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 688 makes the buffer protocol accessible in Python via __buffer__()
+    method and collections.abc.Buffer ABC.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "FunctionDef"
+    attributes:
+      name: "__buffer__"
+  message: |
+    Buffer protocol (__buffer__) is available in Python 3.12+ (PEP 688).
+  suggestion: |
+    This feature requires Python 3.12+.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-688-making-the-buffer-protocol-accessible-in-python"
+    - "https://peps.python.org/pep-0688/"
+
+- id: "PY311SC12"
+  name: "collections.abc.Buffer ABC available"
+  category: "new_feature"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    PEP 688 adds collections.abc.Buffer ABC for buffer protocol support.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "collections.abc"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "Buffer"
+  message: |
+    collections.abc.Buffer (PEP 688) is available in Python 3.12+.
+  suggestion: |
+    For Python 3.11, use typing_extensions or define custom protocol.
+  examples:
+    bad: "from collections.abc import Buffer"
+    good: "# For 3.11: from typing_extensions import Buffer"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#pep-688-making-the-buffer-protocol-accessible-in-python"
+    - "https://peps.python.org/pep-0688/"
+
+- id: "PY311SC13"
+  name: "Slices hashable"
+  category: "behavioral_change"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Slice objects are now hashable in Python 3.12, allowing use as dict keys and in sets.
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "slice"
+  message: |
+    Slices are now hashable in Python 3.12.
+  suggestion: |
+    You can now use slices as dictionary keys or set members in Python 3.12.
+  examples:
+    bad: "# Not hashable in Python 3.11"
+    good: "d = {slice(1, 5): 'value'}  # Works in Python 3.12"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311SC14"
+  name: "Null bytes in source now SyntaxError"
+  category: "behavioral_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Source code containing null bytes now raises SyntaxError in Python 3.12.
+    Previously these were silently ignored.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Module"
+  message: |
+    Source code with null bytes raises SyntaxError in Python 3.12.
+  suggestion: |
+    Remove any null bytes from source code.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311SC15"
+  name: "Invalid escape sequences now warnings"
+  category: "behavioral_change"
   severity: "low"
   risk_level: "LOW"
   source_version: "3.11"
   target_version: "3.12"
   description: |
-    The new type parameter syntax (using [] after function/class names) is
-    not available in Python 3.11. It was introduced in Python 3.12.
+    Invalid escape sequences in string literals now emit DeprecationWarning
+    and will become SyntaxError in future versions.
   detector: "SyntaxChangesDetector"
   pattern:
-    node_type: "Name"
-    attributes:
-      id: "PLACEHOLDER"
+    node_type: "Constant"
   message: |
-    Type parameter syntax is not available until Python 3.12.
+    Invalid escape sequences emit DeprecationWarning in Python 3.12.
   suggestion: |
-    Upgrade to Python 3.12+ to use the new type parameter syntax, or use
-    TypeVar/ParamSpec.
+    Use raw strings (r"...") for regex patterns and paths.
+  examples:
+    bad: "pattern = \"\\d+\""
+    good: "pattern = r\"\\d+\""
   references:
-    - "https://docs.python.org/3/whatsnew/3.12.html#pep-695-type-parameter-syntax"
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311SC16"
+  name: "Assignment expressions in comprehensions relaxed"
+  category: "behavioral_change"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Python 3.12 allows assignment expressions to non-target variables in comprehensions.
+    This was previously restricted.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "ListComp"
+    children:
+      generators:
+        - node_type: "comprehension"
+          children:
+            iter:
+              node_type: "NamedExpr"
+  message: |
+    Assignment to non-target variables in comprehensions works in Python 3.12.
+  suggestion: |
+    This code may fail in Python 3.11 if assigning to non-target variables.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311SC17"
+  name: "ExceptionGroup unwrapping behavior changed"
+  category: "behavioral_change"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    When try-except* handles an entire ExceptionGroup and raises a different exception,
+    it's no longer wrapped in ExceptionGroup in Python 3.12.
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "TryStar"
+  message: |
+    ExceptionGroup unwrapping behavior changed in Python 3.12.
+  suggestion: |
+    Be aware that exception wrapping behavior differs between 3.11 and 3.12 for except*.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311SC18"
+  name: "Garbage collection timing changed"
+  category: "behavioral_change"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Garbage collection now runs only on eval breaker mechanism in Python 3.12,
+    not on object allocations. GC can run when PyErr_CheckSignals() is called.
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "gc"
+  message: |
+    Garbage collection timing changed in Python 3.12.
+  suggestion: |
+    GC timing differences may affect performance characteristics between 3.11 and 3.12.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311SC19"
+  name: "Boolean parameter acceptance relaxed"
+  category: "behavioral_change"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    All builtin and extension callables accepting bool parameters now accept
+    any type in Python 3.12, not just bool and int.
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "Call"
+  message: |
+    Boolean parameter acceptance relaxed in Python 3.12 to accept any truthy value.
+  suggestion: |
+    Code relying on strict bool checking may behave differently in Python 3.12.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311SC20"
+  name: "sum() improved accuracy"
+  category: "behavioral_change"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sum() now uses Neumaier summation for better floating-point accuracy
+    and improved commutativity in Python 3.12.
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "sum"
+  message: |
+    sum() uses improved Neumaier summation in Python 3.12 for better accuracy.
+  suggestion: |
+    Results may differ slightly from Python 3.11 due to improved algorithm.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"

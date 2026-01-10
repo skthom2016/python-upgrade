@@ -1,14 +1,40 @@
 # Breaking changes when upgrading from Python 3.11 to 3.12+
 
-- id: "PY31101"
-  name: "distutils removed"
+- id: "PY311BC01"
+  name: "distutils module removed"
   category: "breaking_change"
   severity: "critical"
   risk_level: "HIGH"
   source_version: "3.11"
   target_version: "3.12"
   description: |
-    The 'distutils' module was removed in Python 3.12.
+    The distutils module was removed in Python 3.12 (PEP 632).
+    It was deprecated since Python 3.10.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "ImportFrom"
+    attributes:
+      module: "regex:distutils.*"
+  message: |
+    The 'distutils' module was removed in Python 3.12 (PEP 632).
+  suggestion: |
+    Use setuptools for packaging tasks. For version parsing, use packaging.version.
+  examples:
+    bad: "from distutils.core import setup"
+    good: "from setuptools import setup"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+    - "https://peps.python.org/pep-0632/"
+
+- id: "PY311BC02"
+  name: "imp module removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    The imp module was removed in Python 3.12. It was deprecated since Python 3.4.
   detector: "DeprecatedImportsDetector"
   pattern:
     node_type: "Import"
@@ -16,23 +42,148 @@
       names:
         - node_type: "alias"
           attributes:
-            name: "distutils"
+            name: "imp"
   message: |
-    The 'distutils' module was removed in Python 3.12.
+    The 'imp' module was removed in Python 3.12.
   suggestion: |
-    Use setuptools for packaging tasks or packaging.version for version parsing.
+    Use importlib module instead. See migration guide: imp.find_module() → importlib.util.find_spec(),
+    imp.load_module() → importlib.import_module(), imp.reload() → importlib.reload().
+  examples:
+    bad: "import imp\nmod = imp.load_module('name', *args)"
+    good: "import importlib\nmod = importlib.import_module('name')"
   references:
     - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+    - "https://docs.python.org/3/library/importlib.html"
 
-- id: "PY31102"
-  name: "typing.Text removed"
+- id: "PY311BC03"
+  name: "asynchat module removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    The asynchat module was removed in Python 3.12 (PEP 594).
+    It was deprecated since Python 3.6.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "asynchat"
+  message: |
+    The 'asynchat' module was removed in Python 3.12 (PEP 594).
+  suggestion: |
+    Use asyncio module instead for asynchronous I/O.
+  examples:
+    bad: "import asynchat"
+    good: "import asyncio"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+    - "https://peps.python.org/pep-0594/"
+
+- id: "PY311BC04"
+  name: "asyncore module removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    The asyncore module was removed in Python 3.12 (PEP 594).
+    It was deprecated since Python 3.6.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "asyncore"
+  message: |
+    The 'asyncore' module was removed in Python 3.12 (PEP 594).
+  suggestion: |
+    Use asyncio module instead for asynchronous I/O.
+  examples:
+    bad: "import asyncore"
+    good: "import asyncio"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+    - "https://peps.python.org/pep-0594/"
+
+- id: "PY311BC05"
+  name: "smtpd module removed"
   category: "breaking_change"
   severity: "medium"
   risk_level: "MEDIUM"
   source_version: "3.11"
   target_version: "3.12"
   description: |
-    typing.Text was removed in Python 3.11. Use 'str' instead.
+    The smtpd module was removed in Python 3.12.
+    It was deprecated since Python 3.4.7 and 3.5.4.
+  detector: "DeprecatedImportsDetector"
+  pattern:
+    node_type: "Import"
+    children:
+      names:
+        - node_type: "alias"
+          attributes:
+            name: "smtpd"
+  message: |
+    The 'smtpd' module was removed in Python 3.12.
+  suggestion: |
+    Use the aiosmtpd package from PyPI: pip install aiosmtpd
+  examples:
+    bad: "import smtpd"
+    good: "# pip install aiosmtpd\nimport aiosmtpd"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC06"
+  name: "sqlite3.enable_shared_cache() removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sqlite3.enable_shared_cache() was removed in Python 3.12.
+    Shared cache mode is discouraged by SQLite.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "sqlite3"
+          attr: "enable_shared_cache"
+  message: |
+    sqlite3.enable_shared_cache() was removed in Python 3.12.
+  suggestion: |
+    Remove calls to enable_shared_cache(). If needed, use URI filenames with shared cache mode.
+  examples:
+    bad: "sqlite3.enable_shared_cache(True)"
+    good: "conn = sqlite3.connect('file:path?cache=shared', uri=True)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+    - "https://www.sqlite.org/sharedcache.html"
+
+- id: "PY311BC07"
+  name: "sqlite3.OptimizedUnicode removed"
+  category: "breaking_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    sqlite3.OptimizedUnicode was removed in Python 3.12.
+    It has been an alias for str since Python 3.3.
   detector: "DeprecatedAPIsDetector"
   pattern:
     node_type: "Attribute"
@@ -40,11 +191,396 @@
       value:
         node_type: "Name"
         attributes:
-          id: "typing"
-      attr: "Text"
+          id: "sqlite3"
+      attr: "OptimizedUnicode"
   message: |
-    typing.Text was removed. Use 'str' instead.
+    sqlite3.OptimizedUnicode was removed in Python 3.12.
   suggestion: |
-    Replace 'typing.Text' with 'str'.
+    Use str instead of sqlite3.OptimizedUnicode.
+  examples:
+    bad: "text_factory = sqlite3.OptimizedUnicode"
+    good: "text_factory = str"
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC08"
+  name: "ssl.RAND_pseudo_bytes() removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    ssl.RAND_pseudo_bytes() was removed in Python 3.12.
+    It has been deprecated since Python 3.6.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "ssl"
+          attr: "RAND_pseudo_bytes"
+  message: |
+    ssl.RAND_pseudo_bytes() was removed in Python 3.12.
+  suggestion: |
+    Use os.urandom() or ssl.RAND_bytes() instead.
+  examples:
+    bad: "random_bytes = ssl.RAND_pseudo_bytes(16)"
+    good: "import os\nrandom_bytes = os.urandom(16)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC09"
+  name: "ssl.match_hostname() removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    ssl.match_hostname() was removed in Python 3.12.
+    OpenSSL now handles hostname matching internally.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "ssl"
+          attr: "match_hostname"
+  message: |
+    ssl.match_hostname() was removed in Python 3.12.
+  suggestion: |
+    Remove manual hostname matching. SSLContext handles this automatically.
+  examples:
+    bad: "ssl.match_hostname(cert, hostname)"
+    good: "# SSLContext handles hostname verification automatically"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC10"
+  name: "ssl.wrap_socket() removed"
+  category: "breaking_change"
+  severity: "high"
+  risk_level: "HIGH"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    ssl.wrap_socket() module-level function was removed in Python 3.12.
+    It has been deprecated since Python 3.7.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "ssl"
+          attr: "wrap_socket"
+  message: |
+    ssl.wrap_socket() module-level function was removed in Python 3.12.
+  suggestion: |
+    Use SSLContext.wrap_socket() method instead.
+  examples:
+    bad: "ssl.wrap_socket(sock, ...)"
+    good: "context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)\ncontext.wrap_socket(sock, ...)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC11"
+  name: "unittest TestCase deprecated aliases removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Long-deprecated unittest.TestCase method aliases were removed in Python 3.12.
+    These include assertEquals, failUnless, failIf, etc.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "regex:(assertEquals|assertNotEquals|assertAlmostEquals|assertNotAlmostEquals|assertRegexpMatches|assertRaisesRegexp|assertNotRegexpMatches)"
+  message: |
+    unittest.TestCase deprecated method aliases were removed in Python 3.12.
+  suggestion: |
+    Use the standard method names: assertEquals→assertEqual, assertNotEquals→assertNotEqual,
+    assertAlmostEquals→assertAlmostEqual, assertRegexpMatches→assertRegex.
+  examples:
+    bad: "self.assertEquals(a, b)"
+    good: "self.assertEqual(a, b)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC12"
+  name: "configparser.ParsingError.filename attribute removed"
+  category: "breaking_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    configparser.ParsingError.filename attribute was removed in Python 3.12.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Name"
+        attributes:
+          id: "regex:.*ParsingError.*"
+      attr: "filename"
+  message: |
+    configparser.ParsingError.filename was removed. Use the 'source' attribute instead.
+  suggestion: |
+    Replace error.filename with error.source.
+  examples:
+    bad: "except configparser.ParsingError as e:\n    print(e.filename)"
+    good: "except configparser.ParsingError as e:\n    print(e.source)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC13"
+  name: "ftplib.FTP_TLS.ssl_version attribute removed"
+  category: "breaking_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    ftplib.FTP_TLS.ssl_version class attribute was removed in Python 3.12.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "ftplib"
+          attr: "FTP_TLS"
+      attr: "ssl_version"
+  message: |
+    ftplib.FTP_TLS.ssl_version class attribute was removed. Use the 'context' parameter instead.
+  suggestion: |
+    Create an SSLContext with the desired protocol version and pass it via the context parameter.
+  examples:
+    bad: "ftplib.FTP_TLS.ssl_version = ssl.PROTOCOL_TLSv1_2"
+    good: "context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)\nftp = ftplib.FTP_TLS(context=context)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC14"
+  name: "gzip.GzipFile.filename attribute removed"
+  category: "breaking_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    gzip.GzipFile.filename attribute was removed in Python 3.12.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Attribute"
+    children:
+      value:
+        node_type: "Call"
+        children:
+          func:
+            node_type: "Attribute"
+            children:
+              value:
+                node_type: "Name"
+                attributes:
+                  id: "gzip"
+              attr: "GzipFile"
+      attr: "filename"
+  message: |
+    gzip.GzipFile.filename attribute was removed. Use the 'name' attribute instead.
+  suggestion: |
+    Replace gzipfile.filename with gzipfile.name.
+  examples:
+    bad: "with gzip.GzipFile('file.gz') as f:\n    print(f.filename)"
+    good: "with gzip.GzipFile('file.gz') as f:\n    print(f.name)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC15"
+  name: "zipimport.zipimporter.find_loader() removed"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    zipimport.zipimporter.find_loader() and find_module() methods were removed in Python 3.12.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "regex:(find_loader|find_module)"
+        children:
+          value:
+            node_type: "Attribute"
+            children:
+              value:
+                node_type: "Name"
+                attributes:
+                  id: "zipimport"
+              attr: "zipimporter"
+  message: |
+    zipimport.zipimporter.find_loader() and find_module() were removed in Python 3.12.
+  suggestion: |
+    Use find_spec() method instead.
+  examples:
+    bad: "loader = zipimporter.find_loader('module')"
+    good: "spec = zipimporter.find_spec('module')"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC16"
+  name: "xml.etree.ElementTree.Element.copy() removed"
+  category: "breaking_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    The pure Python implementation of xml.etree.ElementTree.Element.copy()
+    was removed in Python 3.12.
+  detector: "DeprecatedAPIsDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        attributes:
+          attr: "copy"
+  message: |
+    xml.etree.ElementTree.Element.copy() pure Python implementation was removed.
+  suggestion: |
+    Use copy.copy(element) instead.
+  examples:
+    bad: "new_elem = element.copy()"
+    good: "import copy\nnew_elem = copy.copy(element)"
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC17"
+  name: "Null bytes in source code now SyntaxError"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Source code containing null bytes now raises SyntaxError in Python 3.12.
+    Previously these were silently ignored.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Module"
+  message: |
+    Source code containing null bytes now raises SyntaxError in Python 3.12.
+  suggestion: |
+    Remove any null bytes from source code.
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311BC18"
+  name: "venv no longer pre-installs setuptools"
+  category: "breaking_change"
+  severity: "medium"
+  risk_level: "MEDIUM"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    venv no longer pre-installs setuptools, distutils, or pkg_resources in Python 3.12.
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Attribute"
+        children:
+          value:
+            node_type: "Name"
+            attributes:
+              id: "venv"
+          attr: "create"
+  message: |
+    venv no longer pre-installs setuptools in Python 3.12.
+  suggestion: |
+    After creating venv, manually install setuptools if needed: pip install setuptools
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#removed"
+
+- id: "PY311BC19"
+  name: "Escape sequence warnings upgraded"
+  category: "breaking_change"
+  severity: "low"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Invalid escape sequences in string literals now emit DeprecationWarning
+    and will become SyntaxError in future versions.
+  detector: "SyntaxChangesDetector"
+  pattern:
+    node_type: "Constant"
+    attributes:
+      value: "regex:.*\\\\[^\\\\nrtbfv'\"a0-7xuUN].*"
+  message: |
+    Invalid escape sequences now emit DeprecationWarning in Python 3.12.
+  suggestion: |
+    Use raw strings (r"...") for regex patterns and paths, or use proper escape sequences.
+  examples:
+    bad: "pattern = \"\\d+\\.\\d+\""
+    good: "pattern = r\"\\d+\\.\\d+\""
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
+
+- id: "PY311BC20"
+  name: "Slices now hashable"
+  category: "behavioral_change"
+  severity: "info"
+  risk_level: "LOW"
+  source_version: "3.11"
+  target_version: "3.12"
+  description: |
+    Slice objects are now hashable in Python 3.12, allowing them to be used
+    as dictionary keys and in sets.
+  detector: "BehaviorChangeDetector"
+  pattern:
+    node_type: "Call"
+    children:
+      func:
+        node_type: "Name"
+        attributes:
+          id: "slice"
+  message: |
+    Slices are now hashable in Python 3.12.
+  suggestion: |
+    You can now use slices as dictionary keys: d = {slice(1, 5): "value"}
+  references:
+    - "https://docs.python.org/3/whatsnew/3.12.html#other-language-changes"
