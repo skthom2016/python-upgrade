@@ -254,7 +254,7 @@
     node_type: "Call"
   condition:
     func_is: "xml.etree.ElementTree.XMLParser"
-    has_positional_args_beyond_first
+    has_positional_args_beyond_first: true
   message: |
     The html argument of XMLParser was removed in Python 3.8.
     All parameters are now keyword-only.
@@ -288,7 +288,7 @@
     node_type: "Call"
   condition:
     calls_method: "doctype"
-    on_xmlparser
+    on_xmlparser: true
   message: |
     The XMLParser.doctype() method was removed in Python 3.8.
   suggestion: |

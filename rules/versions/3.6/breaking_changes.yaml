@@ -151,7 +151,7 @@
   pattern:
     node_type: "GeneratorExp"
   condition:
-    missing_parentheses_in_call_or_class
+    missing_parentheses_in_call_or_class: true
   message: |
     Generator expressions must be directly inside a set of parentheses and
     cannot have a comma on either side in function calls or class definitions.
@@ -268,7 +268,7 @@
               id: "re"
           attr: "sub"
   condition:
-    has_unknown_escape_in_replacement
+    has_unknown_escape_in_replacement: true
   message: |
     Unknown backslash escapes in re.sub() replacement strings now raise an
     error in Python 3.7+. Use raw strings or double backslashes.

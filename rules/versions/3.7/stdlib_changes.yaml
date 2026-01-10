@@ -210,7 +210,7 @@
     node_type: "FunctionDef"
   condition:
     has_decorator: "cached_property"
-    is_in_functools_module
+    is_in_functools_module: true
   message: |
     The functools.cached_property decorator is new in Python 3.8. This code will
     not work in Python 3.7.
@@ -247,7 +247,7 @@
     node_type: "FunctionDef"
   condition:
     has_decorator: "singledispatchmethod"
-    is_in_functools_module
+    is_in_functools_module: true
   message: |
     The functools.singledispatchmethod() decorator is new in Python 3.8. This code
     will not work in Python 3.7.
@@ -574,7 +574,7 @@
     node_type: "FunctionDef"
   condition:
     has_decorator: "lru_cache"
-    is_in_functools_module
+    is_in_functools_module: true
   message: |
     Using @lru_cache() as a decorator directly is new in Python 3.8. This code
     will not work in Python 3.7.
@@ -641,7 +641,7 @@
     node_type: "Call"
   condition:
     func_is: "_asdict"
-    on_namedtuple
+    on_namedtuple: true
   message: |
     collections.namedtuple._asdict() now returns dict in Python 3.8 instead of
     OrderedDict.
@@ -1692,7 +1692,7 @@
   pattern:
     node_type: "DictComp"
   condition:
-    has_dict_comprehension_with_assignment_expr_in_key
+    has_dict_comprehension_with_assignment_expr_in_key: true
   message: |
     In Python 3.8, dict comprehensions compute key before value. This
     changes behavior for code using assignment expressions.

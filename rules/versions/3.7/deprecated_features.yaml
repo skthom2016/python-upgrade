@@ -16,7 +16,7 @@
     node_type: "Call"
   condition:
     func_is: "regex:(getchildren|getiterator)"
-    on_elementtree_object
+    on_elementtree_object: true
   message: |
     getchildren() and getiterator() are deprecated and will be removed in
     Python 3.9. Use list() and iter() instead.
@@ -124,7 +124,7 @@
     node_type: "Call"
   condition:
     accesses_attribute: "_field_types"
-    on_namedtuple
+    on_namedtuple: true
   message: |
     typing.NamedTuple._field_types is deprecated. Use __annotations__
     instead.
