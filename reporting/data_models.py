@@ -70,6 +70,7 @@ class Issue:
         code_snippet: Code snippet showing the issue
         affected_versions: List of Python versions affected
         references: Links to documentation or PEPs
+        detection_method: How the issue was detected (ast, llm, hybrid)
     """
     id: str
     file_path: str
@@ -82,6 +83,7 @@ class Issue:
     code_snippet: str = ""
     affected_versions: List[str] = field(default_factory=list)
     references: List[str] = field(default_factory=list)
+    detection_method: str = "ast"
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -97,6 +99,7 @@ class Issue:
             'code_snippet': self.code_snippet,
             'affected_versions': self.affected_versions,
             'references': self.references,
+            'detection_method': self.detection_method,
         }
 
     @classmethod
@@ -120,6 +123,7 @@ class Issue:
             code_snippet=data.get('code_snippet', ''),
             affected_versions=data.get('affected_versions', []),
             references=data.get('references', []),
+            detection_method=data.get('detection_method', 'ast'),
         )
 
 

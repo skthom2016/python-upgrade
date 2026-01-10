@@ -99,11 +99,29 @@ class AnalysisOrchestrator:
         if malformed:
             print(f"[WARN] {len(malformed)} malformed rules were skipped")
 
+        # Create Ollama config if LLM is enabled
+        llm_config = None
+        if self.config.llm_enabled:
+            try:
+                from detection.llm import OllamaConfig
+                llm_config = OllamaConfig(
+                    host=self.config.llm_host,
+                    model=self.config.llm_model,
+                    temperature=self.config.llm_temperature,
+                    timeout=self.config.llm_timeout,
+                    max_tokens=self.config.llm_max_tokens
+                )
+                print(f"[INFO] LLM detection enabled: {self.config.llm_model}")
+            except ImportError:
+                print("[WARNING] LLM detection modules not available, using AST-only")
+
         # Create rule executor
         rule_executor = RuleExecutor(
             rules=rules,
             target_version=self.target_version,
             source_version=self.source_version,
+            enable_llm=self.config.llm_enabled,
+            llm_config=llm_config
         )
 
         # Discover Python files
@@ -159,6 +177,13 @@ class AnalysisOrchestrator:
         print(f"[INFO] Total files analyzed: {self.files_analyzed}")
         print(f"[INFO] Total issues found: {len(self.aggregator.all_issues)}")
         print(f"[INFO] Duration: {duration:.2f} seconds")
+
+        # Show LLM statistics if enabled
+        if self.config.llm_enabled and rule_executor.llm_validations > 0:
+            print(f"[INFO] LLM Detection Statistics:")
+            print(f"[INFO]   - Validations performed: {rule_executor.llm_validations}")
+            print(f"[INFO]   - Issues detected by LLM: {rule_executor.llm_detections}")
+            print(f"[INFO]   - LLM rules skipped: {rule_executor.llm_skipped}")
 
         # Generate report data
         report_data = self.aggregator.to_report_json(

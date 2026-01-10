@@ -1,20 +1,26 @@
-# Breaking changes when upgrading from Python 3.7 to 3.8+
+# Breaking Changes when upgrading from Python 3.7
+# These changes will cause code to break or behave differently
 
-- id: "PY37BC01"
-  name: "Yield expressions in comprehensions become SyntaxError"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.7"
-  target_version: "3.8"
+- id: PY37BC01
+  name: Yield expressions in comprehensions become SyntaxError
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     Yield expressions (both 'yield' and 'yield from' clauses) are now
     disallowed in comprehensions and generator expressions (aside from the
     iterable expression in the leftmost 'for' clause). In Python 3.7 this was
     deprecated, in Python 3.8 it becomes a SyntaxError.
-  detector: "SyntaxErrorDetector"
+  detector: SyntaxErrorDetector
   pattern:
-    node_type: "ListComp"
+    node_type: ListComp
   condition:
     contains_yield: true
   message: |
@@ -34,27 +40,31 @@
               yield x
       list(gen())
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#other-language-changes"
-    - "https://bugs.python.org/issue10544"
-
-- id: "PY37BC02"
-  name: "macpath module removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#other-language-changes
+  - https://bugs.python.org/issue10544
+- id: PY37BC02
+  name: macpath module removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The macpath module, deprecated in Python 3.7, has been removed.
     Use os.path instead.
-  detector: "ImportChangesDetector"
+  detector: ImportChangesDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "macpath"
+      - node_type: alias
+        attributes:
+          name: macpath
   message: |
     The macpath module was removed in Python 3.8. Use os.path instead.
   suggestion: |
@@ -67,31 +77,35 @@
       import os.path
       path = os.path.join('a', 'b')
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue35471"
-
-- id: "PY37BC03"
-  name: "platform.popen() removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue35471
+- id: PY37BC03
+  name: platform.popen() removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The function platform.popen() has been removed, after having been
     deprecated since Python 3.3. Use os.popen() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "platform"
-          attr: "popen"
+              id: platform
+          attr: popen
   message: |
     platform.popen() was removed in Python 3.8. Use os.popen() instead.
   suggestion: |
@@ -104,32 +118,36 @@
       import os
       stream = os.popen('command')
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue35345"
-
-- id: "PY37BC04"
-  name: "time.clock() removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue35345
+- id: PY37BC04
+  name: time.clock() removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     The function time.clock() has been removed, after having been
     deprecated since Python 3.3. Use time.perf_counter() or
     time.process_time() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "time"
-          attr: "clock"
+              id: time
+          attr: clock
   message: |
     time.clock() was removed in Python 3.8. Use time.perf_counter() or
     time.process_time() instead.
@@ -142,26 +160,30 @@
     good: |
       start = time.perf_counter()
   references:
-    - "https://docs.python.org/3/library/time.html#time.clock"
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue36895"
-
-- id: "PY37BC05"
-  name: "pyvenv script removed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/time.html#time.clock
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue36895
+- id: PY37BC05
+  name: pyvenv script removed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The pyvenv script has been removed in favor of 'python3.8 -m venv'
     to help eliminate confusion as to what Python interpreter the pyvenv
     script is tied to.
-  detector: "CommandUsageDetector"
+  detector: CommandUsageDetector
   pattern:
-    node_type: "Str"
+    node_type: Str
   condition:
-    contains: "pyvenv"
+    contains: pyvenv
   message: |
     The pyvenv script was removed in Python 3.8. Use 'python -m venv' instead.
   suggestion: |
@@ -172,25 +194,29 @@
     good: |
       python -m venv myenv
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue25427"
-
-- id: "PY37BC06"
-  name: "cgi parse_qs, parse_qsl, escape removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue25427
+- id: PY37BC06
+  name: cgi parse_qs, parse_qsl, escape removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     parse_qs, parse_qsl, and escape are removed from the cgi module.
     They are deprecated in Python 3.2 or older. They should be imported
     from the urllib.parse and html modules instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(cgi.parse_qs|cgi.parse_qsl|cgi.escape)"
+    func_is: regex:(cgi.parse_qs|cgi.parse_qsl|cgi.escape)
   message: |
     cgi.parse_qs(), cgi.parse_qsl(), and cgi.escape() were removed in Python 3.8.
     Use urllib.parse and html.escape instead.
@@ -206,54 +232,62 @@
       from urllib.parse import parse_qs
       data = parse_qs(query_string)
   references:
-    - "https://docs.python.org/3/library/cgi.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-
-- id: "PY37BC07"
-  name: "tarfile filemode function removed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/cgi.html
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+- id: PY37BC07
+  name: tarfile filemode function removed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The filemode function is removed from the tarfile module.
     It is not documented and deprecated since Python 3.3.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "tarfile"
-          attr: "filemode"
+              id: tarfile
+          attr: filemode
   message: |
     tarfile.filemode() was removed in Python 3.8.
   suggestion: |
     Remove calls to tarfile.filemode(). This function was undocumented.
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-
-- id: "PY37BC08"
-  name: "XMLParser html argument removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+- id: PY37BC08
+  name: XMLParser html argument removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The XMLParser constructor no longer accepts the html argument. It never
     had an effect and was deprecated in Python 3.4. All other parameters
     are now keyword-only.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "xml.etree.ElementTree.XMLParser"
+    func_is: xml.etree.ElementTree.XMLParser
     has_positional_args_beyond_first: true
   message: |
     The html argument of XMLParser was removed in Python 3.8.
@@ -269,25 +303,29 @@
       import xml.etree.ElementTree as ET
       parser = ET.XMLParser(target=target)
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue29209"
-
-- id: "PY37BC09"
-  name: "XMLParser doctype() method removed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue29209
+- id: PY37BC09
+  name: XMLParser doctype() method removed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The doctype() method of XMLParser has been removed.
     Define the doctype() method on a target for handling an XML doctype
     declaration instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    calls_method: "doctype"
+    calls_method: doctype
     on_xmlparser: true
   message: |
     The XMLParser.doctype() method was removed in Python 3.8.
@@ -295,23 +333,27 @@
     Define the doctype() method on a target object for handling doctype
     declarations, or remove calls to this method.
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue29209"
-
-- id: "PY37BC10"
-  name: "unicode_internal codec removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue29209
+- id: PY37BC10
+  name: unicode_internal codec removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The "unicode_internal" codec has been removed.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Str"
+    node_type: Str
   condition:
-    contains: "unicode_internal"
+    contains: unicode_internal
   message: |
     The unicode_internal codec was removed in Python 3.8.
   suggestion: |
@@ -323,24 +365,28 @@
     good: |
       b'some data'.decode('utf-8')
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue36297"
-
-- id: "PY37BC11"
-  name: "sqlite3 Cache and Statement objects removed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue36297
+- id: PY37BC11
+  name: sqlite3 Cache and Statement objects removed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The Cache and Statement objects of the sqlite3 module are no longer
     exposed to the user.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(sqlite3.Cache|sqlite3.Statement)"
+    func_is: regex:(sqlite3.Cache|sqlite3.Statement)
   message: |
     sqlite3.Cache and sqlite3.Statement objects are no longer exposed
     in Python 3.8.
@@ -355,25 +401,29 @@
       import sqlite3
       # Use standard connection and cursor operations
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue30262"
-
-- id: "PY37BC12"
-  name: "sys.set_coroutine_wrapper functions removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue30262
+- id: PY37BC12
+  name: sys.set_coroutine_wrapper functions removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The functions sys.set_coroutine_wrapper() and
     sys.get_coroutine_wrapper() deprecated in Python 3.7 have been
     removed.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(sys.set_coroutine_wrapper|sys.get_coroutine_wrapper)"
+    func_is: regex:(sys.set_coroutine_wrapper|sys.get_coroutine_wrapper)
   message: |
     sys.set_coroutine_wrapper() and sys.get_coroutine_wrapper() were
     removed in Python 3.8.
@@ -389,29 +439,33 @@
       import sys
       sys.set_coroutine_origin_tracking_depth(2)
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals"
-    - "https://bugs.python.org/issue36933"
-
-- id: "PY37BC13"
-  name: "asyncio.Task.current_task() requires argument"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.8.html#api-and-feature-removals
+  - https://bugs.python.org/issue36933
+- id: PY37BC13
+  name: asyncio.Task.current_task() requires argument
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     asyncio.Task.current_task() without arguments was deprecated in 3.7
     and removed in 3.9. Must pass loop=None.
-  detector: "AsyncChangesDetector"
+  detector: AsyncChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Attribute"
-          attr: "current_task"
+            node_type: Attribute
+          attr: current_task
   message: |
     asyncio.Task.current_task() requires loop=None argument in Python 3.9+
   suggestion: |
@@ -422,22 +476,26 @@
     good: |
       task = asyncio.current_task()
   references:
-    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.current_task"
-
-- id: "PY37BC14"
-  name: "asyncio.CancelledError inheritance changed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/asyncio-task.html#asyncio.current_task
+- id: PY37BC14
+  name: asyncio.CancelledError inheritance changed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     asyncio.CancelledError now inherits from BaseException instead of
     Exception. This means that except Exception clauses will no longer
     catch asyncio.CancelledError, which can change program behavior.
-  detector: "AsyncChangesDetector"
+  detector: AsyncChangesDetector
   pattern:
-    node_type: "ExceptHandler"
+    node_type: ExceptHandler
   condition:
     catches_exception: true
   message: |
@@ -461,26 +519,30 @@
       except Exception:
           handle_error()
   references:
-    - "https://docs.python.org/3/library/asyncio-exceptions.html#asyncio.CancelledError"
-    - "https://docs.python.org/3/whatsnew/3.8.html#asyncio"
-    - "https://bugs.python.org/issue32528"
-
-- id: "PY37BC15"
-  name: "collections.namedtuple._asdict() returns dict"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/asyncio-exceptions.html#asyncio.CancelledError
+  - https://docs.python.org/3/whatsnew/3.8.html#asyncio
+  - https://bugs.python.org/issue32528
+- id: PY37BC15
+  name: collections.namedtuple._asdict() returns dict
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     collections.namedtuple()._asdict() now returns a regular dict instead
     of an OrderedDict. If you rely on the OrderedDict type, you need to
     explicitly convert.
-  detector: "StdlibChangesDetector"
+  detector: StdlibChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    calls_method: "_asdict"
+    calls_method: _asdict
     on_namedtuple: true
   message: |
     namedtuple._asdict() returns a dict in Python 3.8+, not an OrderedDict.
@@ -500,25 +562,29 @@
       p = Point(1, 2)
       d = OrderedDict(p._asdict())  # Explicit conversion
   references:
-    - "https://docs.python.org/3/library/collections.html#collections.namedtuple"
-    - "https://docs.python.org/3/whatsnew/3.8.html#collections"
-    - "https://bugs.python.org/issue35864"
-
-- id: "PY37BC16"
-  name: "math.factorial() no longer accepts non-int arguments"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/collections.html#collections.namedtuple
+  - https://docs.python.org/3/whatsnew/3.8.html#collections
+  - https://bugs.python.org/issue35864
+- id: PY37BC16
+  name: math.factorial() no longer accepts non-int arguments
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     math.factorial() no longer accepts arguments that are not int-like.
     Passing float or Decimal will raise TypeError.
-  detector: "StdlibChangesDetector"
+  detector: StdlibChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "math.factorial"
+    func_is: math.factorial
   message: |
     math.factorial() no longer accepts non-int arguments in Python 3.8+.
   suggestion: |
@@ -532,27 +598,31 @@
       result = math.factorial(int(5.0))
       result = math.factorial(5)
   references:
-    - "https://docs.python.org/3/library/math.html#math.factorial"
-    - "https://docs.python.org/3/whatsnew/3.8.html#math"
-    - "https://bugs.python.org/issue33083"
-
-- id: "PY37BC17"
-  name: "os.path boolean methods return False for bad paths"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/math.html#math.factorial
+  - https://docs.python.org/3/whatsnew/3.8.html#math
+  - https://bugs.python.org/issue33083
+- id: PY37BC17
+  name: os.path boolean methods return False for bad paths
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     On Windows, os.path.isdir() no longer returns True for a link to a
     non-existent directory. Boolean-returning os.path functions
     (exists(), isdir(), isfile(), etc.) now return False instead of
     raising ValueError on bytes paths that contain unencodable characters.
-  detector: "StdlibChangesDetector"
+  detector: StdlibChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(os\\.path\\.(exists|isdir|isfile|islink|ismount))"
+    func_is: regex:(os\.path\.(exists|isdir|isfile|islink|ismount))
   message: |
     os.path boolean methods have changed behavior in Python 3.8 for
     edge cases on Windows and unencodable paths.
@@ -573,26 +643,30 @@
       # Python 3.8+: just use the function directly
       exists = os.path.exists(path)
   references:
-    - "https://docs.python.org/3/library/os.path.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#os-path"
-    - "https://bugs.python.org/issue33721"
-
-- id: "PY37BC18"
-  name: "pathlib boolean methods return False for bad paths"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/os.path.html
+  - https://docs.python.org/3/whatsnew/3.8.html#os-path
+  - https://bugs.python.org/issue33721
+- id: PY37BC18
+  name: pathlib boolean methods return False for bad paths
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     pathlib.Path methods that return booleans (exists(), is_dir(),
     is_file(), etc.) now return False instead of raising ValueError
     on paths containing characters that are unencodable at the OS level.
-  detector: "StdlibChangesDetector"
+  detector: StdlibChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    calls_method: "regex:(exists|is_dir|is_file|is_symlink|is_socket|is_fifo|is_block_device|is_char_device)"
+    calls_method: regex:(exists|is_dir|is_file|is_symlink|is_socket|is_fifo|is_block_device|is_char_device)
     on_pathlib_path: true
   message: |
     pathlib.Path boolean methods have changed behavior in Python 3.8
@@ -614,6 +688,6 @@
       # Python 3.8+: just use the method directly
       exists = Path(path).exists()
   references:
-    - "https://docs.python.org/3/library/pathlib.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#pathlib"
-    - "https://bugs.python.org/issue33721"
+  - https://docs.python.org/3/library/pathlib.html
+  - https://docs.python.org/3/whatsnew/3.8.html#pathlib
+  - https://bugs.python.org/issue33721

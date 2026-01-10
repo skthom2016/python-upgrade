@@ -1,801 +1,923 @@
-# Deprecated features when upgrading from Python 3.10 to 3.11+
+# Deprecated Features when upgrading from Python 3.10
+# These features are deprecated and will be removed in future versions
 
-- id: "PY310DF01"
-  name: "aifc module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+- id: PY310DF01
+  name: aifc module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The aifc module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides support for reading and writing AIFF and AIFF-C files.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "aifc"
+      - node_type: alias
+        attributes:
+          name: aifc
   message: |
     The 'aifc' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Consider using third-party audio libraries like pydub or soundfile.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF02"
-  name: "audioop module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF02
+  name: audioop module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The audioop module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides support for audio operations on sound fragments.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "audioop"
+      - node_type: alias
+        attributes:
+          name: audioop
   message: |
     The 'audioop' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Consider using third-party audio libraries like pydub or numpy for audio processing.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF03"
-  name: "chunk module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF03
+  name: chunk module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The chunk module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides support for reading and writing IFF chunked data.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "chunk"
+      - node_type: alias
+        attributes:
+          name: chunk
   message: |
     The 'chunk' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     If needed, copy the module code from Python 3.10 or use a third-party alternative.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF04"
-  name: "cgi module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF04
+  name: cgi module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The cgi module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides support for Common Gateway Interface scripts.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "cgi"
+      - node_type: alias
+        attributes:
+          name: cgi
   message: |
     The 'cgi' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use modern web frameworks like FastAPI, Flask, or Django instead of CGI.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF05"
-  name: "cgitb module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF05
+  name: cgitb module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The cgitb module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides a specialized traceback handler for CGI scripts.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "cgitb"
+      - node_type: alias
+        attributes:
+          name: cgitb
   message: |
     The 'cgitb' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use modern error handling and logging frameworks like logging module or Sentry.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF06"
-  name: "crypt module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF06
+  name: crypt module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The crypt module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module implements Unix password hashing.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "crypt"
+      - node_type: alias
+        attributes:
+          name: crypt
   message: |
     The 'crypt' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use the hashlib module or third-party libraries like bcrypt or argon2-cffi for password hashing.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF07"
-  name: "imghdr module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF07
+  name: imghdr module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The imghdr module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module determines the type of image contained in a file.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "imghdr"
+      - node_type: alias
+        attributes:
+          name: imghdr
   message: |
     The 'imghdr' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use third-party libraries like Pillow (PIL) or imageio for image type detection.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF08"
-  name: "mailcap module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF08
+  name: mailcap module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The mailcap module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module reads mailcap files for MIME type handling.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "mailcap"
+      - node_type: alias
+        attributes:
+          name: mailcap
   message: |
     The 'mailcap' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use the mimetypes module or copy the mailcap code if needed.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF09"
-  name: "msilib module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF09
+  name: msilib module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The msilib module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides Windows Installer (MSI) file support.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "msilib"
+      - node_type: alias
+        attributes:
+          name: msilib
   message: |
     The 'msilib' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use third-party tools like WiX or pyinstaller for Windows installer creation.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF10"
-  name: "nis module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF10
+  name: nis module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The nis module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides an interface to NIS (Network Information Service).
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "nis"
+      - node_type: alias
+        attributes:
+          name: nis
   message: |
     The 'nis' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use LDAP or other modern directory services instead of NIS.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF11"
-  name: "nntplib module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF11
+  name: nntplib module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The nntplib module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides an NNTP (Network News Transfer Protocol) client.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "nntplib"
+      - node_type: alias
+        attributes:
+          name: nntplib
   message: |
     The 'nntplib' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     If needed, copy the module code from Python 3.10 or use a third-party NNTP client.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF12"
-  name: "ossaudiodev module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF12
+  name: ossaudiodev module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The ossaudiodev module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides access to OSS (Open Sound System) audio devices.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "ossaudiodev"
+      - node_type: alias
+        attributes:
+          name: ossaudiodev
   message: |
     The 'ossaudiodev' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use modern audio libraries like pyaudio, sounddevice, or pygame for audio device access.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF13"
-  name: "pipes module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF13
+  name: pipes module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The pipes module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides shell pipeline templates (Unix only).
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "pipes"
+      - node_type: alias
+        attributes:
+          name: pipes
   message: |
     The 'pipes' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use the subprocess module with shell=False for secure command execution.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF14"
-  name: "sndhdr module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF14
+  name: sndhdr module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The sndhdr module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module determines the type of sound file.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "sndhdr"
+      - node_type: alias
+        attributes:
+          name: sndhdr
   message: |
     The 'sndhdr' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use third-party audio libraries like pydub, soundfile, or mutagen for audio file detection.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF15"
-  name: "spwd module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF15
+  name: spwd module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The spwd module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides access to the Unix shadow password database.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "spwd"
+      - node_type: alias
+        attributes:
+          name: spwd
   message: |
     The 'spwd' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use the pwd module or system authentication frameworks like PAM.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF16"
-  name: "sunau module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF16
+  name: sunau module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The sunau module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides support for Sun AU sound format files.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "sunau"
+      - node_type: alias
+        attributes:
+          name: sunau
   message: |
     The 'sunau' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use third-party audio libraries like pydub or soundfile for AU file support.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF17"
-  name: "telnetlib module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF17
+  name: telnetlib module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The telnetlib module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides a Telnet client class.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "telnetlib"
+      - node_type: alias
+        attributes:
+          name: telnetlib
   message: |
     The 'telnetlib' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use secure alternatives like SSH (via paramiko) instead of Telnet, or use third-party telnet libraries.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF18"
-  name: "uu module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF18
+  name: uu module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The uu module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module provides uuencode and uudecode functions.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "uu"
+      - node_type: alias
+        attributes:
+          name: uu
   message: |
     The 'uu' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use base64 encoding or other modern encoding schemes instead of uuencode.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF19"
-  name: "xdrlib module deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF19
+  name: xdrlib module deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The xdrlib module is deprecated in Python 3.11 (PEP 594) and will be removed in 3.13.
     This module supports encoding and decoding XDR (External Data Representation) data.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "xdrlib"
+      - node_type: alias
+        attributes:
+          name: xdrlib
   message: |
     The 'xdrlib' module is deprecated in Python 3.11 and will be removed in 3.13 (PEP 594).
   suggestion: |
     Use modern serialization formats like JSON, Protocol Buffers, or MessagePack instead of XDR.
   references:
-    - "https://peps.python.org/pep-0594/"
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-
-- id: "PY310DF20"
-  name: "unittest deprecated aliases"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://peps.python.org/pep-0594/
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+- id: PY310DF20
+  name: unittest deprecated aliases
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Several unittest.TestCase method aliases are deprecated in Python 3.11:
     failUnless, failIf, failUnlessEqual, failIfEqual, failUnlessAlmostEqual,
     failIfAlmostEqual, failUnlessRaises, assertEquals, assertNotEquals,
     assertAlmostEquals, assertNotAlmostEquals, assert_.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "regex:(failUnless|failIf|failUnlessEqual|failIfEqual|failUnlessAlmostEqual|failIfAlmostEqual|failUnlessRaises|assertEquals|assertNotEquals|assertAlmostEquals|assertNotAlmostEquals|assert_)"
+          attr: regex:(failUnless|failIf|failUnlessEqual|failIfEqual|failUnlessAlmostEqual|failIfAlmostEqual|failUnlessRaises|assertEquals|assertNotEquals|assertAlmostEquals|assertNotAlmostEquals|assert_)
   message: |
     unittest.TestCase method aliases are deprecated in Python 3.11.
   suggestion: |
     Use the modern method names: assertTrue, assertFalse, assertEqual, assertNotEqual,
     assertAlmostEqual, assertNotAlmostEqual, assertRaises.
   examples:
-    bad: "self.assertEquals(a, b)"
-    good: "self.assertEqual(a, b)"
+    bad: self.assertEquals(a, b)
+    good: self.assertEqual(a, b)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-    - "https://docs.python.org/3/library/unittest.html"
-
-- id: "PY310DF21"
-  name: "locale.getdefaultlocale() deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+  - https://docs.python.org/3/library/unittest.html
+- id: PY310DF21
+  name: locale.getdefaultlocale() deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     locale.getdefaultlocale() is deprecated in Python 3.11 and will be removed in 3.13.
     This function has implementation issues and is not reliable.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "locale"
-          attr: "getdefaultlocale"
+              id: locale
+          attr: getdefaultlocale
   message: |
     locale.getdefaultlocale() is deprecated in Python 3.11 and will be removed in 3.13.
   suggestion: |
     Use locale.setlocale(), locale.getlocale(), or locale.getpreferredencoding(False) instead.
   examples:
-    bad: "lang, encoding = locale.getdefaultlocale()"
-    good: "encoding = locale.getpreferredencoding(False)"
+    bad: lang, encoding = locale.getdefaultlocale()
+    good: encoding = locale.getpreferredencoding(False)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-    - "https://docs.python.org/3/library/locale.html"
-
-- id: "PY310DF22"
-  name: "locale.resetlocale() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+  - https://docs.python.org/3/library/locale.html
+- id: PY310DF22
+  name: locale.resetlocale() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     locale.resetlocale() is deprecated in Python 3.11 and will be removed in 3.13.
     Use locale.setlocale(locale.LC_ALL, '') instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "locale"
-          attr: "resetlocale"
+              id: locale
+          attr: resetlocale
   message: |
     locale.resetlocale() is deprecated in Python 3.11 and will be removed in 3.13.
   suggestion: |
     Use locale.setlocale(locale.LC_ALL, '') to reset locale to default.
   examples:
-    bad: "locale.resetlocale()"
-    good: "locale.setlocale(locale.LC_ALL, '')"
+    bad: locale.resetlocale()
+    good: locale.setlocale(locale.LC_ALL, '')
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-    - "https://docs.python.org/3/library/locale.html"
-
-- id: "PY310DF23"
-  name: "typing.Text deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+  - https://docs.python.org/3/library/locale.html
+- id: PY310DF23
+  name: typing.Text deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     typing.Text is deprecated in Python 3.11. It was an alias for str
     to support Python 2 compatibility.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "Text"
+      - node_type: alias
+        attributes:
+          name: Text
   message: |
     typing.Text is deprecated in Python 3.11.
   suggestion: |
     Use str instead of typing.Text.
   examples:
-    bad: "from typing import Text\ndef foo(x: Text) -> Text: ..."
-    good: "def foo(x: str) -> str: ..."
+    bad: |-
+      from typing import Text
+      def foo(x: Text) -> Text: ...
+    good: 'def foo(x: str) -> str: ...'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-    - "https://docs.python.org/3/library/typing.html"
-
-- id: "PY310DF24"
-  name: "configparser.SafeConfigParser deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+  - https://docs.python.org/3/library/typing.html
+- id: PY310DF24
+  name: configparser.SafeConfigParser deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     configparser.SafeConfigParser has been deprecated since Python 3.2 and
     is now explicitly deprecated in Python 3.11. Use ConfigParser instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "configparser"
-      attr: "SafeConfigParser"
+          id: configparser
+      attr: SafeConfigParser
   message: |
     configparser.SafeConfigParser is deprecated. Use ConfigParser instead.
   suggestion: |
     Replace SafeConfigParser with ConfigParser (they are equivalent).
   examples:
-    bad: "config = configparser.SafeConfigParser()"
-    good: "config = configparser.ConfigParser()"
+    bad: config = configparser.SafeConfigParser()
+    good: config = configparser.ConfigParser()
   references:
-    - "https://docs.python.org/3/library/configparser.html"
-
-- id: "PY310DF25"
-  name: "sqlite3.OptimizedUnicode deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/library/configparser.html
+- id: PY310DF25
+  name: sqlite3.OptimizedUnicode deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     sqlite3.OptimizedUnicode is deprecated in Python 3.11 and will be removed in 3.13.
     It has been an alias for str since Python 3.3.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "sqlite3"
-      attr: "OptimizedUnicode"
+          id: sqlite3
+      attr: OptimizedUnicode
   message: |
     sqlite3.OptimizedUnicode is deprecated in Python 3.11 and will be removed in 3.13.
   suggestion: |
     Use str instead of sqlite3.OptimizedUnicode.
   examples:
-    bad: "sqlite3.register_adapter(str, sqlite3.OptimizedUnicode)"
-    good: "# No adapter needed, str is natively supported"
+    bad: sqlite3.register_adapter(str, sqlite3.OptimizedUnicode)
+    good: '# No adapter needed, str is natively supported'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#deprecated"
-    - "https://docs.python.org/3/library/sqlite3.html"
-
-- id: "PY310DF26"
-  name: "threading.currentThread() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#deprecated
+  - https://docs.python.org/3/library/sqlite3.html
+- id: PY310DF26
+  name: threading.currentThread() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     threading.currentThread() is deprecated in Python 3.11 in favor of
     threading.current_thread() with PEP 8 compliant naming.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "threading"
-          attr: "currentThread"
+              id: threading
+          attr: currentThread
   message: |
     threading.currentThread() is deprecated. Use threading.current_thread() instead.
   suggestion: |
     Replace threading.currentThread() with threading.current_thread().
   examples:
-    bad: "thread = threading.currentThread()"
-    good: "thread = threading.current_thread()"
+    bad: thread = threading.currentThread()
+    good: thread = threading.current_thread()
   references:
-    - "https://docs.python.org/3/library/threading.html"
-
-- id: "PY310DF27"
-  name: "threading.activeCount() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/library/threading.html
+- id: PY310DF27
+  name: threading.activeCount() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     threading.activeCount() is deprecated in Python 3.11 in favor of
     threading.active_count() with PEP 8 compliant naming.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "threading"
-          attr: "activeCount"
+              id: threading
+          attr: activeCount
   message: |
     threading.activeCount() is deprecated. Use threading.active_count() instead.
   suggestion: |
     Replace threading.activeCount() with threading.active_count().
   examples:
-    bad: "count = threading.activeCount()"
-    good: "count = threading.active_count()"
+    bad: count = threading.activeCount()
+    good: count = threading.active_count()
   references:
-    - "https://docs.python.org/3/library/threading.html"
-
-- id: "PY310DF28"
-  name: "wave.Wave_read.getparams() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/library/threading.html
+- id: PY310DF28
+  name: wave.Wave_read.getparams() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     wave.Wave_read.getparams() method returns a named tuple but direct unpacking
     is discouraged. Access fields by name instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "getparams"
+          attr: getparams
   message: |
     Unpacking wave.Wave_read.getparams() result is discouraged in Python 3.11.
   suggestion: |
     Access parameters by name from the returned namedtuple: params.nchannels, params.sampwidth, etc.
   examples:
-    bad: "nchannels, sampwidth, framerate, nframes, comptype, compname = wav.getparams()"
-    good: "params = wav.getparams()\nnchannels = params.nchannels"
+    bad: nchannels, sampwidth, framerate, nframes, comptype, compname = wav.getparams()
+    good: |-
+      params = wav.getparams()
+      nchannels = params.nchannels
   references:
-    - "https://docs.python.org/3/library/wave.html"
-
-- id: "PY310DF29"
-  name: "webbrowser.MacOSX deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/library/wave.html
+- id: PY310DF29
+  name: webbrowser.MacOSX deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     webbrowser.MacOSX class is deprecated in Python 3.11. It is replaced by
     webbrowser.MacOSXOSAScript for the modern implementation.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "webbrowser"
-      attr: "MacOSX"
+          id: webbrowser
+      attr: MacOSX
   message: |
     webbrowser.MacOSX is deprecated in Python 3.11. Use MacOSXOSAScript instead.
   suggestion: |
     Use webbrowser.MacOSXOSAScript for macOS browser control.
   references:
-    - "https://docs.python.org/3/library/webbrowser.html"
+  - https://docs.python.org/3/library/webbrowser.html

@@ -42,6 +42,15 @@ class Config:
     snippet_lines: int = 3
     top_files_count: int = 10
 
+    # LLM detection
+    llm_enabled: bool = True
+    llm_host: str = "http://localhost:11434"
+    llm_model: str = "qwen2.5:7b"
+    llm_temperature: float = 0.1
+    llm_timeout: int = 30
+    llm_max_tokens: Optional[int] = None
+    llm_graceful_degradation: bool = True
+
     def __post_init__(self):
         """Validate configuration after initialization."""
         # Normalize paths
@@ -134,6 +143,7 @@ class ConfigLoader:
         baseline = config_dict.get('baseline', {})
         cache = config_dict.get('cache', {})
         reporting = config_dict.get('reporting', {})
+        llm = config_dict.get('llm', {})
 
         return Config(
             source_version=python.get('source_version', 'auto'),
@@ -152,6 +162,13 @@ class ConfigLoader:
             include_snippets=reporting.get('include_snippets', True),
             snippet_lines=reporting.get('snippet_lines', 3),
             top_files_count=reporting.get('top_files_count', 10),
+            llm_enabled=llm.get('enabled', True),
+            llm_host=llm.get('host', 'http://localhost:11434'),
+            llm_model=llm.get('model', 'qwen2.5:7b'),
+            llm_temperature=llm.get('temperature', 0.1),
+            llm_timeout=llm.get('timeout', 30),
+            llm_max_tokens=llm.get('max_tokens'),
+            llm_graceful_degradation=llm.get('graceful_degradation', True),
         )
 
     def update_from_args(self, config: Config, args) -> Config:

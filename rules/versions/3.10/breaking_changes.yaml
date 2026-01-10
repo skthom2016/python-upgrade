@@ -1,521 +1,623 @@
-# Breaking changes when upgrading from Python 3.10 to 3.11+
+# Breaking Changes when upgrading from Python 3.10
+# These changes will cause code to break or behave differently
 
-- id: "PY310BC01"
-  name: "binhex module removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.10"
-  target_version: "3.11"
+- id: PY310BC01
+  name: binhex module removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     The binhex module was deprecated in Python 3.9 and removed in 3.11.
     It provided binhex4 encoding/decoding for Mac files.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "binhex"
+      - node_type: alias
+        attributes:
+          name: binhex
   message: |
     The binhex module was removed in Python 3.11.
   suggestion: |
     If you need binhex functionality, copy the implementation from Python 3.10 or earlier.
   examples:
-    bad: "import binhex"
-    good: "# Copy binhex module from Python 3.10 if needed"
+    bad: import binhex
+    good: '# Copy binhex module from Python 3.10 if needed'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC02"
-  name: "asyncio.coroutine decorator removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC02
+  name: asyncio.coroutine decorator removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     The @asyncio.coroutine decorator for legacy generator-based coroutines
     was removed. Use async def instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "asyncio"
-      attr: "coroutine"
+          id: asyncio
+      attr: coroutine
   message: |
     @asyncio.coroutine decorator was removed in Python 3.11.
   suggestion: |
     Convert generator-based coroutines to async def functions.
   examples:
-    bad: "@asyncio.coroutine\ndef coro():\n    yield from asyncio.sleep(1)"
-    good: "async def coro():\n    await asyncio.sleep(1)"
+    bad: |-
+      @asyncio.coroutine
+      def coro():
+          yield from asyncio.sleep(1)
+    good: |-
+      async def coro():
+          await asyncio.sleep(1)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC03"
-  name: "asyncio._reuse_address parameter removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC03
+  name: asyncio._reuse_address parameter removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The _reuse_address parameter was removed from asyncio.loop.create_datagram_endpoint()
     due to security concerns with SO_REUSEADDR in UDP.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "create_datagram_endpoint"
+          attr: create_datagram_endpoint
       keywords:
-        - node_type: "keyword"
-          attributes:
-            arg: "reuse_address"
+      - node_type: keyword
+        attributes:
+          arg: reuse_address
   message: |
     The reuse_address parameter was removed from create_datagram_endpoint().
   suggestion: |
     Remove the reuse_address parameter from create_datagram_endpoint() calls.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC04"
-  name: "binascii binhex functions removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC04
+  name: binascii binhex functions removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Functions related to the binhex module were removed from binascii:
     a2b_hqx(), b2a_hqx(), rlecode_hqx(), rldecode_hqx().
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "binascii"
-          attr: "regex:(a2b_hqx|b2a_hqx|rlecode_hqx|rldecode_hqx)"
+              id: binascii
+          attr: regex:(a2b_hqx|b2a_hqx|rlecode_hqx|rldecode_hqx)
   message: |
     binascii binhex-related functions were removed in Python 3.11.
   suggestion: |
     Use alternative encoding or copy implementation from Python 3.10.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC05"
-  name: "gettext l* functions removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC05
+  name: gettext l* functions removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     Removed deprecated gettext functions: lgettext(), ldgettext(),
     lngettext(), ldngettext(). Use standard variants instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "gettext"
-          attr: "regex:(lgettext|ldgettext|lngettext|ldngettext)"
+              id: gettext
+          attr: regex:(lgettext|ldgettext|lngettext|ldngettext)
   message: |
     gettext l* functions were removed in Python 3.11.
   suggestion: |
     Use gettext(), dgettext(), ngettext(), dngettext() instead.
   examples:
-    bad: "gettext.lgettext('Hello')"
-    good: "gettext.gettext('Hello')"
+    bad: gettext.lgettext('Hello')
+    good: gettext.gettext('Hello')
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC06"
-  name: "gettext bind_textdomain_codeset removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC06
+  name: gettext bind_textdomain_codeset removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     gettext.bind_textdomain_codeset() function was removed.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "gettext"
-          attr: "bind_textdomain_codeset"
+              id: gettext
+          attr: bind_textdomain_codeset
   message: |
     gettext.bind_textdomain_codeset() was removed in Python 3.11.
   suggestion: |
     Encoding is now always UTF-8. Remove calls to bind_textdomain_codeset().
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC07"
-  name: "inspect.getargspec removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC07
+  name: inspect.getargspec removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     inspect.getargspec() was removed (deprecated since Python 3.0).
     Use inspect.signature() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "inspect"
-          attr: "getargspec"
+              id: inspect
+          attr: getargspec
   message: |
     inspect.getargspec() was removed in Python 3.11.
   suggestion: |
     Use inspect.signature() or inspect.getfullargspec() instead.
   examples:
-    bad: "inspect.getargspec(func)"
-    good: "inspect.signature(func)"
+    bad: inspect.getargspec(func)
+    good: inspect.signature(func)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC08"
-  name: "inspect.formatargspec removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC08
+  name: inspect.formatargspec removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     inspect.formatargspec() was removed (deprecated since Python 3.5).
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "inspect"
-          attr: "formatargspec"
+              id: inspect
+          attr: formatargspec
   message: |
     inspect.formatargspec() was removed in Python 3.11.
   suggestion: |
     Use inspect.signature() and format the result manually.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC09"
-  name: "file mode 'U' removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC09
+  name: file mode 'U' removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     The 'U' mode (universal newlines) is no longer accepted in open(),
     io.open(), codecs.open(), and fileinput.FileInput().
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "open"
+          id: open
       args:
-        - node_type: "Constant"
-          attributes:
-            value: "regex:.*U.*"
+      - node_type: Constant
+        attributes:
+          value: regex:.*U.*
   message: |
     File mode 'U' was removed in Python 3.11.
   suggestion: |
     Remove 'U' from mode string. Universal newlines are default in text mode.
   examples:
-    bad: "open('file.txt', 'rU')"
-    good: "open('file.txt', 'r')"
+    bad: open('file.txt', 'rU')
+    good: open('file.txt', 'r')
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api"
-
-- id: "PY310BC10"
-  name: "random.sample set auto-conversion removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api
+- id: PY310BC10
+  name: random.sample set auto-conversion removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     random.sample() no longer auto-converts sets to lists. The population
     parameter must be a sequence.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "random"
-          attr: "sample"
+              id: random
+          attr: sample
   message: |
     random.sample() requires a sequence, not a set, in Python 3.11.
   suggestion: |
     Convert sets to lists: random.sample(list(my_set), k)
   examples:
-    bad: "random.sample(my_set, 5)"
-    good: "random.sample(list(my_set), 5)"
+    bad: random.sample(my_set, 5)
+    good: random.sample(list(my_set), 5)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api"
-
-- id: "PY310BC11"
-  name: "random.shuffle _random parameter removed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api
+- id: PY310BC11
+  name: random.shuffle _random parameter removed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The optional _random parameter of random.shuffle() was removed.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "random"
-          attr: "shuffle"
+              id: random
+          attr: shuffle
       keywords:
-        - node_type: "keyword"
-          attributes:
-            arg: "_random"
+      - node_type: keyword
+        attributes:
+          arg: _random
   message: |
     The _random parameter of random.shuffle() was removed in Python 3.11.
   suggestion: |
     Remove the _random parameter. shuffle() now always uses random.random().
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC12"
-  name: "regex global inline flags restricted"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC12
+  name: regex global inline flags restricted
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Global inline flags like (?i) can only be used at the start of regular
     expression patterns (deprecated since Python 3.6).
-  detector: "RegexPatternDetector"
+  detector: RegexPatternDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "re"
-          attr: "regex:(compile|search|match|findall|finditer)"
+              id: re
+          attr: regex:(compile|search|match|findall|finditer)
   message: |
     Global inline flags must appear at the start of regex patterns in Python 3.11.
   suggestion: |
     Move (?i), (?m), (?s), etc. to the beginning of your pattern, or use flag parameters.
   examples:
-    bad: "re.search(r'hello(?i)world', text)"
-    good: "re.search(r'(?i)helloworld', text)"
+    bad: re.search(r'hello(?i)world', text)
+    good: re.search(r'(?i)helloworld', text)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api"
+  - https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api
+- id: PY310BC13
+  name: context manager TypeError instead of AttributeError
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: hybrid
+    confidence: medium
+    requires_llm: true
+    priority: low
+    semantic_description: |-
+      context manager TypeError instead of AttributeError requires context validation to avoid false positives.
+      When an object doesn't support the context manager protocol,
+      TypeError is now raised instead of AttributeError....
 
-- id: "PY310BC13"
-  name: "context manager TypeError instead of AttributeError"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+      The rule should be validated to ensure it matches the intended context.
+    detection_criteria:
+      ast_pattern: With node with specific attributes
+      text_keywords: []
+      validation_prompt: |-
+        Validate if this code matches the rule: context manager TypeError instead of AttributeError
+        Check for context-specific conditions and edge cases.
+        Ensure the pattern is not a false positive.
   description: |
     When an object doesn't support the context manager protocol,
     TypeError is now raised instead of AttributeError.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "With"
+    node_type: With
   message: |
     Context manager protocol errors now raise TypeError instead of AttributeError.
   suggestion: |
     Update exception handlers catching AttributeError for context managers to catch TypeError.
   examples:
-    bad: "try:\n    with obj:\n        pass\nexcept AttributeError:\n    pass"
-    good: "try:\n    with obj:\n        pass\nexcept TypeError:\n    pass"
+    bad: |-
+      try:
+          with obj:
+              pass
+      except AttributeError:
+          pass
+    good: |-
+      try:
+          with obj:
+              pass
+      except TypeError:
+          pass
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api"
-
-- id: "PY310BC14"
-  name: "integer string conversion limit enforced"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api
+- id: PY310BC14
+  name: integer string conversion limit enforced
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     Converting between int and str in non-power-of-2 bases now raises ValueError
     if the digit count exceeds a limit (default 4300 digits). CVE-2020-10735 mitigation.
-  detector: "SecurityDetector"
+  detector: SecurityDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "regex:(int|str)"
+          id: regex:(int|str)
   message: |
     Large integer string conversions may raise ValueError in Python 3.11 (CVE-2020-10735).
   suggestion: |
     For very large integers, increase the limit using sys.set_int_max_str_digits() or handle ValueError.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api"
-    - "https://docs.python.org/3/library/stdtypes.html#int-max-str-digits"
-
-- id: "PY310BC15"
-  name: "asyncio non-ThreadPoolExecutor prohibited"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api
+  - https://docs.python.org/3/library/stdtypes.html#int-max-str-digits
+- id: PY310BC15
+  name: asyncio non-ThreadPoolExecutor prohibited
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Passing non-ThreadPoolExecutor executors to asyncio.loop.set_default_executor()
     now raises TypeError (deprecated since Python 3.8).
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "set_default_executor"
+          attr: set_default_executor
   message: |
     set_default_executor() only accepts ThreadPoolExecutor in Python 3.11.
   suggestion: |
     Use concurrent.futures.ThreadPoolExecutor as the executor.
   examples:
-    bad: "loop.set_default_executor(ProcessPoolExecutor())"
-    good: "loop.set_default_executor(ThreadPoolExecutor())"
+    bad: loop.set_default_executor(ProcessPoolExecutor())
+    good: loop.set_default_executor(ThreadPoolExecutor())
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#removed"
-
-- id: "PY310BC16"
-  name: "sys.exc_info exception representation changed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#removed
+- id: PY310BC16
+  name: sys.exc_info exception representation changed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Exception handler representation changed. Only exc_value field retained;
     exc_type and exc_traceback are now derived from exc_value.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "sys"
-          attr: "exc_info"
+              id: sys
+          attr: exc_info
   message: |
     sys.exc_info() now derives type and traceback from the exception value.
   suggestion: |
     Code accessing exc_type or exc_traceback directly may need updates.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api"
-
-- id: "PY310BC17"
-  name: "object.__getstate__() now implemented"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api
+- id: PY310BC17
+  name: object.__getstate__() now implemented
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     object.__getstate__() is now implemented for various types, which may
     break code not expecting __getstate__() to exist.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     attributes:
-      attr: "__getstate__"
+      attr: __getstate__
   message: |
     __getstate__() is now implemented for several builtin types in Python 3.11.
   suggestion: |
     Update code that checks for __getstate__() existence or calls it on builtin types.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api"
-
-- id: "PY310BC18"
-  name: "bytes not accepted on sys.path"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#changes-in-the-python-api
+- id: PY310BC18
+  name: bytes not accepted on sys.path
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Bytes are no longer accepted on sys.path. Support was broken and is now
     formally removed.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Subscript"
+    node_type: Subscript
     children:
       value:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "sys"
-          attr: "path"
+              id: sys
+          attr: path
   message: |
     sys.path no longer accepts bytes objects in Python 3.11.
   suggestion: |
     Use string paths instead of bytes in sys.path.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#other-language-changes"
+  - https://docs.python.org/3/whatsnew/3.11.html#other-language-changes

@@ -1,155 +1,181 @@
-# Standard library changes when upgrading from Python 3.10 to 3.11+
+# Stdlib Changes when upgrading from Python 3.10
+# Changes to modules, functions, and classes in the Python standard library
 
-- id: "PY310SL01"
-  name: "tomllib module available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+- id: PY310SL01
+  name: tomllib module available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     PEP 680 adds tomllib module for parsing TOML (Tom's Obvious Minimal Language)
     files. This is a read-only implementation in the standard library.
-  detector: "NewModuleDetector"
+  detector: NewModuleDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "tomllib"
+      - node_type: alias
+        attributes:
+          name: tomllib
   message: |
     tomllib module (PEP 680) is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use the tomli package: pip install tomli
   examples:
-    bad: "import tomllib"
-    good: "try:\n    import tomllib\nexcept ImportError:\n    import tomli as tomllib"
+    bad: import tomllib
+    good: |-
+      try:
+          import tomllib
+      except ImportError:
+          import tomli as tomllib
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-680-tomllib-support-for-parsing-toml-in-the-standard-library"
-    - "https://peps.python.org/pep-0680/"
-
-- id: "PY310SL02"
-  name: "asyncio.TaskGroup available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-680-tomllib-support-for-parsing-toml-in-the-standard-library
+  - https://peps.python.org/pep-0680/
+- id: PY310SL02
+  name: asyncio.TaskGroup available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     asyncio.TaskGroup provides a context manager for managing groups of tasks
     with automatic cancellation and exception handling (PEP 654).
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "asyncio"
-      attr: "TaskGroup"
+          id: asyncio
+      attr: TaskGroup
   message: |
     asyncio.TaskGroup is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use asyncio.gather() or install the taskgroup backport package.
   examples:
-    bad: "async with asyncio.TaskGroup() as tg: ..."
-    good: "results = await asyncio.gather(*tasks)  # Python 3.10"
+    bad: 'async with asyncio.TaskGroup() as tg: ...'
+    good: 'results = await asyncio.gather(*tasks)  # Python 3.10'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#asyncio"
-    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.TaskGroup"
-
-- id: "PY310SL03"
-  name: "asyncio.timeout() context manager available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#asyncio
+  - https://docs.python.org/3/library/asyncio-task.html#asyncio.TaskGroup
+- id: PY310SL03
+  name: asyncio.timeout() context manager available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     asyncio.timeout() provides a simple context manager for timeouts.
     It's cleaner than asyncio.wait_for() for many use cases.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "asyncio"
-          attr: "timeout"
+              id: asyncio
+          attr: timeout
   message: |
     asyncio.timeout() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use asyncio.wait_for() instead.
   examples:
-    bad: "async with asyncio.timeout(10): ..."
-    good: "await asyncio.wait_for(coro, timeout=10)  # Python 3.10"
+    bad: 'async with asyncio.timeout(10): ...'
+    good: 'await asyncio.wait_for(coro, timeout=10)  # Python 3.10'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#asyncio"
-    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.timeout"
-
-- id: "PY310SL04"
-  name: "asyncio.Runner class available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#asyncio
+  - https://docs.python.org/3/library/asyncio-task.html#asyncio.timeout
+- id: PY310SL04
+  name: asyncio.Runner class available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     asyncio.Runner provides a context manager for managing the asyncio event loop.
     It simplifies running multiple async functions in the same event loop.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "asyncio"
-      attr: "Runner"
+          id: asyncio
+      attr: Runner
   message: |
     asyncio.Runner is available in Python 3.11+.
   suggestion: |
     For Python 3.10, manually manage the event loop or use asyncio.run().
   examples:
-    bad: "with asyncio.Runner() as runner: ..."
-    good: "# Use asyncio.run() for each coroutine in Python 3.10"
+    bad: 'with asyncio.Runner() as runner: ...'
+    good: '# Use asyncio.run() for each coroutine in Python 3.10'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#asyncio"
-    - "https://docs.python.org/3/library/asyncio-runner.html"
-
-- id: "PY310SL05"
-  name: "contextlib.chdir() context manager available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#asyncio
+  - https://docs.python.org/3/library/asyncio-runner.html
+- id: PY310SL05
+  name: contextlib.chdir() context manager available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     contextlib.chdir() provides a context manager for temporarily changing
     the current working directory.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "contextlib"
-          attr: "chdir"
+              id: contextlib
+          attr: chdir
   message: |
     contextlib.chdir() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, manually use os.chdir() with try/finally.
   examples:
-    bad: "with contextlib.chdir(path): ..."
+    bad: 'with contextlib.chdir(path): ...'
     good: |
       old_cwd = os.getcwd()
       try:
@@ -158,730 +184,830 @@
       finally:
           os.chdir(old_cwd)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#contextlib"
-    - "https://docs.python.org/3/library/contextlib.html#contextlib.chdir"
-
-- id: "PY310SL06"
-  name: "datetime.UTC constant available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#contextlib
+  - https://docs.python.org/3/library/contextlib.html#contextlib.chdir
+- id: PY310SL06
+  name: datetime.UTC constant available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     datetime.UTC is an alias for datetime.timezone.utc, providing a cleaner
     way to access the UTC timezone.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "datetime"
-      attr: "UTC"
+          id: datetime
+      attr: UTC
   message: |
     datetime.UTC is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use datetime.timezone.utc instead.
   examples:
-    bad: "dt = datetime.now(datetime.UTC)"
-    good: "dt = datetime.now(datetime.timezone.utc)"
+    bad: dt = datetime.now(datetime.UTC)
+    good: dt = datetime.now(datetime.timezone.utc)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#datetime"
-    - "https://docs.python.org/3/library/datetime.html#datetime.UTC"
-
-- id: "PY310SL07"
-  name: "enum.StrEnum class available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#datetime
+  - https://docs.python.org/3/library/datetime.html#datetime.UTC
+- id: PY310SL07
+  name: enum.StrEnum class available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     enum.StrEnum is an Enum subclass whose members are also strings.
     This is useful for string-based enumerations.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "enum"
-      attr: "StrEnum"
+          id: enum
+      attr: StrEnum
   message: |
     enum.StrEnum is available in Python 3.11+.
   suggestion: |
     For Python 3.10, create a custom class: class MyEnum(str, Enum): ...
   examples:
-    bad: "class Color(StrEnum): RED = 'red'"
-    good: "class Color(str, Enum): RED = 'red'"
+    bad: 'class Color(StrEnum): RED = ''red'''
+    good: 'class Color(str, Enum): RED = ''red'''
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#enum"
-    - "https://docs.python.org/3/library/enum.html#enum.StrEnum"
-
-- id: "PY310SL08"
-  name: "enum.ReprEnum class available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#enum
+  - https://docs.python.org/3/library/enum.html#enum.StrEnum
+- id: PY310SL08
+  name: enum.ReprEnum class available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     enum.ReprEnum changes __repr__() to show only the member's name and value,
     not the class name.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "enum"
-      attr: "ReprEnum"
+          id: enum
+      attr: ReprEnum
   message: |
     enum.ReprEnum is available in Python 3.11+.
   suggestion: |
     For Python 3.10, customize __repr__() in your Enum class.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#enum"
-    - "https://docs.python.org/3/library/enum.html#enum.ReprEnum"
-
-- id: "PY310SL09"
-  name: "enum.verify() decorator available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#enum
+  - https://docs.python.org/3/library/enum.html#enum.ReprEnum
+- id: PY310SL09
+  name: enum.verify() decorator available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     enum.verify() decorator checks that Enum constraints are met,
     such as UNIQUE, CONTINUOUS, NAMED_FLAGS.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "enum"
-          attr: "verify"
+              id: enum
+          attr: verify
   message: |
     enum.verify() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, manually validate enum constraints.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#enum"
-    - "https://docs.python.org/3/library/enum.html#enum.verify"
-
-- id: "PY310SL10"
-  name: "enum.member() and nonmember() available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#enum
+  - https://docs.python.org/3/library/enum.html#enum.verify
+- id: PY310SL10
+  name: enum.member() and nonmember() available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     enum.member() and enum.nonmember() explicitly mark attributes as
     enum members or non-members.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "enum"
-          attr: "regex:(member|nonmember)"
+              id: enum
+          attr: regex:(member|nonmember)
   message: |
     enum.member() and nonmember() are available in Python 3.11+.
   suggestion: |
     For Python 3.10, use naming conventions to distinguish members and non-members.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#enum"
-    - "https://docs.python.org/3/library/enum.html#enum.member"
-
-- id: "PY310SL11"
-  name: "fractions.Fraction supports string format spec"
-  category: "enhancement"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#enum
+  - https://docs.python.org/3/library/enum.html#enum.member
+- id: PY310SL11
+  name: fractions.Fraction supports string format spec
+  category: enhancement
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     fractions.Fraction now supports format specification mini-language
     for decimal representations.
-  detector: "EnhancementDetector"
+  detector: EnhancementDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "format"
+          id: format
       args:
-        - node_type: "Call"
-          children:
-            func:
-              node_type: "Attribute"
-              children:
-                value:
-                  node_type: "Name"
-                  attributes:
-                    id: "fractions"
-                attr: "Fraction"
+      - node_type: Call
+        children:
+          func:
+            node_type: Attribute
+            children:
+              value:
+                node_type: Name
+                attributes:
+                  id: fractions
+              attr: Fraction
   message: |
     fractions.Fraction format spec support is enhanced in Python 3.11.
   suggestion: |
     This feature works in Python 3.11+. Use str() for Python 3.10.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#fractions"
-
-- id: "PY310SL12"
-  name: "functools.cache() decorator available"
-  category: "enhancement"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#fractions
+- id: PY310SL12
+  name: functools.cache() decorator available
+  category: enhancement
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     functools.cache() decorator is equivalent to lru_cache(maxsize=None)
     but simpler and faster. Actually added in 3.9, but worth noting.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "functools"
-      attr: "cache"
+          id: functools
+      attr: cache
   message: |
     functools.cache() is available in Python 3.9+.
   suggestion: |
     This is available in both 3.10 and 3.11, no changes needed.
   references:
-    - "https://docs.python.org/3/library/functools.html#functools.cache"
-
-- id: "PY310SL13"
-  name: "inspect.BufferFlags class available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/library/functools.html#functools.cache
+- id: PY310SL13
+  name: inspect.BufferFlags class available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     inspect.BufferFlags provides flags for buffer protocol operations
     (PEP 688 - Making the buffer protocol accessible in Python).
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "inspect"
-      attr: "BufferFlags"
+          id: inspect
+      attr: BufferFlags
   message: |
     inspect.BufferFlags is available in Python 3.11+ (PEP 688).
   suggestion: |
     This feature is only available in Python 3.11+.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#inspect"
-    - "https://peps.python.org/pep-0688/"
-
-- id: "PY310SL14"
-  name: "math.exp2() function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#inspect
+  - https://peps.python.org/pep-0688/
+- id: PY310SL14
+  name: math.exp2() function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     math.exp2(x) returns 2 raised to the power x. More accurate and
     faster than 2**x or pow(2, x).
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "math"
-          attr: "exp2"
+              id: math
+          attr: exp2
   message: |
     math.exp2() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use 2**x or pow(2, x).
   examples:
-    bad: "result = math.exp2(x)"
-    good: "result = 2**x  # or pow(2, x)"
+    bad: result = math.exp2(x)
+    good: 'result = 2**x  # or pow(2, x)'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#math"
-    - "https://docs.python.org/3/library/math.html#math.exp2"
-
-- id: "PY310SL15"
-  name: "math.cbrt() function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#math
+  - https://docs.python.org/3/library/math.html#math.exp2
+- id: PY310SL15
+  name: math.cbrt() function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     math.cbrt(x) returns the cube root of x. More accurate than x**(1/3)
     or pow(x, 1/3).
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "math"
-          attr: "cbrt"
+              id: math
+          attr: cbrt
   message: |
     math.cbrt() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use x**(1/3) or pow(x, 1/3).
   examples:
-    bad: "result = math.cbrt(x)"
-    good: "result = pow(x, 1/3)"
+    bad: result = math.cbrt(x)
+    good: result = pow(x, 1/3)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#math"
-    - "https://docs.python.org/3/library/math.html#math.cbrt"
-
-- id: "PY310SL16"
-  name: "operator.call() function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#math
+  - https://docs.python.org/3/library/math.html#math.cbrt
+- id: PY310SL16
+  name: operator.call() function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     operator.call(obj, *args, **kwargs) is equivalent to obj(*args, **kwargs).
     Useful for functional programming.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "operator"
-          attr: "call"
+              id: operator
+          attr: call
   message: |
     operator.call() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use lambda obj, *args, **kw: obj(*args, **kw).
   examples:
-    bad: "operator.call(func, arg1, arg2)"
-    good: "(lambda f, *args: f(*args))(func, arg1, arg2)"
+    bad: operator.call(func, arg1, arg2)
+    good: '(lambda f, *args: f(*args))(func, arg1, arg2)'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#operator"
-    - "https://docs.python.org/3/library/operator.html#operator.call"
-
-- id: "PY310SL17"
-  name: "os.path.splitroot() function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#operator
+  - https://docs.python.org/3/library/operator.html#operator.call
+- id: PY310SL17
+  name: os.path.splitroot() function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     os.path.splitroot() splits a pathname into drive, root, and tail components.
     Works on Windows and Unix paths.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Attribute"
+            node_type: Attribute
             children:
               value:
-                node_type: "Name"
+                node_type: Name
                 attributes:
-                  id: "os"
-              attr: "path"
-          attr: "splitroot"
+                  id: os
+              attr: path
+          attr: splitroot
   message: |
     os.path.splitroot() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use os.path.splitdrive() and custom logic.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#os"
-    - "https://docs.python.org/3/library/os.path.html#os.path.splitroot"
-
-- id: "PY310SL18"
-  name: "pathlib.Path.is_mount() method available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#os
+  - https://docs.python.org/3/library/os.path.html#os.path.splitroot
+- id: PY310SL18
+  name: pathlib.Path.is_mount() method available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     pathlib.Path.is_mount() checks if a path is a mount point.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "is_mount"
+          attr: is_mount
   message: |
     pathlib.Path.is_mount() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use os.path.ismount() instead.
   examples:
-    bad: "if path.is_mount(): ..."
-    good: "if os.path.ismount(path): ..."
+    bad: 'if path.is_mount(): ...'
+    good: 'if os.path.ismount(path): ...'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pathlib"
-    - "https://docs.python.org/3/library/pathlib.html#pathlib.Path.is_mount"
-
-- id: "PY310SL19"
-  name: "re.RegexFlag.NOFLAG constant available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pathlib
+  - https://docs.python.org/3/library/pathlib.html#pathlib.Path.is_mount
+- id: PY310SL19
+  name: re.RegexFlag.NOFLAG constant available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     re.NOFLAG (or re.RegexFlag.NOFLAG) represents no regex flags set.
     Useful for explicitly indicating default behavior.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "re"
-      attr: "NOFLAG"
+          id: re
+      attr: NOFLAG
   message: |
     re.NOFLAG is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use 0 instead.
   examples:
-    bad: "pattern = re.compile(r'test', re.NOFLAG)"
-    good: "pattern = re.compile(r'test', 0)"
+    bad: pattern = re.compile(r'test', re.NOFLAG)
+    good: pattern = re.compile(r'test', 0)
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#re"
-    - "https://docs.python.org/3/library/re.html#re.NOFLAG"
-
-- id: "PY310SL20"
-  name: "shutil.make_archive() root_dir and base_dir parameters"
-  category: "enhancement"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#re
+  - https://docs.python.org/3/library/re.html#re.NOFLAG
+- id: PY310SL20
+  name: shutil.make_archive() root_dir and base_dir parameters
+  category: enhancement
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     shutil.make_archive() now accepts pathlib.Path objects for
     root_dir and base_dir parameters.
-  detector: "EnhancementDetector"
+  detector: EnhancementDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "shutil"
-          attr: "make_archive"
+              id: shutil
+          attr: make_archive
   message: |
     shutil.make_archive() supports pathlib.Path in Python 3.11+.
   suggestion: |
     For Python 3.10, convert Path objects to strings: str(path).
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#shutil"
-
-- id: "PY310SL21"
-  name: "socket.create_server() supports multi-bind"
-  category: "enhancement"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#shutil
+- id: PY310SL21
+  name: socket.create_server() supports multi-bind
+  category: enhancement
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     socket.create_server() can now bind to multiple addresses when
     given a sequence of host-port tuples.
-  detector: "EnhancementDetector"
+  detector: EnhancementDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "socket"
-          attr: "create_server"
+              id: socket
+          attr: create_server
   message: |
     socket.create_server() multi-bind support is available in Python 3.11+.
   suggestion: |
     For Python 3.10, create separate sockets for each address.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#socket"
-
-- id: "PY310SL22"
-  name: "sqlite3.Connection.blobopen() method available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#socket
+- id: PY310SL22
+  name: sqlite3.Connection.blobopen() method available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     sqlite3.Connection.blobopen() opens a BLOB for incremental I/O,
     returning a blob handle object.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "blobopen"
+          attr: blobopen
   message: |
     sqlite3.Connection.blobopen() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, read/write BLOBs entirely in memory.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#sqlite3"
-    - "https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.blobopen"
-
-- id: "PY310SL23"
-  name: "sqlite3.Connection.setlimit() and getlimit() available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#sqlite3
+  - https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.blobopen
+- id: PY310SL23
+  name: sqlite3.Connection.setlimit() and getlimit() available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     sqlite3.Connection.setlimit() and getlimit() allow runtime control
     of SQLite resource limits.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "regex:(setlimit|getlimit)"
+          attr: regex:(setlimit|getlimit)
   message: |
     sqlite3.Connection.setlimit/getlimit() are available in Python 3.11+.
   suggestion: |
     These features require Python 3.11+.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#sqlite3"
-    - "https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.setlimit"
-
-- id: "PY310SL24"
-  name: "sys.exception() function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#sqlite3
+  - https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.setlimit
+- id: PY310SL24
+  name: sys.exception() function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     sys.exception() returns the active exception being handled.
     Similar to sys.exc_info()[1] but cleaner.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "sys"
-          attr: "exception"
+              id: sys
+          attr: exception
   message: |
     sys.exception() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use sys.exc_info()[1].
   examples:
-    bad: "exc = sys.exception()"
-    good: "exc = sys.exc_info()[1]"
+    bad: exc = sys.exception()
+    good: exc = sys.exc_info()[1]
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#sys"
-    - "https://docs.python.org/3/library/sys.html#sys.exception"
-
-- id: "PY310SL25"
-  name: "sys.__interactivehook__ available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#sys
+  - https://docs.python.org/3/library/sys.html#sys.exception
+- id: PY310SL25
+  name: sys.__interactivehook__ available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     sys.__interactivehook__ is now called when entering interactive mode,
     allowing customization of the interactive environment.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     children:
       value:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "sys"
-      attr: "__interactivehook__"
+          id: sys
+      attr: __interactivehook__
   message: |
     sys.__interactivehook__ behavior improved in Python 3.11.
   suggestion: |
     This feature works differently between versions.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#sys"
-
-- id: "PY310SL26"
-  name: "threading.setprofile_all_threads() available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#sys
+- id: PY310SL26
+  name: threading.setprofile_all_threads() available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     threading.setprofile_all_threads() and settrace_all_threads()
     set profile/trace functions for all existing and future threads.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "threading"
-          attr: "regex:(setprofile_all_threads|settrace_all_threads)"
+              id: threading
+          attr: regex:(setprofile_all_threads|settrace_all_threads)
   message: |
     threading.setprofile_all_threads() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, manually set profile/trace for each thread.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#threading"
-    - "https://docs.python.org/3/library/threading.html"
-
-- id: "PY310SL27"
-  name: "traceback.StackSummary.format_frame_summary() available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#threading
+  - https://docs.python.org/3/library/threading.html
+- id: PY310SL27
+  name: traceback.StackSummary.format_frame_summary() available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     traceback.StackSummary.format_frame_summary() formats a single
     FrameSummary object with improved error location information (PEP 657).
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "format_frame_summary"
+          attr: format_frame_summary
   message: |
     traceback.StackSummary.format_frame_summary() is available in Python 3.11+.
   suggestion: |
     This feature provides enhanced error messages in Python 3.11.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#traceback"
-    - "https://peps.python.org/pep-0657/"
-
-- id: "PY310SL28"
-  name: "unicodedata updated to Unicode 14.0"
-  category: "enhancement"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#traceback
+  - https://peps.python.org/pep-0657/
+- id: PY310SL28
+  name: unicodedata updated to Unicode 14.0
+  category: enhancement
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     The unicodedata module has been updated to Unicode 14.0.0,
     adding support for new characters and properties.
-  detector: "EnhancementDetector"
+  detector: EnhancementDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "unicodedata"
+      - node_type: alias
+        attributes:
+          name: unicodedata
   message: |
     unicodedata is updated to Unicode 14.0.0 in Python 3.11.
   suggestion: |
     Python 3.10 uses Unicode 13.0.0. Be aware of differences in character support.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#unicodedata"
-
-- id: "PY310SL29"
-  name: "unittest.TestCase.enterContext() available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#unicodedata
+- id: PY310SL29
+  name: unittest.TestCase.enterContext() available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     unittest.TestCase.enterContext() allows entering a context manager
     that will be automatically exited after the test.
-  detector: "NewAPIDetector"
+  detector: NewAPIDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         attributes:
-          attr: "enterContext"
+          attr: enterContext
   message: |
     unittest.TestCase.enterContext() is available in Python 3.11+.
   suggestion: |
     For Python 3.10, use addCleanup() with context manager __exit__.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#unittest"
-    - "https://docs.python.org/3/library/unittest.html"
-
-- id: "PY310SL30"
-  name: "Performance improvements in Python 3.11"
-  category: "informational"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#unittest
+  - https://docs.python.org/3/library/unittest.html
+- id: PY310SL30
+  name: Performance improvements in Python 3.11
+  category: informational
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.11 is significantly faster than 3.10 (average 1.25x speedup).
     Improvements include faster startup, faster runtime, zero-cost exceptions,
     and adaptive specializing interpreter (PEP 659).
-  detector: "InformationalDetector"
+  detector: InformationalDetector
   pattern:
-    node_type: "Module"
+    node_type: Module
   message: |
     Python 3.11 provides significant performance improvements (average 1.25x faster).
   suggestion: |
     Consider upgrading to Python 3.11 for performance benefits (PEP 659).
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-faster-cpython"
-    - "https://peps.python.org/pep-0659/"
+  - https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-faster-cpython
+  - https://peps.python.org/pep-0659/

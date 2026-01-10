@@ -1,20 +1,26 @@
-# Syntax changes when upgrading from Python 3.7 to 3.8+
+# Syntax Changes when upgrading from Python 3.7
+# New syntax features and breaking syntax changes
 
-- id: "PY37SC01"
-  name: "Assignment expressions (walrus operator) available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.7"
-  target_version: "3.8"
+- id: PY37SC01
+  name: Assignment expressions (walrus operator) available
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     The walrus operator := (assignment expressions) is not available in
     Python 3.7. It was introduced in Python 3.8 via PEP 572.
     Assignment expressions allow assigning values within larger expressions,
     reducing redundant function calls and improving readability.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "NamedExpr"
+    node_type: NamedExpr
   message: |
     Assignment expressions (:=) are not available in Python 3.7.
     This code requires Python 3.8+.
@@ -32,23 +38,27 @@
       if n > 10:
           print(f"List is too long ({n} elements)")
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions"
-    - "https://www.python.org/dev/peps/pep-0572/"
-
-- id: "PY37SC02"
-  name: "Positional-only parameters available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions
+  - https://www.python.org/dev/peps/pep-0572/
+- id: PY37SC02
+  name: Positional-only parameters available
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 570 introduced positional-only parameters using the / syntax.
     Parameters before / can only be passed positionally, not as keyword
     arguments. This was not available in Python 3.7.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "FunctionDef"
+    node_type: FunctionDef
   condition:
     has_posonlyargs: true
   message: |
@@ -67,23 +77,27 @@
       def f(a, b, c, d, *, e, f):
           print(a, b, c, d, e, f)
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#positional-only-parameters"
-    - "https://www.python.org/dev/peps/pep-0570/"
-
-- id: "PY37SC03"
-  name: "f-string = specifier available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#positional-only-parameters
+  - https://www.python.org/dev/peps/pep-0570/
+- id: PY37SC03
+  name: f-string = specifier available
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.8 added the = specifier for f-strings to support self-documenting
     expressions for debugging. The syntax f'{expr=}' expands to show both
     the expression text and its value.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "JoinedStr"
+    node_type: JoinedStr
   condition:
     contains_debug_specifier: true
   message: |
@@ -103,22 +117,26 @@
       member_since = date(1975, 7, 31)
       print(f'user={user!r} member_since={member_since!r}')
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#f-strings-support-for-self-documenting-expressions-and-debugging"
-    - "https://bugs.python.org/issue36817"
-
-- id: "PY37SC04"
-  name: "continue in finally clause allowed"
-  category: "syntax_change"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#f-strings-support-for-self-documenting-expressions-and-debugging
+  - https://bugs.python.org/issue36817
+- id: PY37SC04
+  name: continue in finally clause allowed
+  category: syntax_change
+  severity: info
+  risk_level: INFO
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     In Python 3.7 and earlier, using 'continue' in a finally clause was
     illegal and raised SyntaxError. Python 3.8 removed this restriction.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Continue"
+    node_type: Continue
   condition:
     inside_finally_clause: true
   message: |
@@ -146,23 +164,27 @@
           finally:
               cleanup()
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#other-language-changes"
-    - "https://bugs.python.org/issue32489"
-
-- id: "PY37SC05"
-  name: "Generalized iterable unpacking in yield and return"
-  category: "syntax_change"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.7"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.8.html#other-language-changes
+  - https://bugs.python.org/issue32489
+- id: PY37SC05
+  name: Generalized iterable unpacking in yield and return
+  category: syntax_change
+  severity: info
+  risk_level: INFO
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.8 allows generalized iterable unpacking in yield and return
     statements without requiring enclosing parentheses. In Python 3.7,
     you needed parentheses for unpacking with *.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Return"
+    node_type: Return
   condition:
     has_unparenthesized_starred_unpacking: true
   message: |
@@ -182,24 +204,30 @@
           lastname, *members = family.split()
           return (lastname.upper(), *members)
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#other-language-changes"
-    - "https://bugs.python.org/issue32117"
+  - https://docs.python.org/3/whatsnew/3.8.html#other-language-changes
+  - https://bugs.python.org/issue32117
+- id: PY37SC06
+  name: |2-
 
-- id: "PY37SC06"
-  name: "\N{name} escapes supported in regular expressions"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.7"
-  target_version: "3.8"
+    {name} escapes supported in regular expressions
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.7'
+  target_version: '3.8'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.8 added support for \N{name} Unicode named character escapes
     in regular expression patterns. This was not supported in Python 3.7.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "re.compile"
+    func_is: re.compile
     pattern_contains_unicode_name_escape: true
   message: |
     \N{name} escapes in regular expressions are not available in Python 3.7.
@@ -217,5 +245,5 @@
       import re
       pattern = re.compile(r'A')  # or r'\u0041'
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#other-language-changes"
-    - "https://bugs.python.org/issue30688"
+  - https://docs.python.org/3/whatsnew/3.8.html#other-language-changes
+  - https://bugs.python.org/issue30688

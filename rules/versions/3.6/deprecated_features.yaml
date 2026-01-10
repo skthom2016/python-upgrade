@@ -1,21 +1,26 @@
-# Deprecated features when upgrading from Python 3.6 to 3.7+
+# Deprecated Features when upgrading from Python 3.6
 # These features are deprecated and will be removed in future versions
 
-- id: "PY36DF01"
-  name: "Yield expressions in comprehensions deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.8"
+- id: PY36DF01
+  name: Yield expressions in comprehensions deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Yield expressions (both 'yield' and 'yield from' clauses) are now
     deprecated in comprehensions and generator expressions (aside from the
     iterable expression in the leftmost 'for' clause). In Python 3.7 these
     emit DeprecationWarning, in Python 3.8 this will be a SyntaxError.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ListComp"
+    node_type: ListComp
   condition:
     contains_yield: true
   message: |
@@ -36,26 +41,30 @@
               yield x
       list(gen())
   references:
-    - "https://docs.python.org/3/whatsnew/3.7.html#deprecated-python-behavior"
-    - "https://bugs.python.org/issue10544"
-
-- id: "PY36DF02"
-  name: "Returning complex subclass from __complex__() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/whatsnew/3.7.html#deprecated-python-behavior
+  - https://bugs.python.org/issue10544
+- id: PY36DF02
+  name: Returning complex subclass from __complex__() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Returning a subclass of complex from object.__complex__() is deprecated
     and will be an error in future Python versions. This makes __complex__()
     consistent with object.__int__() and object.__float__().
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "FunctionDef"
+    node_type: FunctionDef
   condition:
-    function_name: "__complex__"
-    returns_subclass_of: "complex"
+    function_name: __complex__
+    returns_subclass_of: complex
   message: |
     Returning a subclass of complex from __complex__() is deprecated and
     will be an error in Python 3.8+.
@@ -74,31 +83,35 @@
           def __complex__(self):
               return complex(1+2j)
   references:
-    - "https://docs.python.org/3/whatsnew/3.7.html#deprecated-python-behavior"
-    - "https://bugs.python.org/issue28894"
-
-- id: "PY36DF03"
-  name: "aifc.openfp() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.7.html#deprecated-python-behavior
+  - https://bugs.python.org/issue28894
+- id: PY36DF03
+  name: aifc.openfp() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     aifc.openfp() has been deprecated and will be removed in Python 3.9.
     Use aifc.open() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "aifc"
-          attr: "openfp"
+              id: aifc
+          attr: openfp
   message: |
     aifc.openfp() is deprecated and will be removed in Python 3.9.
     Use aifc.open() instead.
@@ -112,23 +125,27 @@
       import aifc
       f = aifc.open('sound.aiff')
   references:
-    - "https://docs.python.org/3/library/aifc.html#aifc.open"
-    - "https://bugs.python.org/issue31985"
-
-- id: "PY36DF04"
-  name: "Direct await of asyncio.Lock deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/aifc.html#aifc.open
+  - https://bugs.python.org/issue31985
+- id: PY36DF04
+  name: Direct await of asyncio.Lock deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Support for directly awaiting instances of asyncio.Lock and other
     asyncio synchronization primitives has been deprecated. An asynchronous
     context manager must be used instead.
-  detector: "AsyncChangesDetector"
+  detector: AsyncChangesDetector
   pattern:
-    node_type: "Await"
+    node_type: Await
   condition:
     awaits_sync_primitive: true
   message: |
@@ -147,25 +164,29 @@
       async with lock:
           # ... do work ...
   references:
-    - "https://docs.python.org/3/library/asyncio-sync.html"
-    - "https://bugs.python.org/issue32253"
-
-- id: "PY36DF05"
-  name: "asyncio.Task.current_task() and all_tasks() deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/asyncio-sync.html
+  - https://bugs.python.org/issue32253
+- id: PY36DF05
+  name: asyncio.Task.current_task() and all_tasks() deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The asyncio.Task.current_task() and asyncio.Task.all_tasks() methods
     have been deprecated. Use asyncio.current_task() and
     asyncio.all_tasks() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(asyncio.Task.current_task|asyncio.Task.all_tasks)"
+    func_is: regex:(asyncio.Task.current_task|asyncio.Task.all_tasks)
   message: |
     asyncio.Task.current_task() and asyncio.Task.all_tasks() are
     deprecated. Use asyncio.current_task() and asyncio.all_tasks() instead.
@@ -180,31 +201,35 @@
       task = asyncio.current_task()
       tasks = asyncio.all_tasks()
   references:
-    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.current_task"
-    - "https://bugs.python.org/issue32250"
-
-- id: "PY36DF06"
-  name: "collections ABC in collections module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/asyncio-task.html#asyncio.current_task
+  - https://bugs.python.org/issue32250
+- id: PY36DF06
+  name: collections ABC in collections module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     In Python 3.8, the abstract base classes in collections.abc will no
     longer be exposed in the regular collections module. Import from
     collections.abc instead.
-  detector: "ImportChangesDetector"
+  detector: ImportChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     children:
       module:
-        node_type: "str"
-        value: "collections"
+        node_type: str
+        value: collections
       names:
-        - node_type: "alias"
-          attributes:
-            name: "regex:(Callable|Iterator|Collection|Mapping|MutableMapping|Sequence|MutableSequence|Set|MutableSet)"
+      - node_type: alias
+        attributes:
+          name: regex:(Callable|Iterator|Collection|Mapping|MutableMapping|Sequence|MutableSequence|Set|MutableSet)
   message: |
     Importing ABC classes from 'collections' is deprecated. Use
     'collections.abc' instead. Will be removed in Python 3.10.
@@ -217,32 +242,36 @@
     good: |
       from collections.abc import Callable, Iterator, Mapping
   references:
-    - "https://docs.python.org/3/library/collections.abc.html"
-    - "https://bugs.python.org/issue25988"
-
-- id: "PY36DF07"
-  name: "dbm.dumb behavior change deprecation"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/collections.abc.html
+  - https://bugs.python.org/issue25988
+- id: PY36DF07
+  name: dbm.dumb behavior change deprecation
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     dbm.dumb now supports reading read-only files and no longer writes the
     index file when it is not changed. A deprecation warning is emitted if
     the index file is missing and recreated in 'r' and 'w' modes.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "dbm"
-          attr: "open"
+              id: dbm
+          attr: open
   condition:
     mode_is_read_or_write: true
   message: |
@@ -259,22 +288,26 @@
       db = dbm.dumb.open('file', 'c')  # Create if needed
       db = dbm.dumb.open('file', 'r')  # Read only, expects index
   references:
-    - "https://docs.python.org/3/library/dbm.html#module-dbm.dumb"
-    - "https://bugs.python.org/issue28847"
-
-- id: "PY36DF08"
-  name: "Non-Enum membership check deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/dbm.html#module-dbm.dumb
+  - https://bugs.python.org/issue28847
+- id: PY36DF08
+  name: Non-Enum membership check deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     In Python 3.8, attempting to check for non-Enum objects in Enum classes
     will raise a TypeError. Currently returns False but is deprecated.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Compare"
+    node_type: Compare
   condition:
     checking_non_enum_in_enum: true
   message: |
@@ -299,31 +332,35 @@
       if 1 in [e.value for e in Color]:
           pass
   references:
-    - "https://docs.python.org/3/library/enum.html"
-    - "https://bugs.python.org/issue33217"
-
-- id: "PY36DF09"
-  name: "gettext non-integer plural deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/enum.html
+  - https://bugs.python.org/issue33217
+- id: PY36DF09
+  name: gettext non-integer plural deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Using non-integer value for selecting a plural form in gettext is now
     deprecated. It never correctly worked.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "gettext"
-          attr: "ngettext"
+              id: gettext
+          attr: ngettext
   condition:
     plural_not_integer: true
   message: |
@@ -336,25 +373,29 @@
     good: |
       msg = gettext.ngettext('singular', 'plural', 2)  # Integer
   references:
-    - "https://docs.python.org/3/library/gettext.html#gettext.ngettext"
-    - "https://bugs.python.org/issue28692"
-
-- id: "PY36DF10"
-  name: "importlib find_module() and find_loader() deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/gettext.html#gettext.ngettext
+  - https://bugs.python.org/issue28692
+- id: PY36DF10
+  name: importlib find_module() and find_loader() deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     MetaPathFinder.find_module() and PathEntryFinder.find_loader()
     methods have been deprecated since Python 3.4 and now emit
     DeprecationWarning. Use find_spec() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(find_module|find_loader)"
+    func_is: regex:(find_module|find_loader)
     is_importlib_method: true
   message: |
     importlib find_module() and find_loader() are deprecated. Use
@@ -368,31 +409,35 @@
     good: |
       spec = finder.find_spec('module')
   references:
-    - "https://docs.python.org/3/library/importlib.html#importlib.abc.MetaPathFinder.find_spec"
-    - "https://bugs.python.org/issue29576"
-
-- id: "PY36DF11"
-  name: "locale.format() deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/importlib.html#importlib.abc.MetaPathFinder.find_spec
+  - https://bugs.python.org/issue29576
+- id: PY36DF11
+  name: locale.format() deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     locale.format() has been deprecated, use locale.format_string()
     instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "locale"
-          attr: "format"
+              id: locale
+          attr: format
   message: |
     locale.format() is deprecated. Use locale.format_string() instead.
   suggestion: |
@@ -403,27 +448,31 @@
     good: |
       formatted = locale.format_string('%d', 1000, grouping=True)
   references:
-    - "https://docs.python.org/3/library/locale.html#locale.format_string"
-    - "https://bugs.python.org/issue10379"
-
-- id: "PY36DF12"
-  name: "macpath module deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/locale.html#locale.format_string
+  - https://bugs.python.org/issue10379
+- id: PY36DF12
+  name: macpath module deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The macpath module is now deprecated and will be removed in Python 3.8.
     Use os.path and genericpath functions instead.
-  detector: "ImportChangesDetector"
+  detector: ImportChangesDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "macpath"
+      - node_type: alias
+        attributes:
+          name: macpath
   message: |
     The macpath module is deprecated and will be removed in Python 3.8.
     Use os.path instead.
@@ -437,26 +486,30 @@
       import os.path
       path = os.path.join('a', 'b')
   references:
-    - "https://bugs.python.org/issue9850"
-
-- id: "PY36DF13"
-  name: "dummy_threading deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.9"
+  - https://bugs.python.org/issue9850
+- id: PY36DF13
+  name: dummy_threading deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     dummy_threading and _dummy_thread have been deprecated. It is no longer
     possible to build Python with threading disabled. Use threading instead.
-  detector: "ImportChangesDetector"
+  detector: ImportChangesDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "regex:(dummy_threading|_dummy_thread)"
+      - node_type: alias
+        attributes:
+          name: regex:(dummy_threading|_dummy_thread)
   message: |
     The dummy_threading module is deprecated. Use threading instead.
   suggestion: |
@@ -469,24 +522,28 @@
       import threading
       threading.Thread(...)
   references:
-    - "https://bugs.python.org/issue31370"
-
-- id: "PY36DF14"
-  name: "socket.htons() and ntohs() silent truncation deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.9"
+  - https://bugs.python.org/issue31370
+- id: PY36DF14
+  name: socket.htons() and ntohs() silent truncation deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The silent argument value truncation in socket.htons() and
     socket.ntohs() has been deprecated. In future versions, passing
     arguments larger than 16 bits will raise an exception.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(socket.htons|socket.ntohs)"
+    func_is: regex:(socket.htons|socket.ntohs)
     argument_exceeds_16_bits: true
   message: |
     Passing values > 16 bits to socket.htons() and socket.ntohs() is
@@ -500,30 +557,34 @@
     good: |
       socket.htons(50000)  # Valid 16-bit value
   references:
-    - "https://bugs.python.org/issue28332"
-
-- id: "PY36DF15"
-  name: "ssl.wrap_socket() deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.12"
+  - https://bugs.python.org/issue28332
+- id: PY36DF15
+  name: ssl.wrap_socket() deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.12'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     ssl.wrap_socket() is deprecated. Use ssl.SSLContext.wrap_socket()
     instead for better security and flexibility.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "ssl"
-          attr: "wrap_socket"
+              id: ssl
+          attr: wrap_socket
   message: |
     ssl.wrap_socket() is deprecated. Use ssl.SSLContext.wrap_socket()
     instead.
@@ -540,31 +601,35 @@
       context.check_hostname = True
       ssl_sock = context.wrap_socket(sock)
   references:
-    - "https://docs.python.org/3/library/ssl.html#ssl.wrap_socket"
-    - "https://bugs.python.org/issue28124"
-
-- id: "PY36DF16"
-  name: "sunau.openfp() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/ssl.html#ssl.wrap_socket
+  - https://bugs.python.org/issue28124
+- id: PY36DF16
+  name: sunau.openfp() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     sunau.openfp() has been deprecated and will be removed in Python 3.9.
     Use sunau.open() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "sunau"
-          attr: "openfp"
+              id: sunau
+          attr: openfp
   message: |
     sunau.openfp() is deprecated and will be removed in Python 3.9.
     Use sunau.open() instead.
@@ -578,30 +643,34 @@
       import sunau
       f = sunau.open('sound.au')
   references:
-    - "https://bugs.python.org/issue31985"
-
-- id: "PY36DF17"
-  name: "wave.openfp() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.9"
+  - https://bugs.python.org/issue31985
+- id: PY36DF17
+  name: wave.openfp() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     wave.openfp() has been deprecated and will be removed in Python 3.9.
     Use wave.open() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "wave"
-          attr: "openfp"
+              id: wave
+          attr: openfp
   message: |
     wave.openfp() is deprecated and will be removed in Python 3.9.
     Use wave.open() instead.
@@ -615,23 +684,27 @@
       import wave
       f = wave.open('sound.wav')
   references:
-    - "https://bugs.python.org/issue31985"
-
-- id: "PY36DF18"
-  name: "sys.set_coroutine_wrapper() deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.7"
+  - https://bugs.python.org/issue31985
+- id: PY36DF18
+  name: sys.set_coroutine_wrapper() deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.7'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     sys.set_coroutine_wrapper() and sys.get_coroutine_wrapper() have
     been deprecated. Use sys.set_coroutine_origin_tracking_depth() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(sys.set_coroutine_wrapper|sys.get_coroutine_wrapper)"
+    func_is: regex:(sys.set_coroutine_wrapper|sys.get_coroutine_wrapper)
   message: |
     sys.set_coroutine_wrapper() and sys.get_coroutine_wrapper() are
     deprecated in Python 3.7+.
@@ -645,31 +718,35 @@
       import sys
       sys.set_coroutine_origin_tracking_depth(2)
   references:
-    - "https://docs.python.org/3/library/sys.html#sys.set_coroutine_origin_tracking_depth"
-    - "https://bugs.python.org/issue32591"
-
-- id: "PY36DF19"
-  name: "sys.callstats() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://docs.python.org/3/library/sys.html#sys.set_coroutine_origin_tracking_depth
+  - https://bugs.python.org/issue32591
+- id: PY36DF19
+  name: sys.callstats() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The undocumented sys.callstats() function has been deprecated and
     will be removed in a future Python version.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "sys"
-          attr: "callstats"
+              id: sys
+          attr: callstats
   message: |
     sys.callstats() is deprecated and will be removed in a future version.
   suggestion: |
@@ -683,23 +760,27 @@
       profiler = cProfile.Profile()
       profiler.run('your_code()')
   references:
-    - "https://bugs.python.org/issue28799"
-
-- id: "PY36DF20"
-  name: "PySlice_GetIndicesEx() deprecated (C API)"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://bugs.python.org/issue28799
+- id: PY36DF20
+  name: PySlice_GetIndicesEx() deprecated (C API)
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Function PySlice_GetIndicesEx() is deprecated in the C API and replaced
     with PySlice_Unpack() and PySlice_AdjustIndices().
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Str"
+    node_type: Str
   condition:
-    contains: "PySlice_GetIndicesEx"
+    contains: PySlice_GetIndicesEx
   message: |
     PySlice_GetIndicesEx() is deprecated in the C API. Use
     PySlice_Unpack() and PySlice_AdjustIndices() instead.
@@ -715,23 +796,27 @@
       PySlice_Unpack(slice, &start, &stop, &step);
       PySlice_AdjustIndices(len, &start, &stop);
   references:
-    - "https://bugs.python.org/issue27867"
-
-- id: "PY36DF21"
-  name: "PyOS_AfterFork() deprecated (C API)"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.6"
-  target_version: "3.8"
+  - https://bugs.python.org/issue27867
+- id: PY36DF21
+  name: PyOS_AfterFork() deprecated (C API)
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.6'
+  target_version: '3.8'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     PyOS_AfterFork() has been deprecated. Use PyOS_BeforeFork(),
     PyOS_AfterFork_Parent() or PyOS_AfterFork_Child() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Str"
+    node_type: Str
   condition:
-    contains: "PyOS_AfterFork"
+    contains: PyOS_AfterFork
   message: |
     PyOS_AfterFork() is deprecated in the C API. Use the new fork-related
     functions instead.
@@ -752,4 +837,4 @@
           PyOS_AfterFork_Parent();
       }
   references:
-    - "https://bugs.python.org/issue16500"
+  - https://bugs.python.org/issue16500

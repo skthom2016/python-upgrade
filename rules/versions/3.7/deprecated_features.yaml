@@ -1,21 +1,27 @@
-# Deprecated features when upgrading from Python 3.7 to 3.8+
+# Deprecated Features when upgrading from Python 3.7
+# These features are deprecated and will be removed in future versions
 
-- id: "PY37DF01"
-  name: "getchildren() and getiterator() deprecated in ElementTree"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.9"
+- id: PY37DF01
+  name: getchildren() and getiterator() deprecated in ElementTree
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Deprecated methods getchildren() and getiterator() in the
     ElementTree module now emit a DeprecationWarning instead of
     PendingDeprecationWarning. They will be removed in Python 3.9.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(getchildren|getiterator)"
+    func_is: regex:(getchildren|getiterator)
     on_elementtree_object: true
   message: |
     getchildren() and getiterator() are deprecated and will be removed in
@@ -31,25 +37,29 @@
       children = list(element)
       iterator = iter(element)
   references:
-    - "https://docs.python.org/3/library/xml.etree.elementtree.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue29209"
-
-- id: "PY37DF02"
-  name: "@asyncio.coroutine decorator deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.10"
+  - https://docs.python.org/3/library/xml.etree.elementtree.html
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue29209
+- id: PY37DF02
+  name: '@asyncio.coroutine decorator deprecated'
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The @asyncio.coroutine decorator is deprecated and will be removed in
     version 3.10. Use async def instead.
-  detector: "AsyncChangesDetector"
+  detector: AsyncChangesDetector
   pattern:
-    node_type: "FunctionDef"
+    node_type: FunctionDef
   condition:
-    has_decorator: "asyncio.coroutine"
+    has_decorator: asyncio.coroutine
   message: |
     The @asyncio.coroutine decorator is deprecated and will be removed in
     Python 3.10. Use 'async def' syntax instead.
@@ -65,17 +75,21 @@
       async def my_coroutine():
           await asyncio.sleep(1)
   references:
-    - "https://docs.python.org/3/library/asyncio-task.html#asyncio.coroutine"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue36921"
-
-- id: "PY37DF03"
-  name: "asyncio loop parameter deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.10"
+  - https://docs.python.org/3/library/asyncio-task.html#asyncio.coroutine
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue36921
+- id: PY37DF03
+  name: asyncio loop parameter deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The explicit passing of a loop argument has been deprecated and will be
     removed in version 3.10 for the following: asyncio.sleep(),
@@ -85,12 +99,12 @@
     asyncio.Semaphore, asyncio.Queue,
     asyncio.create_subprocess_exec(), and
     asyncio.create_subprocess_shell().
-  detector: "AsyncChangesDetector"
+  detector: AsyncChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(asyncio\\.sleep|asyncio\\.gather|asyncio\\.shield|asyncio\\.wait_for|asyncio\\.wait|asyncio\\.as_completed|asyncio\\.Task\\(|asyncio\\.Lock\\(|asyncio\\.Event\\(|asyncio\\.Condition\\(|asyncio\\.Semaphore\\(|asyncio\\.Queue\\(|asyncio\\.create_subprocess_exec\\(|asyncio\\.create_subprocess_shell\\()"
-    has_kwarg: "loop"
+    func_is: regex:(asyncio\.sleep|asyncio\.gather|asyncio\.shield|asyncio\.wait_for|asyncio\.wait|asyncio\.as_completed|asyncio\.Task\(|asyncio\.Lock\(|asyncio\.Event\(|asyncio\.Condition\(|asyncio\.Semaphore\(|asyncio\.Queue\(|asyncio\.create_subprocess_exec\(|asyncio\.create_subprocess_shell\()
+    has_kwarg: loop
   message: |
     Explicit loop argument in asyncio functions is deprecated and will be
     removed in Python 3.10.
@@ -105,25 +119,29 @@
       await asyncio.sleep(1)
       asyncio.run(main())
   references:
-    - "https://docs.python.org/3/library/asyncio-task.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue34790"
-
-- id: "PY37DF04"
-  name: "typing.NamedTuple._field_types deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/asyncio-task.html
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue34790
+- id: PY37DF04
+  name: typing.NamedTuple._field_types deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The typing.NamedTuple class has deprecated the _field_types attribute
     in favor of the __annotations__ attribute which has the same information.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    accesses_attribute: "_field_types"
+    accesses_attribute: _field_types
     on_namedtuple: true
   message: |
     typing.NamedTuple._field_types is deprecated. Use __annotations__
@@ -140,26 +158,30 @@
       Point = NamedTuple('Point', [('x', int), ('y', int)])
       field_names = Point.__annotations__
   references:
-    - "https://docs.python.org/3/library/typing.html#typing.NamedTuple"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue36320"
-
-- id: "PY37DF05"
-  name: "ast classes Num, Str, Bytes, NameConstant, Ellipsis deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/typing.html#typing.NamedTuple
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue36320
+- id: PY37DF05
+  name: ast classes Num, Str, Bytes, NameConstant, Ellipsis deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     ast classes Num, Str, Bytes, NameConstant and Ellipsis are considered
     deprecated and will be removed in future Python versions. Constant
     should be used instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Str"
+    node_type: Str
   condition:
-    contains: "ast.Num|ast.Str|ast.Bytes|ast.NameConstant|ast.Ellipsis"
+    contains: ast.Num|ast.Str|ast.Bytes|ast.NameConstant|ast.Ellipsis
   message: |
     AST classes Num, Str, Bytes, NameConstant, and Ellipsis are deprecated.
     Use ast.Constant instead.
@@ -180,27 +202,31 @@
           def visit_Constant(self, node):
               print(f"Constant: {node.value}")
   references:
-    - "https://docs.python.org/3/library/ast.html#ast.Constant"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue32892"
-
-- id: "PY37DF06"
-  name: "ast.NodeVisitor visit_Num, visit_Str, etc. deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/ast.html#ast.Constant
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue32892
+- id: PY37DF06
+  name: ast.NodeVisitor visit_Num, visit_Str, etc. deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     ast.NodeVisitor methods visit_Num(), visit_Str(), visit_Bytes(),
     visit_NameConstant(), and visit_Ellipsis() are deprecated now and will
     not be called in future Python versions. Add visit_Constant() to
     handle all constant nodes.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "FunctionDef"
+    node_type: FunctionDef
   condition:
-    has_visitor_method: "regex:(visit_Num|visit_Str|visit_Bytes|visit_NameConstant|visit_Ellipsis)"
+    has_visitor_method: regex:(visit_Num|visit_Str|visit_Bytes|visit_NameConstant|visit_Ellipsis)
   message: |
     AST visitor methods for deprecated AST node types are deprecated.
     Add visit_Constant() to handle all constant nodes instead.
@@ -221,28 +247,32 @@
           def visit_Constant(self, node):
               print(f"Constant: {node.value}")
   references:
-    - "https://docs.python.org/3/ast.html#ast.NodeVisitor"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue36917"
-
-- id: "PY37DF07"
-  name: "lgettext() and related functions deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/ast.html#ast.NodeVisitor
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue36917
+- id: PY37DF07
+  name: lgettext() and related functions deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The following functions in the gettext module are deprecated:
     lgettext(), ldgettext(), lngettext(), ldngettext(). They return
     encoded bytes, and it's possible that you will get unexpected
     Unicode-related exceptions if there are encoding problems with the
     translated strings.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(gettext\\.lgettext|gettext\\.ldgettext|gettext\\.lngettext|gettext\\.ldngettext)"
+    func_is: regex:(gettext\.lgettext|gettext\.ldgettext|gettext\.lngettext|gettext\.ldngettext)
   message: |
     gettext.lgettext() and related functions are deprecated. They return
     encoded bytes. Use gettext.gettext() instead.
@@ -257,28 +287,32 @@
       import gettext
       msg = gettext.gettext('message')
   references:
-    - "https://docs.python.org/3/library/gettext.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue33710"
-
-- id: "PY37DF08"
-  name: "gettext bind_textdomain_codeset() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/gettext.html
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue33710
+- id: PY37DF08
+  name: gettext bind_textdomain_codeset() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Function bind_textdomain_codeset(), methods
     NullTranslations.output_charset() and
     NullTranslations.set_output_charset(), and the codeset parameter
     of functions translation() and install() are also deprecated,
     since they are only used for the l*gettext() functions.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "regex:(gettext\\.bind_textdomain_codeset|gettext\\.NullTranslations\\.output_charset|gettext\\.NullTranslations\\.set_output_charset|gettext\\.translation\\(.*codeset|gettext\\.install\\(.*codeset)"
+    func_is: regex:(gettext\.bind_textdomain_codeset|gettext\.NullTranslations\.output_charset|gettext\.NullTranslations\.set_output_charset|gettext\.translation\(.*codeset|gettext\.install\(.*codeset)
   message: |
     gettext bind_textdomain_codeset() and related functions are deprecated.
     These are only used for the deprecated l*gettext() functions.
@@ -290,31 +324,35 @@
       import gettext
       gettext.bind_textdomain_codeset('UTF-8')
   references:
-    - "https://docs.python.org/3/library/gettext.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue33710"
-
-- id: "PY37DF09"
-  name: "threading.Thread.isAlive() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/gettext.html
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue33710
+- id: PY37DF09
+  name: threading.Thread.isAlive() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The isAlive() method of threading.Thread has been deprecated.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "thread"
-          attr: "isAlive"
+              id: thread
+          attr: isAlive
   message: |
     threading.Thread.isAlive() is deprecated. Use is_alive() instead.
   suggestion: |
@@ -331,26 +369,30 @@
       if thread.is_alive():
           pass
   references:
-    - "https://docs.python.org/3/library/threading.html#thread-Thread.is_alive"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue35283"
-
-- id: "PY37DF10"
-  name: "int() and related functions deprecate Decimal/Fraction"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/threading.html#thread-Thread.is_alive
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue35283
+- id: PY37DF10
+  name: int() and related functions deprecate Decimal/Fraction
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Many builtin and extension functions that take integer arguments will
     now emit a deprecation warning for Decimals, Fractions and any other
     objects that can be converted to integers only with a loss (e.g. that have
     the __int__() method but do not have the __index__() method). In
     future versions they will be errors.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
     argument_type_is_float_or_decimal: true
     func_accepts_only_integers: true
@@ -370,16 +412,20 @@
       n = Decimal('10')
       os.open('file', int(n), flags=os.O_CREAT)
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue36048"
-
-- id: "PY37DF11"
-  name: "Keyword arguments becoming positional-only (第一批)"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue36048
+- id: PY37DF11
+  name: Keyword arguments becoming positional-only (第一批)
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Deprecated passing the following arguments as keyword arguments:
     - func in functools.partialmethod(), weakref.finalize(),
@@ -397,12 +443,12 @@
     - obj in weakref.finalize().
 
     In future releases of Python, they will be positional-only.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is_one_of: "regex:(functools\\.partialmethod|weakref\\.finalize|profile\\.Profile\\.runcall|cProfile\\.Profile\\.runcall|bdb\\.Bdb\\.runcall|trace\\.Trace\\.runfunc|curses\\.wrapper)"
-    has_kwarg_one_of: "func|function|fn|callback|c|typeid|obj"
+    func_is_one_of: regex:(functools\.partialmethod|weakref\.finalize|profile\.Profile\.runcall|cProfile\.Profile\.runcall|bdb\.Bdb\.runcall|trace\.Trace\.runfunc|curses\.wrapper)
+    has_kwarg_one_of: func|function|fn|callback|c|typeid|obj
   message: |
     Keyword argument will become positional-only in Python 3.9+.
   suggestion: |
@@ -413,24 +459,28 @@
       unittest.TestCase.addCleanup(cleanup, 'arg')
       concurrent.futures.ThreadPoolExecutor.submit(task, fn=callback)
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue36492"
-
-- id: "PY37DF12"
-  name: "distutils bdist_wininst command deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue36492
+- id: PY37DF12
+  name: distutils bdist_wininst command deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The distutils bdist_wininst command is now deprecated, use bdist_wheel
     (wheel packages) instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Str"
+    node_type: Str
   condition:
-    contains: "bdist_wininst"
+    contains: bdist_wininst
   message: |
     The distutils bdist_wininst command is deprecated. Use bdist_wheel instead.
   suggestion: |
@@ -440,24 +490,28 @@
       # In setup.py or setup.cfg
       setup(cmdclass={'bdist_wininst': ...})
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue37481"
-
-- id: "PY37DF13"
-  name: "asyncio.wait() coroutine objects deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue37481
+- id: PY37DF13
+  name: asyncio.wait() coroutine objects deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The explicit passing of coroutine objects to asyncio.wait() has been
     deprecated and will be removed in version 3.11.
-  detector: "AsyncChangesDetector"
+  detector: AsyncChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "asyncio.wait"
+    func_is: asyncio.wait
     passes_coroutine_object: true
   message: |
     Passing coroutine objects to asyncio.wait() is deprecated and will be
@@ -472,25 +526,29 @@
       await asyncio.gather(coro1, coro2)
       await asyncio.wait([task1, task2])
   references:
-    - "https://docs.python.org/3/library/asyncio-sync.html#asyncio.wait"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue34790"
-
-- id: "PY37DF14"
-  name: "xml.dom.pulldom.DOMEventStream.__getitem__() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/asyncio-sync.html#asyncio.wait
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue34790
+- id: PY37DF14
+  name: xml.dom.pulldom.DOMEventStream.__getitem__() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Deprecated usage of xml.dom.pulldom.DOMEventStream.__getitem__().
     Prefer iteration protocol instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Subscript"
+    node_type: Subscript
   condition:
-    subscripts_object_type: "xml.dom.pulldom.DOMEventStream"
+    subscripts_object_type: xml.dom.pulldom.DOMEventStream
   message: |
     xml.dom.pulldom.DOMEventStream.__getitem__() is deprecated.
     Use iteration instead.
@@ -507,25 +565,29 @@
       for event, node in events:
           process(event, node)
   references:
-    - "https://docs.python.org/3/library/xml.dom.pulldom.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue34898"
-
-- id: "PY37DF15"
-  name: "wsgiref.util.FileWrapper.__getitem__() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/xml.dom.pulldom.html
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue34898
+- id: PY37DF15
+  name: wsgiref.util.FileWrapper.__getitem__() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Deprecated usage of wsgiref.util.FileWrapper.__getitem__().
     Prefer iteration protocol instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Subscript"
+    node_type: Subscript
   condition:
-    subscripts_object_type: "wsgiref.util.FileWrapper"
+    subscripts_object_type: wsgiref.util.FileWrapper
   message: |
     wsgiref.util.FileWrapper.__getitem__() is deprecated.
     Use iteration instead.
@@ -542,25 +604,29 @@
       for chunk in wrapper:
           process(chunk)
   references:
-    - "https://docs.python.org/3/library/wsgiref.html#wsgiref.util.FileWrapper"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue34898"
-
-- id: "PY37DF16"
-  name: "fileinput.FileInput.__getitem__() deprecated"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/wsgiref.html#wsgiref.util.FileWrapper
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue34898
+- id: PY37DF16
+  name: fileinput.FileInput.__getitem__() deprecated
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Deprecated usage of fileinput.FileInput.__getitem__().
     Prefer iteration protocol instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Subscript"
+    node_type: Subscript
   condition:
-    subscripts_object_type: "fileinput.FileInput"
+    subscripts_object_type: fileinput.FileInput
   message: |
     fileinput.FileInput.__getitem__() is deprecated.
     Use iteration instead.
@@ -576,26 +642,30 @@
       for line in fileinput.input(['file.txt']):
           process(line)
   references:
-    - "https://docs.python.org/3/library/fileinput.html"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue34898"
-
-- id: "PY37DF17"
-  name: "asyncio.loop.set_default_executor() with non-ThreadPoolExecutor deprecated"
-  category: "deprecation"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.7"
-  target_version: "3.9"
+  - https://docs.python.org/3/library/fileinput.html
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue34898
+- id: PY37DF17
+  name: asyncio.loop.set_default_executor() with non-ThreadPoolExecutor deprecated
+  category: deprecation
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.7'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Using loop.set_default_executor() with any executor that is not an
     instance of ThreadPoolExecutor is deprecated and will be prohibited
     in Python 3.9.
-  detector: "AsyncChangesDetector"
+  detector: AsyncChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    calls_method: "set_default_executor"
+    calls_method: set_default_executor
     on_asyncio_loop: true
   message: |
     Setting a default executor that is not a ThreadPoolExecutor is
@@ -610,6 +680,6 @@
       from concurrent.futures import ThreadPoolExecutor
       loop.set_default_executor(ThreadPoolExecutor())
   references:
-    - "https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.set_default_executor"
-    - "https://docs.python.org/3/whatsnew/3.8.html#deprecated"
-    - "https://bugs.python.org/issue34075"
+  - https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.set_default_executor
+  - https://docs.python.org/3/whatsnew/3.8.html#deprecated
+  - https://bugs.python.org/issue34075

@@ -11,6 +11,15 @@ from reporting.data_models import Issue, Location, Severity, Category, RiskLevel
 from rules.rule_loader import Rule
 from detection.ast_pattern_matcher import ASTPatternMatcher
 
+# Import LLM detection components
+try:
+    from detection.llm import create_llm_detector, OllamaConfig
+    LLM_AVAILABLE = True
+except ImportError:
+    LLM_AVAILABLE = False
+    create_llm_detector = None
+    OllamaConfig = None
+
 
 class RuleExecutor:
     """
@@ -27,7 +36,9 @@ class RuleExecutor:
         self,
         rules: List[Rule],
         target_version: str,
-        source_version: str = "3.6"
+        source_version: str = "3.6",
+        enable_llm: bool = True,
+        llm_config: Optional[Any] = None
     ):
         """
         Initialize rule executor.
@@ -36,12 +47,23 @@ class RuleExecutor:
             rules: List of Rule objects to execute
             target_version: Target Python version
             source_version: Source Python version
+            enable_llm: Whether to enable LLM detection (default: True)
+            llm_config: Optional Ollama configuration
         """
         self.rules = rules
         self.target_version = target_version
         self.source_version = source_version
         self.file_path: str = ""
         self.source_lines: List[str] = []
+
+        # LLM detection settings
+        self.enable_llm = enable_llm and LLM_AVAILABLE
+        self.llm_config = llm_config
+
+        # Statistics
+        self.llm_detections = 0
+        self.llm_validations = 0
+        self.llm_skipped = 0
 
     def execute_all(
         self,
@@ -98,6 +120,82 @@ class RuleExecutor:
     def execute_rule(self, rule: Rule, tree: ast.Module) -> List[Issue]:
         """
         Execute a single rule against an AST tree.
+
+        Args:
+            rule: Rule to execute
+            tree: AST tree
+
+        Returns:
+            List of Issue objects found
+        """
+        # Check if this rule requires LLM detection
+        detection_strategy = self._get_detection_strategy(rule)
+
+        if detection_strategy in ['hybrid', 'text'] and self.enable_llm:
+            # Use LLM-based detection
+            return self._execute_llm_rule(rule, tree)
+        else:
+            # Use standard AST-based detection
+            return self._execute_ast_rule(rule, tree)
+
+    def _get_detection_strategy(self, rule: Rule) -> str:
+        """Get detection strategy from rule metadata."""
+        # Check if rule has detection metadata
+        if hasattr(rule, 'raw_data'):
+            detection = rule.raw_data.get('detection', {})
+            return detection.get('strategy', 'ast')
+        return 'ast'
+
+    def _execute_llm_rule(self, rule: Rule, tree: ast.Module) -> List[Issue]:
+        """
+        Execute a rule using LLM detection.
+
+        Args:
+            rule: Rule to execute
+            tree: AST tree
+
+        Returns:
+            List of Issue objects found
+        """
+        if not LLM_AVAILABLE:
+            self.llm_skipped += 1
+            print(f"[DEBUG] LLM not available for rule {rule.id}, falling back to AST")
+            # Fall back to AST-only detection
+            return self._execute_ast_rule(rule, tree)
+
+        try:
+            print(f"[DEBUG] Executing LLM rule: {rule.id} - {rule.name}")
+
+            # Create LLM detector from rule
+            detector = create_llm_detector(rule.raw_data, self.llm_config)
+
+            if detector is None:
+                # No LLM detector created, fall back to AST
+                return self._execute_ast_rule(rule, tree)
+
+            # Set context for detector
+            detector.source_lines = self.source_lines
+            detector.file_path = self.file_path
+
+            # Execute LLM detection
+            issues = detector.detect(tree, self.file_path)
+
+            # Track statistics
+            if issues:
+                self.llm_detections += len(issues)
+            self.llm_validations += 1
+
+            return issues
+
+        except Exception as e:
+            print(f"[WARNING] LLM detection failed for rule {rule.id}: {e}")
+            self.llm_skipped += 1
+            # Fall back to AST-only detection
+            return self._execute_ast_rule(rule, tree)
+
+    def _execute_ast_rule(self, rule: Rule, tree: ast.Module) -> List[Issue]:
+        """
+        Execute a rule using standard AST pattern matching.
 
         Args:
             rule: Rule to execute

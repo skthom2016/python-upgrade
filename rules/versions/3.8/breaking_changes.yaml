@@ -1,20 +1,26 @@
-# Breaking changes when upgrading from Python 3.8 to 3.9+
+# Breaking Changes when upgrading from Python 3.8
+# These changes will cause code to break or behave differently
 
-- id: "PY38BC01"
-  name: "sys.getcheckinterval() and sys.setcheckinterval() removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.8"
-  target_version: "3.9"
+- id: PY38BC01
+  name: sys.getcheckinterval() and sys.setcheckinterval() removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     sys.getcheckinterval() and sys.setcheckinterval() have been removed.
     Use sys.getswitchinterval() and sys.setswitchinterval() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "sys\\.(getcheckinterval|setcheckinterval)"
+    func_is: sys\.(getcheckinterval|setcheckinterval)
   message: |
     sys.getcheckinterval() and sys.setcheckinterval() were removed in
     Python 3.9. Use sys.getswitchinterval() and sys.setswitchinterval().
@@ -31,23 +37,27 @@
       interval = sys.getswitchinterval()
       sys.setswitchinterval(0.001)  # Note: expects seconds, not opcodes
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
-
-- id: "PY38BC02"
-  name: "_dummy_thread and dummy_threading modules removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed
+- id: PY38BC02
+  name: _dummy_thread and dummy_threading modules removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The _dummy_thread and dummy_threading modules have been removed.
     These modules were deprecated since Python 2.7 and removed in 3.9.
-  detector: "ImportChangesDetector"
+  detector: ImportChangesDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
   condition:
-    imports: "_dummy_thread|dummy_threading"
+    imports: _dummy_thread|dummy_threading
   message: |
     _dummy_thread and dummy_threading modules were removed in Python 3.9.
   suggestion: |
@@ -59,23 +69,27 @@
     good: |
       import threading
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
-
-- id: "PY38BC03"
-  name: "threading.Thread.isAlive() removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed
+- id: PY38BC03
+  name: threading.Thread.isAlive() removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The threading.Thread.isAlive() method has been removed.
     Use threading.Thread.is_alive() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    calls_method: "isAlive"
+    calls_method: isAlive
     on_thread_object: true
   message: |
     threading.Thread.isAlive() was removed in Python 3.9.
@@ -94,23 +108,27 @@
       if t.is_alive():
           pass
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
-
-- id: "PY38BC04"
-  name: "ElementTree.getchildren() and getiterator() removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed
+- id: PY38BC04
+  name: ElementTree.getchildren() and getiterator() removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     xml.etree.ElementTree methods getchildren() and getiterator() have
     been removed. Use list(element) and element.iter() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    calls_method: "getchildren|getiterator"
+    calls_method: getchildren|getiterator
     on_element: true
   message: |
     ElementTree.getchildren() and getiterator() were removed in Python 3.9.
@@ -126,24 +144,28 @@
       children = list(element)
       iterator = element.iter()
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
-
-- id: "PY38BC05"
-  name: "asyncio.Task.current_task() and all_tasks() removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed
+- id: PY38BC05
+  name: asyncio.Task.current_task() and all_tasks() removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     asyncio.Task.current_task() and asyncio.Task.all_tasks() methods
     have been removed. Use asyncio.current_task() and asyncio.all_tasks()
     module-level functions instead.
-  detector: "AsyncChangesDetector"
+  detector: AsyncChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "asyncio\\.Task\\.(current_task|all_tasks)"
+    func_is: asyncio\.Task\.(current_task|all_tasks)
   message: |
     asyncio.Task.current_task() and all_tasks() were removed in Python 3.9.
     Use asyncio.current_task() and asyncio.all_tasks().
@@ -160,23 +182,27 @@
       task = asyncio.current_task()
       tasks = asyncio.all_tasks()
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
-
-- id: "PY38BC06"
-  name: "base64.encodestring() and decodestring() removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed
+- id: PY38BC06
+  name: base64.encodestring() and decodestring() removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     base64.encodestring() and base64.decodestring() aliases have been
     removed. Use base64.encodebytes() and base64.decodebytes() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "base64\\.(encodestring|decodestring)"
+    func_is: base64\.(encodestring|decodestring)
   message: |
     base64.encodestring() and decodestring() were removed in Python 3.9.
     Use encodebytes() and decodebytes().
@@ -193,22 +219,26 @@
       encoded = base64.encodebytes(data)
       decoded = base64.decodebytes(encoded)
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
-
-- id: "PY38BC07"
-  name: "fractions.gcd() removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed
+- id: PY38BC07
+  name: fractions.gcd() removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     fractions.gcd() function has been removed. Use math.gcd() instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    func_is: "fractions.gcd"
+    func_is: fractions.gcd
   message: |
     fractions.gcd() was removed in Python 3.9. Use math.gcd() instead.
   suggestion: |
@@ -221,23 +251,27 @@
       from math import gcd
       result = gcd(12, 8)
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
-
-- id: "PY38BC08"
-  name: "__import__() now raises ImportError instead of ValueError"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed
+- id: PY38BC08
+  name: __import__() now raises ImportError instead of ValueError
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     __import__() now raises ImportError instead of ValueError for relative
     imports beyond the top-level package.
-  detector: "ExceptionChangesDetector"
+  detector: ExceptionChangesDetector
   pattern:
-    node_type: "ExceptHandler"
+    node_type: ExceptHandler
   condition:
-    catches: "ValueError"
+    catches: ValueError
     in_import_context: true
   message: |
     __import__() now raises ImportError instead of ValueError in Python 3.9.
@@ -256,23 +290,27 @@
       except ImportError:
           handle_error()
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#changes-in-python-behavior"
-
-- id: "PY38BC09"
-  name: "Empty string replace behavior changed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#changes-in-python-behavior
+- id: PY38BC09
+  name: Empty string replace behavior changed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     ''.replace('', s, n) now returns s for non-zero n, instead of an
     empty string. The same applies to bytes and bytearray objects.
-  detector: "BehaviorChangesDetector"
+  detector: BehaviorChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    calls_method: "replace"
+    calls_method: replace
     on_string_type: true
   message: |
     Empty string replace behavior changed in Python 3.9.
@@ -280,23 +318,27 @@
     Review code that calls replace('', ...) on empty strings, as the
     behavior has changed.
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#changes-in-python-behavior"
-
-- id: "PY38BC10"
-  name: "typing.NamedTuple._field_types removed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#changes-in-python-behavior
+- id: PY38BC10
+  name: typing.NamedTuple._field_types removed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The typing.NamedTuple._field_types attribute has been removed.
     Use __annotations__ instead.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
   condition:
-    accesses_attribute: "_field_types"
+    accesses_attribute: _field_types
     on_namedtuple: true
   message: |
     typing.NamedTuple._field_types was removed in Python 3.9.
@@ -317,27 +359,31 @@
           y: int
       fields = Point.__annotations__
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
-
-- id: "PY38BC11"
-  name: "nntplib.NNTP.xpath() and xgtitle() removed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed
+- id: PY38BC11
+  name: nntplib.NNTP.xpath() and xgtitle() removed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     nntplib.NNTP.xpath() and nntplib.NNTP.xgtitle() methods have been
     removed as they are not supported by any NNTP server.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
   condition:
-    calls_method: "xpath|xgtitle"
+    calls_method: xpath|xgtitle
     on_nntp_object: true
   message: |
     nntplib.NNTP.xpath() and xgtitle() were removed in Python 3.9.
   suggestion: |
     Remove calls to these methods as they are not supported.
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#removed"
+  - https://docs.python.org/3/whatsnew/3.9.html#removed

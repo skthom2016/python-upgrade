@@ -32,6 +32,7 @@ class Rule:
         suggestion: Suggested fix
         examples: Code examples (optional)
         references: Documentation links
+        raw_data: Original rule data including detection metadata
     """
     id: str
     name: str
@@ -48,6 +49,7 @@ class Rule:
     suggestion: str
     examples: Optional[Dict[str, str]]
     references: List[str]
+    raw_data: Dict[str, Any] = None  # Store complete rule data for LLM detection
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -87,7 +89,8 @@ class Rule:
             message=data['message'],
             suggestion=data['suggestion'],
             examples=data.get('examples'),
-            references=data.get('references', [])
+            references=data.get('references', []),
+            raw_data=data  # Store complete data for LLM detection
         )
 
 

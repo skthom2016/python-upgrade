@@ -8,10 +8,10 @@ from typing import List
 
 def discover_python_files(root_path: str) -> List[str]:
     """
-    Discover all Python files in a directory.
+    Discover all Python files in a directory or handle a single file.
 
     Args:
-        root_path: Root directory to search
+        root_path: Root directory to search or path to single Python file
 
     Returns:
         List of absolute file paths
@@ -40,6 +40,10 @@ def discover_python_files(root_path: str) -> List[str]:
 
     # Valid extensions
     valid_extensions = ('.py', '.pyw', '.pyi')
+
+    # Handle single file case
+    if os.path.isfile(root_path) and root_path.endswith(valid_extensions):
+        return [root_path]
 
     for root, dirs, files in os.walk(root_path):
         # Filter out skip directories

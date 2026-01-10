@@ -1,20 +1,26 @@
-# Syntax changes when upgrading from Python 3.8 to 3.9+
+# Syntax Changes when upgrading from Python 3.8
+# New syntax features and breaking syntax changes
 
-- id: "PY38SC01"
-  name: "Dictionary merge operators (| and |=) available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.8"
-  target_version: "3.9"
+- id: PY38SC01
+  name: Dictionary merge operators (| and |=) available
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 584 introduced merge (|) and update (|=) operators for dictionaries.
     These operators are not available in Python 3.8.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "BinOp"
+    node_type: BinOp
   condition:
-    operator_is: "BitOr"
+    operator_is: BitOr
     operands_are_dicts: true
   message: |
     Dictionary merge operators (| and |=) are not available in Python 3.8.
@@ -36,22 +42,26 @@
       z = {**x, **y}
       x.update(y)
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#dictionary-merge-update-operators"
-    - "https://www.python.org/dev/peps/pep-0584/"
-
-- id: "PY38SC02"
-  name: "Type hinting generics in standard collections available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#dictionary-merge-update-operators
+  - https://www.python.org/dev/peps/pep-0584/
+- id: PY38SC02
+  name: Type hinting generics in standard collections available
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 585 allows using built-in collection types (list, dict, set, etc.)
     directly as generics in type hints, without importing from typing module.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Subscript"
+    node_type: Subscript
   condition:
     subscripts_builtin_collection: true
   message: |
@@ -73,22 +83,26 @@
           for name in names:
               print("Hello", name)
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#type-hinting-generics-in-standard-collections"
-    - "https://www.python.org/dev/peps/pep-0585/"
-
-- id: "PY38SC03"
-  name: "Relaxed decorator grammar available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#type-hinting-generics-in-standard-collections
+  - https://www.python.org/dev/peps/pep-0585/
+- id: PY38SC03
+  name: Relaxed decorator grammar available
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 614 relaxed grammar restrictions on decorators. Any valid expression
     can now be used as a decorator, not just names, attribute access, and calls.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "FunctionDef"
+    node_type: FunctionDef
   condition:
     has_complex_decorator_expression: true
   message: |
@@ -114,23 +128,27 @@
       def spam():
           pass
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#decorators"
-    - "https://www.python.org/dev/peps/pep-0614/"
-
-- id: "PY38SC04"
-  name: "Unparenthesized lambda in comprehension if clause prohibited"
-  category: "syntax_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.8"
-  target_version: "3.9"
+  - https://docs.python.org/3/whatsnew/3.9.html#decorators
+  - https://www.python.org/dev/peps/pep-0614/
+- id: PY38SC04
+  name: Unparenthesized lambda in comprehension if clause prohibited
+  category: syntax_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.8'
+  target_version: '3.9'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Python 3.9 prohibits unparenthesized lambda expressions as the
     expression part in an if clause in comprehensions and generator
     expressions.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Lambda"
+    node_type: Lambda
   condition:
     in_comprehension_if_without_parens: true
   message: |
@@ -146,4 +164,4 @@
       # Python 3.9 compatible
       [x for x in range(10) if (lambda: True)()]
   references:
-    - "https://docs.python.org/3/whatsnew/3.9.html#other-language-changes"
+  - https://docs.python.org/3/whatsnew/3.9.html#other-language-changes

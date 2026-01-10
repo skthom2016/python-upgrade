@@ -1,19 +1,25 @@
-# Syntax changes when upgrading from Python 3.10 to 3.11+
+# Syntax Changes when upgrading from Python 3.10
+# New syntax features and breaking syntax changes
 
-- id: "PY310SC01"
-  name: "Exception groups available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+- id: PY310SC01
+  name: Exception groups available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 654 introduces exception groups and except* syntax in Python 3.11.
     ExceptionGroup and BaseExceptionGroup allow raising and handling multiple
     exceptions simultaneously.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ExceptHandler"
+    node_type: ExceptHandler
     attributes:
       star: true
   message: |
@@ -33,500 +39,572 @@
       except ValueError as e:
           print(f"ValueError: {e}")
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-654-exception-groups-and-except"
-    - "https://peps.python.org/pep-0654/"
-
-- id: "PY310SC02"
-  name: "ExceptionGroup class available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-654-exception-groups-and-except
+  - https://peps.python.org/pep-0654/
+- id: PY310SC02
+  name: ExceptionGroup class available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     ExceptionGroup and BaseExceptionGroup classes are available in Python 3.11
     for creating groups of exceptions (PEP 654).
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Name"
+    node_type: Name
     attributes:
-      id: "regex:(ExceptionGroup|BaseExceptionGroup)"
+      id: regex:(ExceptionGroup|BaseExceptionGroup)
   message: |
     ExceptionGroup is not available in Python 3.10.
   suggestion: |
     Use the exceptiongroup backport package for Python 3.10: pip install exceptiongroup
   examples:
-    bad: "raise ExceptionGroup('errors', [ValueError(), TypeError()])"
-    good: "from exceptiongroup import ExceptionGroup  # Backport for 3.10"
+    bad: raise ExceptionGroup('errors', [ValueError(), TypeError()])
+    good: 'from exceptiongroup import ExceptionGroup  # Backport for 3.10'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-654-exception-groups-and-except"
-    - "https://peps.python.org/pep-0654/"
-
-- id: "PY310SC03"
-  name: "TypeVarTuple for variadic generics available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-654-exception-groups-and-except
+  - https://peps.python.org/pep-0654/
+- id: PY310SC03
+  name: TypeVarTuple for variadic generics available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 646 adds TypeVarTuple for variadic generics in Python 3.11.
     This allows type variables to represent an arbitrary number of types.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "TypeVarTuple"
+      - node_type: alias
+        attributes:
+          name: TypeVarTuple
   message: |
     TypeVarTuple (PEP 646) requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import TypeVarTuple"
-    good: "from typing_extensions import TypeVarTuple"
+    bad: from typing import TypeVarTuple
+    good: from typing_extensions import TypeVarTuple
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-646-variadic-generics"
-    - "https://peps.python.org/pep-0646/"
-
-- id: "PY310SC04"
-  name: "Unpack for variadic generics available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-646-variadic-generics
+  - https://peps.python.org/pep-0646/
+- id: PY310SC04
+  name: Unpack for variadic generics available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 646 adds Unpack for unpacking TypeVarTuples in type annotations.
     This is available in Python 3.11+ in the typing module.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "Unpack"
+      - node_type: alias
+        attributes:
+          name: Unpack
   message: |
     Unpack for variadic generics (PEP 646) requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import Unpack, TypeVarTuple"
-    good: "from typing_extensions import Unpack, TypeVarTuple"
+    bad: from typing import Unpack, TypeVarTuple
+    good: from typing_extensions import Unpack, TypeVarTuple
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-646-variadic-generics"
-    - "https://peps.python.org/pep-0646/"
-
-- id: "PY310SC05"
-  name: "Self type available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-646-variadic-generics
+  - https://peps.python.org/pep-0646/
+- id: PY310SC05
+  name: Self type available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 673 adds the Self type for annotating methods that return instances
     of their class. This is available in Python 3.11+ in the typing module.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "Self"
+      - node_type: alias
+        attributes:
+          name: Self
   message: |
     Self type (PEP 673) requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import Self"
-    good: "from typing_extensions import Self"
+    bad: from typing import Self
+    good: from typing_extensions import Self
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-673-self-type"
-    - "https://peps.python.org/pep-0673/"
-
-- id: "PY310SC06"
-  name: "LiteralString type available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-673-self-type
+  - https://peps.python.org/pep-0673/
+- id: PY310SC06
+  name: LiteralString type available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 675 adds LiteralString for indicating that a string is a literal,
     useful for preventing injection attacks. Available in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "LiteralString"
+      - node_type: alias
+        attributes:
+          name: LiteralString
   message: |
     LiteralString (PEP 675) requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import LiteralString"
-    good: "from typing_extensions import LiteralString"
+    bad: from typing import LiteralString
+    good: from typing_extensions import LiteralString
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-675-arbitrary-literal-string-type"
-    - "https://peps.python.org/pep-0675/"
-
-- id: "PY310SC07"
-  name: "Required and NotRequired for TypedDict available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-675-arbitrary-literal-string-type
+  - https://peps.python.org/pep-0675/
+- id: PY310SC07
+  name: Required and NotRequired for TypedDict available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 655 adds Required and NotRequired for marking individual TypedDict
     fields as required or not required. Available in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "regex:(Required|NotRequired)"
+      - node_type: alias
+        attributes:
+          name: regex:(Required|NotRequired)
   message: |
     Required and NotRequired (PEP 655) require Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import TypedDict, Required, NotRequired"
-    good: "from typing import TypedDict\nfrom typing_extensions import Required, NotRequired"
+    bad: from typing import TypedDict, Required, NotRequired
+    good: |-
+      from typing import TypedDict
+      from typing_extensions import Required, NotRequired
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-655-marking-individual-typeddict-items-as-required-or-potentially-missing"
-    - "https://peps.python.org/pep-0655/"
-
-- id: "PY310SC08"
-  name: "dataclass_transform decorator available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-655-marking-individual-typeddict-items-as-required-or-potentially-missing
+  - https://peps.python.org/pep-0655/
+- id: PY310SC08
+  name: dataclass_transform decorator available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 681 adds dataclass_transform decorator for marking functions, classes,
     and metaclasses as dataclass-like. Available in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "dataclass_transform"
+      - node_type: alias
+        attributes:
+          name: dataclass_transform
   message: |
     dataclass_transform (PEP 681) requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import dataclass_transform"
-    good: "from typing_extensions import dataclass_transform"
+    bad: from typing import dataclass_transform
+    good: from typing_extensions import dataclass_transform
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#pep-681-data-class-transforms"
-    - "https://peps.python.org/pep-0681/"
-
-- id: "PY310SC09"
-  name: "Never type available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#pep-681-data-class-transforms
+  - https://peps.python.org/pep-0681/
+- id: PY310SC09
+  name: Never type available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Never is a bottom type that indicates a function never returns normally.
     It's the type of raise statement. Available in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "Never"
+      - node_type: alias
+        attributes:
+          name: Never
   message: |
     Never type requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import Never"
-    good: "from typing_extensions import Never"
+    bad: from typing import Never
+    good: from typing_extensions import Never
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484"
-    - "https://docs.python.org/3/library/typing.html#typing.Never"
-
-- id: "PY310SC10"
-  name: "assert_never function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484
+  - https://docs.python.org/3/library/typing.html#typing.Never
+- id: PY310SC10
+  name: assert_never function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     assert_never is a typing helper for exhaustiveness checking in match statements.
     Available in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "assert_never"
+      - node_type: alias
+        attributes:
+          name: assert_never
   message: |
     assert_never requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import assert_never"
-    good: "from typing_extensions import assert_never"
+    bad: from typing import assert_never
+    good: from typing_extensions import assert_never
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484"
-    - "https://docs.python.org/3/library/typing.html#typing.assert_never"
-
-- id: "PY310SC11"
-  name: "reveal_type function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484
+  - https://docs.python.org/3/library/typing.html#typing.assert_never
+- id: PY310SC11
+  name: reveal_type function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     reveal_type is a runtime helper that prints the type of an expression.
     Previously only available in type checkers, now in typing module in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "reveal_type"
+      - node_type: alias
+        attributes:
+          name: reveal_type
   message: |
     reveal_type in typing module requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import reveal_type"
-    good: "from typing_extensions import reveal_type"
+    bad: from typing import reveal_type
+    good: from typing_extensions import reveal_type
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484"
-    - "https://docs.python.org/3/library/typing.html#typing.reveal_type"
-
-- id: "PY310SC12"
-  name: "assert_type function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484
+  - https://docs.python.org/3/library/typing.html#typing.reveal_type
+- id: PY310SC12
+  name: assert_type function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     assert_type is a typing helper for asserting that a value has a specific type.
     Available in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "assert_type"
+      - node_type: alias
+        attributes:
+          name: assert_type
   message: |
     assert_type requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import assert_type"
-    good: "from typing_extensions import assert_type"
+    bad: from typing import assert_type
+    good: from typing_extensions import assert_type
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484"
-    - "https://docs.python.org/3/library/typing.html#typing.assert_type"
-
-- id: "PY310SC13"
-  name: "clear_overloads function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484
+  - https://docs.python.org/3/library/typing.html#typing.assert_type
+- id: PY310SC13
+  name: clear_overloads function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     clear_overloads clears all registered overloads in the internal registry.
     Available in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "clear_overloads"
+      - node_type: alias
+        attributes:
+          name: clear_overloads
   message: |
     clear_overloads requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import clear_overloads"
-    good: "from typing_extensions import clear_overloads"
+    bad: from typing import clear_overloads
+    good: from typing_extensions import clear_overloads
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484"
-    - "https://docs.python.org/3/library/typing.html#typing.clear_overloads"
-
-- id: "PY310SC14"
-  name: "get_overloads function available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484
+  - https://docs.python.org/3/library/typing.html#typing.clear_overloads
+- id: PY310SC14
+  name: get_overloads function available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     get_overloads returns a sequence of @overload-decorated definitions for a function.
     Available in Python 3.11+.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "get_overloads"
+      - node_type: alias
+        attributes:
+          name: get_overloads
   message: |
     get_overloads requires Python 3.11+ or typing_extensions.
   suggestion: |
     For Python 3.10, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import get_overloads"
-    good: "from typing_extensions import get_overloads"
+    bad: from typing import get_overloads
+    good: from typing_extensions import get_overloads
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484"
-    - "https://docs.python.org/3/library/typing.html#typing.get_overloads"
-
-- id: "PY310SC15"
-  name: "Starred unpacking in for statements"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep484
+  - https://docs.python.org/3/library/typing.html#typing.get_overloads
+- id: PY310SC15
+  name: Starred unpacking in for statements
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.11 allows starred expressions in for statements for more flexible
     iteration unpacking patterns.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "For"
+    node_type: For
     children:
       target:
-        node_type: "Starred"
+        node_type: Starred
   message: |
     Starred unpacking in for statements requires Python 3.11+.
   suggestion: |
     For Python 3.10, manually unpack in the loop body.
   examples:
-    bad: "for *rest, last in items: ..."
-    good: "for item in items:\n    *rest, last = item"
+    bad: 'for *rest, last in items: ...'
+    good: |-
+      for item in items:
+          *rest, last = item
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#other-language-changes"
-
-- id: "PY310SC16"
-  name: "Format spec 'z' option for negative zero"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#other-language-changes
+- id: PY310SC16
+  name: Format spec 'z' option for negative zero
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.11 adds the 'z' format spec option that coerces negative zero
     floating-point values to positive zero after rounding.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "JoinedStr"
+    node_type: JoinedStr
     attributes:
-      format_spec: "regex:.*z.*"
+      format_spec: regex:.*z.*
   message: |
     Format spec 'z' option requires Python 3.11+.
   suggestion: |
     For Python 3.10, manually check for negative zero: value if value != 0 else 0
   examples:
-    bad: "f'{value:z.2f}'"
-    good: "f'{value if value != 0 else 0:.2f}'"
+    bad: f'{value:z.2f}'
+    good: f'{value if value != 0 else 0:.2f}'
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#other-language-changes"
-
-- id: "PY310SC17"
-  name: "Asynchronous comprehensions outside async functions"
-  category: "informational"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#other-language-changes
+- id: PY310SC17
+  name: Asynchronous comprehensions outside async functions
+  category: informational
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     Python 3.11 improves error messages when asynchronous comprehensions
     are used outside async functions, providing clearer diagnostics.
-  detector: "InformationalDetector"
+  detector: InformationalDetector
   pattern:
-    node_type: "ListComp"
+    node_type: ListComp
     children:
       generators:
-        - node_type: "comprehension"
-          attributes:
-            is_async: true
+      - node_type: comprehension
+        attributes:
+          is_async: true
   message: |
     Python 3.11 provides better error messages for async comprehensions outside async functions.
   suggestion: |
     Ensure asynchronous comprehensions are only used within async functions.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#other-language-changes"
-
-- id: "PY310SC18"
-  name: "Improved error messages"
-  category: "informational"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.10"
-  target_version: "3.11"
+  - https://docs.python.org/3/whatsnew/3.11.html#other-language-changes
+- id: PY310SC18
+  name: Improved error messages
+  category: informational
+  severity: info
+  risk_level: LOW
+  source_version: '3.10'
+  target_version: '3.11'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.11 provides significantly enhanced error messages with more precise
     locations, better suggestions, and clearer diagnostics for common errors.
-  detector: "InformationalDetector"
+  detector: InformationalDetector
   pattern:
-    node_type: "Module"
+    node_type: Module
   message: |
     Python 3.11 provides significantly enhanced error messages and debugging experience.
   suggestion: |
     Consider upgrading to Python 3.11+ for improved error diagnostics during development.
   references:
-    - "https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep657"
-    - "https://peps.python.org/pep-0657/"
+  - https://docs.python.org/3/whatsnew/3.11.html#whatsnew311-pep657
+  - https://peps.python.org/pep-0657/

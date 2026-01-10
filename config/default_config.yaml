@@ -55,3 +55,25 @@ reporting:
 
   # Maximum number of files to show in top problematic files list
   top_files_count: 10
+
+llm:
+  # Enable LLM-based detection for context-dependent and semantic issues
+  enabled: true
+
+  # Ollama server host
+  host: "http://localhost:11434"
+
+  # Model to use for analysis (qwen2.5:7b recommended)
+  model: "qwen2.5:7b"
+
+  # Temperature for generation (0.0-1.0, lower = more deterministic)
+  temperature: 0.1
+
+  # Request timeout in seconds
+  timeout: 30
+
+  # Maximum tokens per request (null for no limit)
+  max_tokens: null
+
+  # Graceful degradation: if true, continue with AST-only if LLM unavailable
+  graceful_degradation: true

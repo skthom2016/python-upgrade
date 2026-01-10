@@ -1,420 +1,499 @@
-# Breaking changes when upgrading from Python 3.9 to 3.10+
+# Breaking Changes when upgrading from Python 3.9
+# These changes will cause code to break or behave differently
 
-- id: "PY39BC01"
-  name: "parser module removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.9"
-  target_version: "3.10"
+- id: PY39BC01
+  name: parser module removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     The parser module was deprecated in Python 3.9 and removed in 3.10.
     This module provided access to Python's internal parser and AST.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "parser"
+      - node_type: alias
+        attributes:
+          name: parser
   message: |
     The 'parser' module was removed in Python 3.10.
   suggestion: |
     Use the 'ast' module instead for working with Python's abstract syntax tree.
   examples:
-    bad: "import parser"
-    good: "import ast"
+    bad: import parser
+    good: import ast
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#removed"
-    - "https://docs.python.org/3/library/ast.html"
-
-- id: "PY39BC02"
-  name: "formatter module removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#removed
+  - https://docs.python.org/3/library/ast.html
+- id: PY39BC02
+  name: formatter module removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     The formatter module was removed in Python 3.10. It was deprecated in 3.4
     and was little used and largely untested.
-  detector: "DeprecatedImportsDetector"
+  detector: DeprecatedImportsDetector
   pattern:
-    node_type: "Import"
+    node_type: Import
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "formatter"
+      - node_type: alias
+        attributes:
+          name: formatter
   message: |
     The 'formatter' module was removed in Python 3.10.
   suggestion: |
     If you need this functionality, copy the code from Python 3.9 or earlier.
   examples:
-    bad: "import formatter"
-    good: "# Copy formatter code from Python 3.9 if needed"
+    bad: import formatter
+    good: '# Copy formatter code from Python 3.9 if needed'
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#removed"
-
-- id: "PY39BC03"
-  name: "collections ABC aliases removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#removed
+- id: PY39BC03
+  name: collections ABC aliases removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     Aliases to collections.abc classes in the collections module were removed.
     These have been deprecated since Python 3.3.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "collections"
+      module: collections
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "regex:(Awaitable|Coroutine|AsyncIterable|AsyncIterator|AsyncGenerator|Hashable|Iterable|Iterator|Generator|Reversible|Sized|Container|Callable|Collection|Set|MutableSet|Mapping|MutableMapping|MappingView|KeysView|ItemsView|ValuesView|Sequence|MutableSequence|ByteString)"
+      - node_type: alias
+        attributes:
+          name: regex:(Awaitable|Coroutine|AsyncIterable|AsyncIterator|AsyncGenerator|Hashable|Iterable|Iterator|Generator|Reversible|Sized|Container|Callable|Collection|Set|MutableSet|Mapping|MutableMapping|MappingView|KeysView|ItemsView|ValuesView|Sequence|MutableSequence|ByteString)
   message: |
     Abstract base classes have been removed from the collections module.
   suggestion: |
     Import from collections.abc instead: from collections.abc import Callable
   examples:
-    bad: "from collections import Callable, Mapping"
-    good: "from collections.abc import Callable, Mapping"
+    bad: from collections import Callable, Mapping
+    good: from collections.abc import Callable, Mapping
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#removed"
-    - "https://docs.python.org/3/library/collections.abc.html"
-
-- id: "PY39BC04"
-  name: "complex special methods removed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#removed
+  - https://docs.python.org/3/library/collections.abc.html
+- id: PY39BC04
+  name: complex special methods removed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Several special methods have been removed from the complex class: __int__,
     __float__, __floordiv__, __mod__, __divmod__, and their reverse variants.
     These always raised TypeError.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Call"
+            node_type: Call
             children:
               func:
-                node_type: "Name"
+                node_type: Name
                 attributes:
-                  id: "complex"
-          attr: "regex:(__int__|__float__|__floordiv__|__mod__|__divmod__|__rfloordiv__|__rmod__|__rdivmod__)"
+                  id: complex
+          attr: regex:(__int__|__float__|__floordiv__|__mod__|__divmod__|__rfloordiv__|__rmod__|__rdivmod__)
   message: |
     Special method {method} was removed from the complex class in Python 3.10.
   suggestion: |
     These methods always raised TypeError. Remove calls to these methods.
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#removed"
-
-- id: "PY39BC05"
-  name: "asyncio loop parameter removed"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#removed
+- id: PY39BC05
+  name: asyncio loop parameter removed
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     The loop parameter has been removed from most high-level asyncio functions.
     Functions now use the running loop implicitly.
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "asyncio"
-          attr: "regex:(sleep|gather|shield|wait|wait_for|as_completed|Task|create_task|ensure_future)"
+              id: asyncio
+          attr: regex:(sleep|gather|shield|wait|wait_for|as_completed|Task|create_task|ensure_future)
       keywords:
-        - node_type: "keyword"
-          attributes:
-            arg: "loop"
+      - node_type: keyword
+        attributes:
+          arg: loop
   message: |
     The 'loop' parameter has been removed from asyncio high-level API functions.
   suggestion: |
     Remove the loop parameter. The running loop is now used implicitly.
   examples:
-    bad: "await asyncio.sleep(1, loop=loop)"
-    good: "await asyncio.sleep(1)"
+    bad: await asyncio.sleep(1, loop=loop)
+    good: await asyncio.sleep(1)
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#removed"
-    - "https://docs.python.org/3/library/asyncio.html"
-
-- id: "PY39BC06"
-  name: "socket.htons() overflow behavior changed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#removed
+  - https://docs.python.org/3/library/asyncio.html
+- id: PY39BC06
+  name: socket.htons() overflow behavior changed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     socket.htons() and socket.ntohs() now raise OverflowError instead of
     DeprecationWarning for out-of-range values.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "socket"
-          attr: "regex:(htons|ntohs)"
+              id: socket
+          attr: regex:(htons|ntohs)
   message: |
     socket.htons() and socket.ntohs() now raise OverflowError for out-of-range values.
   suggestion: |
     Ensure values passed to htons/ntohs are within valid 16-bit range (0-65535).
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api"
-
-- id: "PY39BC07"
-  name: "collections.abc.Callable parameter flattening"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api
+- id: PY39BC07
+  name: collections.abc.Callable parameter flattening
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The __args__ of a collections.abc.Callable type have been flattened.
     Previously [[int, str], str], now (int, str, str).
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Subscript"
+    node_type: Subscript
     children:
       value:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Attribute"
+            node_type: Attribute
             children:
               value:
-                node_type: "Name"
+                node_type: Name
                 attributes:
-                  id: "collections"
-              attr: "abc"
-          attr: "Callable"
+                  id: collections
+              attr: abc
+          attr: Callable
   message: |
     collections.abc.Callable parameter structure has changed in Python 3.10.
   suggestion: |
     If accessing __args__ or using get_args(), update to handle flattened structure: (int, str, str) instead of ([int, str], str).
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api"
-
-- id: "PY39BC08"
-  name: "urllib.parse query separator change"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api
+- id: PY39BC08
+  name: urllib.parse query separator change
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     Query parameter separator changed to only accept '&' by default.
     The ';' separator is no longer supported for security reasons.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Attribute"
+            node_type: Attribute
             children:
               value:
-                node_type: "Name"
+                node_type: Name
                 attributes:
-                  id: "urllib"
-              attr: "parse"
-          attr: "regex:(parse_qs|parse_qsl)"
+                  id: urllib
+              attr: parse
+          attr: regex:(parse_qs|parse_qsl)
   message: |
     urllib.parse functions now only accept '&' as query parameter separator by default.
   suggestion: |
     Update query strings to use '&' instead of ';' as separator. If you must support ';', use the separator parameter.
   examples:
-    bad: "parse_qs('a=1;b=2')"
-    good: "parse_qs('a=1&b=2')"
+    bad: parse_qs('a=1;b=2')
+    good: parse_qs('a=1&b=2')
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api"
-
-- id: "PY39BC09"
-  name: "shelve default protocol changed"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api
+- id: PY39BC09
+  name: shelve default protocol changed
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The shelve module now uses pickle.DEFAULT_PROTOCOL by default instead of
     pickle protocol 3.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "shelve"
-          attr: "open"
+              id: shelve
+          attr: open
   message: |
     shelve.open() now uses pickle.DEFAULT_PROTOCOL instead of protocol 3.
   suggestion: |
     If you need protocol 3 for backward compatibility, explicitly specify protocol=3 in shelve.open().
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api"
-
-- id: "PY39BC10"
-  name: "traceback parameter renamed"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api
+- id: PY39BC10
+  name: traceback parameter renamed
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     The etype parameter has been renamed to exc in traceback.format_exception(),
     format_exception_only(), and print_exception().
-  detector: "DeprecatedAPIsDetector"
+  detector: DeprecatedAPIsDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Attribute"
+        node_type: Attribute
         children:
           value:
-            node_type: "Name"
+            node_type: Name
             attributes:
-              id: "traceback"
-          attr: "regex:(format_exception|format_exception_only|print_exception)"
+              id: traceback
+          attr: regex:(format_exception|format_exception_only|print_exception)
       keywords:
-        - node_type: "keyword"
-          attributes:
-            arg: "etype"
+      - node_type: keyword
+        attributes:
+          arg: etype
   message: |
     The 'etype' parameter has been renamed to 'exc' in traceback functions.
   suggestion: |
     Rename keyword argument from etype= to exc=, or pass exception object as first positional argument.
   examples:
-    bad: "traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_tb)"
-    good: "traceback.format_exception(exc_value)"
+    bad: traceback.format_exception(etype=exc_type, value=exc_value, tb=exc_tb)
+    good: traceback.format_exception(exc_value)
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api"
-
-- id: "PY39BC11"
-  name: "Decimal/Fraction no longer accepted"
-  category: "breaking_change"
-  severity: "medium"
-  risk_level: "MEDIUM"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api
+- id: PY39BC11
+  name: Decimal/Fraction no longer accepted
+  category: breaking_change
+  severity: medium
+  risk_level: MEDIUM
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: medium
   description: |
     Builtin functions no longer accept Decimal or Fraction objects, or objects
     with __int__() but no __index__().
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "regex:(bin|oct|hex)"
+          id: regex:(bin|oct|hex)
       args:
-        - node_type: "Call"
-          children:
-            func:
-              node_type: "Name"
-              attributes:
-                id: "regex:(Decimal|Fraction)"
+      - node_type: Call
+        children:
+          func:
+            node_type: Name
+            attributes:
+              id: regex:(Decimal|Fraction)
   message: |
     Builtin functions now require __index__() method and no longer accept Decimal/Fraction.
   suggestion: |
     Convert to int explicitly: bin(int(decimal_value))
   examples:
-    bad: "bin(Decimal('10'))"
-    good: "bin(int(Decimal('10')))"
+    bad: bin(Decimal('10'))
+    good: bin(int(Decimal('10')))
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api"
+  - https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api
+- id: PY39BC12
+  name: __debug__ deletion now SyntaxError
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: text
+    confidence: medium
+    requires_llm: true
+    priority: low
+    semantic_description: |-
+      __debug__ deletion now SyntaxError involves semantic or runtime behavior changes.
+      Attempting to delete __debug__ now raises SyntaxError instead of NameError....
 
-- id: "PY39BC12"
-  name: "__debug__ deletion now SyntaxError"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+      This requires LLM analysis to understand the context and implications.
+    detection_criteria:
+      ast_pattern: Delete node with specific attributes
+      text_keywords: []
+      validation_prompt: |-
+        Analyze the semantic implications of this code for: __debug__ deletion now SyntaxError
+        Consider runtime behavior and implicit changes.
+        Determine if this is truly an issue in the target version.
   description: |
     Attempting to delete __debug__ now raises SyntaxError instead of NameError.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Delete"
+    node_type: Delete
     children:
       targets:
-        - node_type: "Name"
-          attributes:
-            id: "__debug__"
+      - node_type: Name
+        attributes:
+          id: __debug__
   message: |
     Deleting __debug__ raises SyntaxError in Python 3.10.
   suggestion: |
     Do not attempt to delete __debug__. It is a built-in constant.
   examples:
-    bad: "del __debug__"
-    good: "# __debug__ cannot be deleted"
+    bad: del __debug__
+    good: '# __debug__ cannot be deleted'
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api"
+  - https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api
+- id: PY39BC13
+  name: NaN hash values now identity-dependent
+  category: breaking_change
+  severity: low
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: text
+    confidence: low
+    requires_llm: true
+    priority: low
+    semantic_description: |-
+      NaN hash values now identity-dependent involves semantic or runtime behavior changes.
+      Hash values of NaN (float('nan') and Decimal('NaN')) now depend on object
+      identity instead of always being 0....
 
-- id: "PY39BC13"
-  name: "NaN hash values now identity-dependent"
-  category: "breaking_change"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+      This requires LLM analysis to understand the context and implications.
+    detection_criteria:
+      ast_pattern: Call node with specific attributes
+      text_keywords: []
+      validation_prompt: |-
+        Analyze the semantic implications of this code for: NaN hash values now identity-dependent
+        Consider runtime behavior and implicit changes.
+        Determine if this is truly an issue in the target version.
   description: |
     Hash values of NaN (float('nan') and Decimal('NaN')) now depend on object
     identity instead of always being 0.
-  detector: "BehaviorChangeDetector"
+  detector: BehaviorChangeDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "hash"
+          id: hash
       args:
-        - node_type: "Call"
-          children:
-            func:
-              node_type: "Name"
-              attributes:
-                id: "regex:(float|Decimal)"
-            args:
-              - node_type: "Constant"
-                attributes:
-                  value: "regex:(?i)(nan|NaN)"
+      - node_type: Call
+        children:
+          func:
+            node_type: Name
+            attributes:
+              id: regex:(float|Decimal)
+          args:
+          - node_type: Constant
+            attributes:
+              value: regex:(?i)(nan|NaN)
   message: |
     Hash values of NaN now depend on object identity in Python 3.10.
   suggestion: |
     Do not rely on NaN hash values being equal or always 0. Each NaN has a unique hash.
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api"
+  - https://docs.python.org/3/whatsnew/3.10.html#changes-in-the-python-api

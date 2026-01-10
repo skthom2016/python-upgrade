@@ -1,18 +1,24 @@
-# Syntax changes when upgrading from Python 3.9 to 3.10+
+# Syntax Changes when upgrading from Python 3.9
+# New syntax features and breaking syntax changes
 
-- id: "PY39SC01"
-  name: "Structural pattern matching available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+- id: PY39SC01
+  name: Structural pattern matching available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Structural pattern matching with match/case statements is available in
     Python 3.10+ (PEP 634, 635, 636). This is not available in Python 3.9.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Match"
+    node_type: Match
   message: |
     Structural pattern matching (match/case) is not available in Python 3.9.
   suggestion: |
@@ -26,24 +32,28 @@
       if status == 404:
           return "Not found"
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-634-structural-pattern-matching"
-    - "https://peps.python.org/pep-0634/"
-    - "https://peps.python.org/pep-0635/"
-    - "https://peps.python.org/pep-0636/"
-
-- id: "PY39SC02"
-  name: "Parenthesized context managers available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#pep-634-structural-pattern-matching
+  - https://peps.python.org/pep-0634/
+  - https://peps.python.org/pep-0635/
+  - https://peps.python.org/pep-0636/
+- id: PY39SC02
+  name: Parenthesized context managers available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Parenthesized context managers allow spanning multiple lines using
     parentheses in with statements (PEP 617). This is not available in Python 3.9.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "With"
+    node_type: With
     attributes:
       paren_context: true
   message: |
@@ -62,232 +72,268 @@
            open('b.txt') as b:
           pass
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#parenthesized-context-managers"
-    - "https://peps.python.org/pep-0617/"
-
-- id: "PY39SC03"
-  name: "Type union operator available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#parenthesized-context-managers
+  - https://peps.python.org/pep-0617/
+- id: PY39SC03
+  name: Type union operator available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     The | operator for type unions (PEP 604) is available in Python 3.10+.
     This is not available in Python 3.9.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "BinOp"
+    node_type: BinOp
     children:
       op:
-        node_type: "BitOr"
+        node_type: BitOr
     attributes:
-      context: "type_annotation"
+      context: type_annotation
   message: |
     Type union operator (|) is not available in Python 3.9 for type hints.
   suggestion: |
     For Python 3.9, use typing.Union instead: Union[int, str]
   examples:
-    bad: "def func(x: int | str) -> int | float: ..."
-    good: "from typing import Union\ndef func(x: Union[int, str]) -> Union[int, float]: ..."
+    bad: 'def func(x: int | str) -> int | float: ...'
+    good: |-
+      from typing import Union
+      def func(x: Union[int, str]) -> Union[int, float]: ...
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-604-new-type-union-operator"
-    - "https://peps.python.org/pep-0604/"
-
-- id: "PY39SC04"
-  name: "isinstance/issubclass with union operator"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#pep-604-new-type-union-operator
+  - https://peps.python.org/pep-0604/
+- id: PY39SC04
+  name: isinstance/issubclass with union operator
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Using | operator with isinstance() and issubclass() is available in
     Python 3.10+. This is not available in Python 3.9.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Call"
+    node_type: Call
     children:
       func:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "regex:(isinstance|issubclass)"
+          id: regex:(isinstance|issubclass)
       args:
-        - node_type: "BinOp"
-          children:
-            op:
-              node_type: "BitOr"
+      - node_type: BinOp
+        children:
+          op:
+            node_type: BitOr
   message: |
     Using | operator with isinstance/issubclass is not available in Python 3.9.
   suggestion: |
     For Python 3.9, use tuple syntax: isinstance(x, (int, str))
   examples:
-    bad: "isinstance(x, int | str)"
-    good: "isinstance(x, (int, str))"
+    bad: isinstance(x, int | str)
+    good: isinstance(x, (int, str))
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-604-new-type-union-operator"
-    - "https://peps.python.org/pep-0604/"
-
-- id: "PY39SC05"
-  name: "Improved error messages"
-  category: "informational"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#pep-604-new-type-union-operator
+  - https://peps.python.org/pep-0604/
+- id: PY39SC05
+  name: Improved error messages
+  category: informational
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.10 provides significantly improved error messages with better
     context and suggestions. This includes better SyntaxError, IndentationError,
     AttributeError, and NameError messages.
-  detector: "InformationalDetector"
+  detector: InformationalDetector
   pattern:
-    node_type: "Module"
+    node_type: Module
   message: |
     Python 3.10 provides significantly improved error messages and debugging experience.
   suggestion: |
     Consider upgrading to Python 3.10+ for better error diagnostics during development.
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#better-error-messages"
-
-- id: "PY39SC06"
-  name: "PEP 626 precise line numbers"
-  category: "informational"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#better-error-messages
+- id: PY39SC06
+  name: PEP 626 precise line numbers
+  category: informational
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.10 implements PEP 626, providing precise line numbers for debugging
     and tracing. Frame objects now have accurate f_lineno values.
-  detector: "InformationalDetector"
+  detector: InformationalDetector
   pattern:
-    node_type: "Attribute"
+    node_type: Attribute
     attributes:
-      attr: "f_lineno"
+      attr: f_lineno
   message: |
     Python 3.10 provides precise line numbers (PEP 626) for better debugging.
   suggestion: |
     If you're doing frame introspection, Python 3.10+ provides more accurate line numbers.
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-626-precise-line-numbers-for-debugging-and-other-tools"
-    - "https://peps.python.org/pep-0626/"
-
-- id: "PY39SC07"
-  name: "Assignment expressions in set literals"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#pep-626-precise-line-numbers-for-debugging-and-other-tools
+  - https://peps.python.org/pep-0626/
+- id: PY39SC07
+  name: Assignment expressions in set literals
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Unparenthesized walrus operator (:=) in set literals and comprehensions is
     now allowed in Python 3.10.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "SetComp"
+    node_type: SetComp
     children:
       generators:
-        - node_type: "comprehension"
-          children:
-            iter:
-              node_type: "NamedExpr"
+      - node_type: comprehension
+        children:
+          iter:
+            node_type: NamedExpr
   message: |
     Unparenthesized assignment expressions in set literals require Python 3.10+.
   suggestion: |
     For Python 3.9, use parentheses: {(y := x) for x in range(5)}
   examples:
-    bad: "{y := x for x in range(5)}"
-    good: "{(y := x) for x in range(5)}"
+    bad: '{y := x for x in range(5)}'
+    good: '{(y := x) for x in range(5)}'
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#other-language-changes"
-
-- id: "PY39SC08"
-  name: "TypeAlias annotation available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#other-language-changes
+- id: PY39SC08
+  name: TypeAlias annotation available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 613 adds TypeAlias annotation for explicit type alias declarations.
     This is available in Python 3.10+ via typing module.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "AnnAssign"
+    node_type: AnnAssign
     children:
       annotation:
-        node_type: "Name"
+        node_type: Name
         attributes:
-          id: "TypeAlias"
+          id: TypeAlias
   message: |
     TypeAlias annotation (PEP 613) requires Python 3.10+ or typing_extensions.
   suggestion: |
     For Python 3.9, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "StrCache: TypeAlias = 'Cache[str]'"
-    good: "from typing_extensions import TypeAlias\nStrCache: TypeAlias = 'Cache[str]'"
+    bad: 'StrCache: TypeAlias = ''Cache[str]'''
+    good: |-
+      from typing_extensions import TypeAlias
+      StrCache: TypeAlias = 'Cache[str]'
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-613-explicit-type-aliases"
-    - "https://peps.python.org/pep-0613/"
-
-- id: "PY39SC09"
-  name: "ParamSpec available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#pep-613-explicit-type-aliases
+  - https://peps.python.org/pep-0613/
+- id: PY39SC09
+  name: ParamSpec available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 612 adds ParamSpec for parameter specification variables in typing.
     This is available in Python 3.10+ via typing module.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "ParamSpec"
+      - node_type: alias
+        attributes:
+          name: ParamSpec
   message: |
     ParamSpec (PEP 612) requires Python 3.10+ or typing_extensions.
   suggestion: |
     For Python 3.9, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import ParamSpec"
-    good: "from typing_extensions import ParamSpec"
+    bad: from typing import ParamSpec
+    good: from typing_extensions import ParamSpec
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-612-parameter-specification-variables"
-    - "https://peps.python.org/pep-0612/"
-
-- id: "PY39SC10"
-  name: "TypeGuard available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "LOW"
-  source_version: "3.9"
-  target_version: "3.10"
+  - https://docs.python.org/3/whatsnew/3.10.html#pep-612-parameter-specification-variables
+  - https://peps.python.org/pep-0612/
+- id: PY39SC10
+  name: TypeGuard available
+  category: new_feature
+  severity: info
+  risk_level: LOW
+  source_version: '3.9'
+  target_version: '3.10'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     PEP 647 adds TypeGuard for user-defined type guards in typing.
     This is available in Python 3.10+ via typing module.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     attributes:
-      module: "typing"
+      module: typing
     children:
       names:
-        - node_type: "alias"
-          attributes:
-            name: "TypeGuard"
+      - node_type: alias
+        attributes:
+          name: TypeGuard
   message: |
     TypeGuard (PEP 647) requires Python 3.10+ or typing_extensions.
   suggestion: |
     For Python 3.9, install typing_extensions: pip install typing_extensions
   examples:
-    bad: "from typing import TypeGuard"
-    good: "from typing_extensions import TypeGuard"
+    bad: from typing import TypeGuard
+    good: from typing_extensions import TypeGuard
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-647-user-defined-type-guards"
-    - "https://peps.python.org/pep-0647/"
+  - https://docs.python.org/3/whatsnew/3.10.html#pep-647-user-defined-type-guards
+  - https://peps.python.org/pep-0647/

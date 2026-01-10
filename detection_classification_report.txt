@@ -1,0 +1,85 @@
+============================================================
+Detection Strategy Classification Summary
+============================================================
+
+Total Rules Classified: 474
+
+By Strategy:
+  AST         :  320 ( 67.5%) - No LLM required
+  HYBRID      :    5 (  1.1%) - LLM validation required
+  TEXT        :    2 (  0.4%) - LLM validation required
+  INFO_ONLY   :  147 ( 31.0%) - No LLM required
+
+By Version:
+  Python 3.10:   95 rules
+    - ast       :  58
+    - hybrid    :   1
+    - info_only :  36
+  Python 3.11:  103 rules
+    - ast       :  59
+    - hybrid    :   1
+    - info_only :  43
+  Python 3.6:   64 rules
+    - ast       :  62
+    - hybrid    :   1
+    - info_only :   1
+  Python 3.7:  106 rules
+    - ast       :  79
+    - info_only :  27
+  Python 3.8:   38 rules
+    - ast       :  27
+    - hybrid    :   1
+    - info_only :  10
+  Python 3.9:   68 rules
+    - ast       :  35
+    - hybrid    :   1
+    - text      :   2
+    - info_only :  30
+
+By Category:
+  api_change               :   17 rules
+  behavior_change          :    1 rules
+  behavioral_change        :   10 rules
+  breaking_change          :  104 rules
+  deprecation              :  139 rules
+  enhancement              :    9 rules
+  informational            :    7 rules
+  new_feature              :  179 rules
+  requirement_change       :    1 rules
+  security_change          :    4 rules
+  syntax_change            :    3 rules
+
+By Priority:
+  critical  :    1 rules
+  high      :   40 rules
+  medium    :  120 rules
+  low       :  100 rules
+  info      :  213 rules
+
+Processed Files:
+  Python 3.10 - breaking_changes         :  18 rules
+  Python 3.10 - deprecated_features      :  29 rules
+  Python 3.10 - stdlib_changes           :  30 rules
+  Python 3.10 - syntax_changes           :  18 rules
+  Python 3.11 - breaking_changes         :  20 rules
+  Python 3.11 - deprecated_features      :  27 rules
+  Python 3.11 - stdlib_changes           :  36 rules
+  Python 3.11 - syntax_changes           :  20 rules
+  Python 3.6 - breaking_changes         :  18 rules
+  Python 3.6 - deprecated_features      :  21 rules
+  Python 3.6 - stdlib_changes           :  19 rules
+  Python 3.6 - syntax_changes           :   6 rules
+  Python 3.7 - breaking_changes         :  18 rules
+  Python 3.7 - deprecated_features      :  17 rules
+  Python 3.7 - stdlib_changes           :  65 rules
+  Python 3.7 - syntax_changes           :   6 rules
+  Python 3.8 - breaking_changes         :  11 rules
+  Python 3.8 - deprecated_features      :  13 rules
+  Python 3.8 - stdlib_changes           :  10 rules
+  Python 3.8 - syntax_changes           :   4 rules
+  Python 3.9 - breaking_changes         :  13 rules
+  Python 3.9 - deprecated_features      :  22 rules
+  Python 3.9 - stdlib_changes           :  23 rules
+  Python 3.9 - syntax_changes           :  10 rules
+
+============================================================

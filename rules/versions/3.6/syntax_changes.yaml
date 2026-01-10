@@ -1,22 +1,27 @@
-# Syntax changes when upgrading from Python 3.6 to 3.7+
+# Syntax Changes when upgrading from Python 3.6
 # New syntax features and breaking syntax changes
 
-- id: "PY36SC01"
-  name: "async and await become reserved keywords"
-  category: "breaking_change"
-  severity: "high"
-  risk_level: "HIGH"
-  source_version: "3.6"
-  target_version: "3.7"
+- id: PY36SC01
+  name: async and await become reserved keywords
+  category: breaking_change
+  severity: high
+  risk_level: HIGH
+  source_version: '3.6'
+  target_version: '3.7'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: high
   description: |
     In Python 3.7, 'async' and 'await' become fully reserved keywords and
     cannot be used as variable names, attribute names, or function names.
     In Python 3.6 they were only soft keywords.
-  detector: "KeywordChangesDetector"
+  detector: KeywordChangesDetector
   pattern:
-    node_type: "Name"
+    node_type: Name
     attributes:
-      id: "regex:^(async|await)$"
+      id: regex:^(async|await)$
   condition:
     used_as_identifier: true
   message: |
@@ -37,32 +42,36 @@
       def await_result():
           pass
   references:
-    - "https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep492"
-    - "https://peps.python.org/pep-0492/"
-
-- id: "PY36SC02"
-  name: "PEP 563: Postponed evaluation of annotations available"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.6"
-  target_version: "3.7"
+  - https://docs.python.org/3/whatsnew/3.7.html#whatsnew37-pep492
+  - https://peps.python.org/pep-0492/
+- id: PY36SC02
+  name: 'PEP 563: Postponed evaluation of annotations available'
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.6'
+  target_version: '3.7'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: info
   description: |
     Python 3.7 supports PEP 563 which enables postponed evaluation of
     annotations. This allows forward references in type hints and
     improves startup time. Must be enabled with 'from __future__ import
     annotations'.
-  detector: "FutureImportDetector"
+  detector: FutureImportDetector
   pattern:
-    node_type: "ImportFrom"
+    node_type: ImportFrom
     children:
       module:
-        node_type: "str"
-        value: "__future__"
+        node_type: str
+        value: __future__
       names:
-        - node_type: "alias"
-          attributes:
-            name: "annotations"
+      - node_type: alias
+        attributes:
+          name: annotations
   message: |
     The 'from __future__ import annotations' import is new in Python 3.7.
     This enables postponed evaluation of type annotations.
@@ -82,22 +91,26 @@
           def validate_b(self, obj: B) -> bool:
               ...
   references:
-    - "https://docs.python.org/3/whatsnew/3.7.html#pep-563-postponed-evaluation-of-annotations"
-    - "https://peps.python.org/pep-0563/"
-
-- id: "PY36SC03"
-  name: "await and async for allowed in f-strings"
-  category: "new_feature"
-  severity: "info"
-  risk_level: "INFO"
-  source_version: "3.6"
-  target_version: "3.7"
+  - https://docs.python.org/3/whatsnew/3.7.html#pep-563-postponed-evaluation-of-annotations
+  - https://peps.python.org/pep-0563/
+- id: PY36SC03
+  name: await and async for allowed in f-strings
+  category: new_feature
+  severity: info
+  risk_level: INFO
+  source_version: '3.6'
+  target_version: '3.7'
+  detection:
+    strategy: info_only
+    confidence: null
+    requires_llm: false
+    priority: info
   description: |
     Python 3.7 lifts the restriction that await expressions and
     comprehensions containing async for clauses were illegal in f-strings.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "JoinedStr"
+    node_type: JoinedStr
   condition:
     contains_await_or_async_for: true
   message: |
@@ -112,23 +125,27 @@
       result = f"{await asyncio.sleep(0)}"
       result = f"{[x async for x in async_gen()]}"
   references:
-    - "https://docs.python.org/3/whatsnew/3.7.html#other-language-changes"
-
-- id: "PY36SC04"
-  name: "Walrus operator not available"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.7"
+  - https://docs.python.org/3/whatsnew/3.7.html#other-language-changes
+- id: PY36SC04
+  name: Walrus operator not available
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.7'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     The walrus operator := (assignment expressions) is not available in
     Python 3.7. It was introduced in Python 3.8.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Name"
+    node_type: Name
     attributes:
-      id: "PLACEHOLDER"
+      id: PLACEHOLDER
   message: |
     If you want to use the walrus operator :=, you'll need to upgrade to
     Python 3.8 or later.
@@ -146,24 +163,28 @@
       if n > 10:
           print(n)
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions"
-    - "https://peps.python.org/pep-0572/"
-
-- id: "PY36SC05"
-  name: "Positional-only parameters not available"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.7"
+  - https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions
+  - https://peps.python.org/pep-0572/
+- id: PY36SC05
+  name: Positional-only parameters not available
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.7'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Positional-only parameters (using /) are not available in Python 3.7.
     They were introduced in Python 3.8.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Name"
+    node_type: Name
     attributes:
-      id: "PLACEHOLDER"
+      id: PLACEHOLDER
   message: |
     Positional-only parameters are not available in Python 3.7.
     Use Python 3.8+ if you need this feature.
@@ -179,24 +200,28 @@
       def greet(name, greeting="Hello"):
           print(f"{greeting}, {name}!")
   references:
-    - "https://docs.python.org/3/whatsnew/3.8.html#positional-only-parameters"
-    - "https://peps.python.org/pep-0570/"
-
-- id: "PY36SC06"
-  name: "Match statement not available"
-  category: "deprecation"
-  severity: "low"
-  risk_level: "LOW"
-  source_version: "3.6"
-  target_version: "3.7"
+  - https://docs.python.org/3/whatsnew/3.8.html#positional-only-parameters
+  - https://peps.python.org/pep-0570/
+- id: PY36SC06
+  name: Match statement not available
+  category: deprecation
+  severity: low
+  risk_level: LOW
+  source_version: '3.6'
+  target_version: '3.7'
+  detection:
+    strategy: ast
+    confidence: high
+    requires_llm: false
+    priority: low
   description: |
     Structural pattern matching (match/case statements) is not available
     in Python 3.7. It was introduced in Python 3.10.
-  detector: "SyntaxChangesDetector"
+  detector: SyntaxChangesDetector
   pattern:
-    node_type: "Name"
+    node_type: Name
     attributes:
-      id: "PLACEHOLDER"
+      id: PLACEHOLDER
   message: |
     Pattern matching with match/case is not available in Python 3.7.
     Use Python 3.10+ if you need this feature.
@@ -218,5 +243,5 @@
       elif status == 404:
           return "Not Found"
   references:
-    - "https://docs.python.org/3/whatsnew/3.10.html#pep-634-structural-pattern-matching"
-    - "https://peps.python.org/pep-0634/"
+  - https://docs.python.org/3/whatsnew/3.10.html#pep-634-structural-pattern-matching
+  - https://peps.python.org/pep-0634/
