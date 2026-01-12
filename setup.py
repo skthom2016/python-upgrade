@@ -43,6 +43,7 @@ setup(
         'psutil>=5.9.0',
         'pyyaml>=6.0',
         'packaging>=21.0',
+        'requests>=2.28.0',
     ],
     entry_points={
         'console_scripts': [

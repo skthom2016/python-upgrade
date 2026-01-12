@@ -1,0 +1,39 @@
+# Test configuration with LLM disabled for fast testing
+python:
+  source_version: auto
+  target_version: null
+
+scan:
+  resume: false
+  parallel: true
+  verbose: true
+
+paths:
+  source: "./"
+  output: "./output"
+
+performance:
+  max_workers: 4
+  memory_limit: 80
+  cpu_limit: 90
+
+baseline:
+  file: null
+
+cache:
+  enabled: false
+
+reporting:
+  include_snippets: true
+  snippet_lines: 5
+  top_files_count: 20
+
+# LLM disabled for faster testing
+llm:
+  enabled: false
+  host: "http://localhost:11434"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.1
+  timeout: 30
+  max_tokens: null
+  graceful_degradation: true

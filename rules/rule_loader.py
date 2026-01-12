@@ -140,8 +140,11 @@ class RuleLoader:
         source_minor = int(source_version.split('.')[1])
         target_minor = int(target_version.split('.')[1])
 
-        # Load rules for each intermediate version
-        for version_minor in range(source_minor, target_minor + 1):
+        # Load rules for each intermediate version (excluding target version itself)
+        # For 3.6->3.7: load only 3.6 rules
+        # For 3.6->3.8: load 3.6 and 3.7 rules
+        # For 3.6->3.12: load 3.6, 3.7, 3.8, 3.9, 3.10, 3.11 rules
+        for version_minor in range(source_minor, target_minor):
             version_str = f"3.{version_minor}"
             version_dir = os.path.join(self.rules_dir, version_str)
 

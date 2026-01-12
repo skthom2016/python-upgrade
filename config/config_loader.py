@@ -50,6 +50,7 @@ class Config:
     llm_timeout: int = 30
     llm_max_tokens: Optional[int] = None
     llm_graceful_degradation: bool = True
+    llm_validation_mode: str = "none"
 
     def __post_init__(self):
         """Validate configuration after initialization."""
@@ -164,11 +165,12 @@ class ConfigLoader:
             top_files_count=reporting.get('top_files_count', 10),
             llm_enabled=llm.get('enabled', True),
             llm_host=llm.get('host', 'http://localhost:11434'),
-            llm_model=llm.get('model', 'qwen2.5:7b'),
+            llm_model=llm.get('model', 'qwen2.5-coder:7b'),
             llm_temperature=llm.get('temperature', 0.1),
             llm_timeout=llm.get('timeout', 30),
             llm_max_tokens=llm.get('max_tokens'),
             llm_graceful_degradation=llm.get('graceful_degradation', True),
+            llm_validation_mode=llm.get('validation_mode', 'none'),
         )
 
     def update_from_args(self, config: Config, args) -> Config:

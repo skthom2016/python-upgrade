@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Bini Analyzer - Main Application
+  bini-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bini-analyzer:latest
+    container_name: bini-analyzer
+    volumes:
+      # Mount your Python project to analyze
+      - ./test-project:/workspace:ro
+      # Output directory for reports
+      - ./output:/output
+      # Optional: Custom config
+      - ./config/default_config.yaml:/app/config/default_config.yaml:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OLLAMA_HOST=http://ollama:11434
+    networks:
+      - bini-network
+    depends_on:
+      ollama:
+        condition: service_healthy
+    # Override command for actual analysis
+    command: analyze /workspace --target 3.12 --output /output
+    restart: "no"
+
+  # Ollama - LLM Service (Optional for Phase 2 validation)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-llm
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - bini-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    # Pull the model on startup
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        sleep 10
+        ollama pull qwen2.5:7b
+        wait
+
+networks:
+  bini-network:
+    driver: bridge
+
+volumes:
+  ollama-data:
+    driver: local

@@ -71,6 +71,10 @@ class Issue:
         affected_versions: List of Python versions affected
         references: Links to documentation or PEPs
         detection_method: How the issue was detected (ast, llm, hybrid)
+        llm_validated: True if LLM checked this issue (two-phase workflow)
+        llm_confirmed: True if LLM confirmed issue, False if rejected as FP
+        llm_explanation: LLM reasoning for validation decision
+        analysis_phase: Phase when issue was detected (ast_only or llm_validated)
     """
     id: str
     file_path: str
@@ -84,6 +88,10 @@ class Issue:
     affected_versions: List[str] = field(default_factory=list)
     references: List[str] = field(default_factory=list)
     detection_method: str = "ast"
+    llm_validated: bool = False
+    llm_confirmed: bool = True
+    llm_explanation: str = ""
+    analysis_phase: str = "ast_only"
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -100,6 +108,10 @@ class Issue:
             'affected_versions': self.affected_versions,
             'references': self.references,
             'detection_method': self.detection_method,
+            'llm_validated': self.llm_validated,
+            'llm_confirmed': self.llm_confirmed,
+            'llm_explanation': self.llm_explanation,
+            'analysis_phase': self.analysis_phase,
         }
 
     @classmethod
@@ -124,6 +136,10 @@ class Issue:
             affected_versions=data.get('affected_versions', []),
             references=data.get('references', []),
             detection_method=data.get('detection_method', 'ast'),
+            llm_validated=data.get('llm_validated', False),
+            llm_confirmed=data.get('llm_confirmed', True),
+            llm_explanation=data.get('llm_explanation', ''),
+            analysis_phase=data.get('analysis_phase', 'ast_only'),
         )
 
 
@@ -276,6 +292,9 @@ class AnalysisMetadata:
         generated_at: Timestamp when report was generated
         analyzer_version: Version of the analyzer tool
         config_hash: Hash of configuration used
+        analysis_phase: Phase of analysis (ast_only or complete)
+        llm_validation_performed: True if LLM validation was performed
+        llm_validation_stats: Statistics about LLM validation
     """
     source_version: str
     target_version: str
@@ -283,6 +302,9 @@ class AnalysisMetadata:
     generated_at: str
     analyzer_version: str = "1.0.0"
     config_hash: str = ""
+    analysis_phase: str = "complete"
+    llm_validation_performed: bool = False
+    llm_validation_stats: Dict[str, int] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -293,6 +315,9 @@ class AnalysisMetadata:
             'generated_at': self.generated_at,
             'analyzer_version': self.analyzer_version,
             'config_hash': self.config_hash,
+            'analysis_phase': self.analysis_phase,
+            'llm_validation_performed': self.llm_validation_performed,
+            'llm_validation_stats': self.llm_validation_stats,
         }
 
 

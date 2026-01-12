@@ -1,0 +1,53 @@
+# Bini Docker Configuration
+# Optimized for containerized deployment with Ollama
+
+python:
+  source_version: auto
+  target_version: null
+
+scan:
+  resume: true
+  parallel: true
+  verbose: false
+
+paths:
+  source: "/workspace"
+  output: "/output"
+
+performance:
+  max_workers: null
+  # Lower limits for containerized environment
+  memory_limit: 80
+  cpu_limit: 90
+
+baseline:
+  file: null
+
+cache:
+  enabled: true
+  expiration_days: 30
+
+reporting:
+  include_snippets: true
+  snippet_lines: 5
+  top_files_count: 20
+
+# LLM Configuration for Docker
+# In Docker, Ollama runs as a separate service at http://ollama:11434
+llm:
+  # Check environment variable to enable/disable LLM
+  enabled: true
+
+  # Docker network hostname for Ollama service
+  host: "${OLLAMA_HOST:-http://localhost:11434}"
+
+  # Model: qwen2.5-coder:7b is recommended (optimized for code analysis)
+  # Alternatives: qwen2.5-coder:3b (faster, less accurate), qwen2.5-coder:14b (slower, more accurate)
+  model: "qwen2.5-coder:7b"
+
+  temperature: 0.1
+  timeout: 60
+  max_tokens: null
+
+  # If Ollama is unavailable, continue with AST-only analysis
+  graceful_degradation: true

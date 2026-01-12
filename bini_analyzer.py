@@ -94,24 +94,15 @@ class BiniAnalyzer:
         # Create orchestrator
         self.orchestrator = AnalysisOrchestrator(self.config)
 
-        # Run analysis
+        # Run analysis (two-phase workflow)
+        # Reports are generated inside the orchestrator:
+        # - Phase 1: report_phase1_ast_only_{timestamp}.html
+        # - Phase 2 (if approved): report_final_llm_validated_{timestamp}.html
         report_data = self.orchestrator.analyze_project()
 
-        # Generate report
-        report_generator = ReportGenerator(
-            output_dir=self.config.output_path
-        )
-
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        report_filename = f"report_{timestamp}.html"
-        report_path = os.path.join(self.config.output_path, report_filename)
-
-        report_generator.generate_report(
-            report_data=report_data,
-            output_path=report_path
-        )
-
-        self.logger.info(f"Report generated: {report_path}")
+        # Report path is already set by orchestrator
+        report_path = report_data.get('report_path', 'Unknown')
+        self.logger.info(f"Analysis complete! Report: {report_path}")
 
         return 0
 

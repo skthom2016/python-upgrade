@@ -68,12 +68,25 @@ class ASTPatternMatcher:
 
         Args:
             node: AST node
-            node_type: Expected node type (string)
+            node_type: Expected node type (string), supports multiple types separated by |
 
         Returns:
             True if node type matches
         """
-        # Convert string to AST class
+        # Handle multiple node types (e.g., "FunctionDef|AsyncFunctionDef")
+        if '|' in node_type:
+            node_types = node_type.split('|')
+            for nt in node_types:
+                nt = nt.strip()
+                try:
+                    ast_class = getattr(ast, nt)
+                    if isinstance(node, ast_class):
+                        return True
+                except AttributeError:
+                    continue
+            return False
+
+        # Single node type
         try:
             ast_class = getattr(ast, node_type)
             return isinstance(node, ast_class)
@@ -169,7 +182,7 @@ class ASTPatternMatcher:
                 else:
                     return False
 
-            # Handle single child
+            # Handle single child (AST node)
             elif isinstance(child, ast.AST):
                 if isinstance(child_pattern, dict):
                     matcher = ASTPatternMatcher(child_pattern)
@@ -178,10 +191,16 @@ class ASTPatternMatcher:
                 else:
                     return False
 
-            # Handle None
-            elif child is None:
-                if child_pattern is not None:
+            # Handle scalar values (strings, numbers, booleans)
+            # This is needed for matching attributes like 'attr' in Attribute nodes
+            elif isinstance(child, (str, int, float, bool)) or child is None:
+                if isinstance(child_pattern, dict):
+                    # Pattern is a dict, but child is scalar - doesn't match
                     return False
+                else:
+                    # Direct comparison for scalar values
+                    if child != child_pattern:
+                        return False
 
             else:
                 return False

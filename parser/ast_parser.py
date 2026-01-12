@@ -42,17 +42,29 @@ class ASTParser:
     # Default encoding
     DEFAULT_ENCODING = 'utf-8'
 
-    def __init__(self, file_path: str, encoding: str = DEFAULT_ENCODING):
+    def __init__(self, file_path: str, encoding: str = DEFAULT_ENCODING, source_version: Optional[str] = None):
         """
         Initialize AST parser.
 
         Args:
             file_path: Path to Python source file
             encoding: File encoding (default: utf-8)
+            source_version: Source Python version for parsing (e.g., "3.6")
+                           If None, uses current Python version
         """
         self.file_path = file_path
         self.encoding = encoding
+        self.source_version = source_version
         self.source_lines: List[str] = []
+
+        # Convert source_version to feature_version tuple for ast.parse()
+        self.feature_version = None
+        if source_version:
+            try:
+                parts = source_version.split('.')
+                self.feature_version = (int(parts[0]), int(parts[1]))
+            except (ValueError, IndexError):
+                pass  # Invalid version format, will use current Python version
 
     def parse(self) -> ParseResult:
         """
@@ -88,7 +100,12 @@ class ASTParser:
 
         # Parse AST
         try:
-            tree = ast.parse(source, filename=self.file_path)
+            # Parse with source version's syntax if specified
+            # This allows parsing Python 3.6 code like "async = True" even on Python 3.12
+            if self.feature_version:
+                tree = ast.parse(source, filename=self.file_path, feature_version=self.feature_version)
+            else:
+                tree = ast.parse(source, filename=self.file_path)
             return ParseResult(
                 tree=tree,
                 syntax_error=None,

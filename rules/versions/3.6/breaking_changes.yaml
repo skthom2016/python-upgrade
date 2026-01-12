@@ -135,7 +135,7 @@
     into RuntimeError exceptions.
   detector: AsyncChangesDetector
   pattern:
-    node_type: FunctionDef
+    node_type: FunctionDef|AsyncFunctionDef
   condition:
     is_async_function: true
     raises_stopiteration: true
@@ -209,7 +209,7 @@
     This was an oversight in the original implementation.
   detector: AsyncChangesDetector
   pattern:
-    node_type: FunctionDef
+    node_type: FunctionDef|AsyncFunctionDef
   condition:
     is_async: true
     function_name: __aiter__
@@ -497,9 +497,9 @@
     the result of readPlist() and readPlistFromBytes() are now normal dicts.
   detector: DeprecatedAPIsDetector
   pattern:
-    node_type: Call
+    node_type: Call|ImportFrom
   condition:
-    func_is: regex:(plistlib.Plist|plistlib.Dict|plistlib._InternalDict)
+    func_is: regex:(plistlib.Plist|plistlib.Dict|plistlib._InternalDict|Plist|Dict|_InternalDict)
   message: |
     plistlib.Plist, Dict, and _InternalDict classes were removed in
     Python 3.7. Attribute access is no longer supported.
@@ -536,16 +536,9 @@
     Python 3.5.
   detector: DeprecatedAPIsDetector
   pattern:
-    node_type: Call
-    children:
-      func:
-        node_type: Attribute
-        children:
-          value:
-            node_type: Name
-            attributes:
-              id: asyncio.windows_utils
-          attr: socketpair
+    node_type: Call|ImportFrom
+  condition:
+    func_is: regex:(asyncio.windows_utils.socketpair|socketpair)
   message: |
     asyncio.windows_utils.socketpair() was removed in Python 3.7.
     Use socket.socketpair() instead.
@@ -579,14 +572,10 @@
   detector: ImportChangesDetector
   pattern:
     node_type: ImportFrom
-    children:
-      module:
-        node_type: str
-        value: asyncio
-      names:
-      - node_type: alias
-        attributes:
-          name: regex:(selectors|_overlapped)
+    attributes:
+      module: asyncio
+  condition:
+    imports: regex:(selectors|_overlapped)
   message: |
     asyncio.selectors and asyncio._overlapped are no longer exported in
     Python 3.7+. Import these modules directly instead.
